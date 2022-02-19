@@ -1,2 +1,3 @@
 # anoncreds-spec
-The specification for AnonCreds verifiable credential exchange.
+
+The source documents for the specification of the AnonCreds verifiable credential exchange.
