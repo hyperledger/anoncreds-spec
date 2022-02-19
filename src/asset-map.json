@@ -1,0 +1,26 @@
+{
+  "head": {
+    "css": [
+      "assets/css/custom-elements.css",
+      "assets/css/prism.css",
+      "assets/css/chart.css",
+      "assets/css/index.css"
+    ],
+    "js": [
+      "assets/js/utils.js",
+      "assets/js/custom-elements.js"
+    ]
+  },
+  "body": {
+    "js": [
+      "assets/js/markdown-it.js",
+      "assets/js/prism.js",
+      "assets/js/mermaid.js",
+      "assets/js/chart.js",
+      "assets/js/font-awesome.js",
+      "assets/js/popper.js",
+      "assets/js/tippy.js",
+      "assets/js/index.js"
+    ]
+  }
+}

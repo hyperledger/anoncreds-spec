@@ -1,0 +1,21 @@
+
+{
+  "specs": [
+    {
+      "title": "AnonCreds Specification",
+      "spec_directory": "./spec",
+      "output_path": "./docs",
+      "markdown_paths": [
+        "0_header.md",
+        "1_about.md",
+        "2_abstract.md"      ],
+      "logo": "",
+      "logo_link": "https://github.com/AnonCreds-WG/anoncreds-spec",
+      "source": {
+        "host": "github",
+        "account": "AnonCreds-WG",
+        "repo": "anoncreds-spec"
+      }
+    }
+  ]
+}

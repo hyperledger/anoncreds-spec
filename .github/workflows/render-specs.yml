@@ -1,0 +1,35 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Build Spec
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_spec:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout 🛎️
+      uses: actions/checkout@v2
+      with:
+          persist-credentials: false
+
+    - name: Install and Build 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
+      run: |
+          npm install
+          npm run render
+          
+    - name: Override gitignore
+      run: git add -f docs/index.html
+
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@4.1.3
+      with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages # The branch the action should deploy to.
+          folder: . # The folder the action should deploy.
