@@ -5,7 +5,7 @@ AnonCreds Specification
 
 **Latest Draft:**
 
-  [https://github.com/AonCreds-WG/anoncreds-spec](https://github.com/AonCreds-WG/anoncreds-spec)
+[https://github.com/AonCreds-WG/anoncreds-spec](https://github.com/AonCreds-WG/anoncreds-spec)
 
 **Editors:**
 
