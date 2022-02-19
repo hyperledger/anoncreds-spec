@@ -104,7 +104,7 @@ dist
 .tern-port
 
 # spec-up generated output
-docs/
+# docs/
 
 # Netbeans
 nbproject/
