@@ -1,0 +1,6 @@
+
+body:after {
+  content: "Custom CSS in body";
+  opacity: 0;
+  pointer-events: none;
+}

@@ -2,10 +2,10 @@
 
 This repository contains the source documents for the AnonCreds open
 specification. This open specification is based on the open source
-implementation of AnonCreds that has been in use for the last 5 years as part of
+verifiable credential implementation of AnonCreds that has been in use since 2017 as part of
 the [Hyperledger Indy](https://www.hyperledger.org/projects/hyperledger-indy)
-open source project. The extensive use of AnonCreds has made it a de facto
-standard, and the AnonCreds Working Group has been established to formalize the
+open source project. The extensive use of AnonCreds around the world has made it a de facto
+standard, and the AnonCreds Working Group (AnonCreds-WG) has been established to formalize the
 specification and place it on a standards track.
 
 The draft specification can be found here: *To be added*
