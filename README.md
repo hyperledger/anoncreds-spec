@@ -1,4 +1,4 @@
-# AnonCreds Specification
+# The AnonCreds Specification
 
 This repository contains the source documents for the AnonCreds open
 specification. This open specification is based on the open source
@@ -8,8 +8,9 @@ open source project. The extensive use of AnonCreds around the world has made it
 standard, and the AnonCreds Working Group (AnonCreds-WG) has been established to formalize the
 specification and place it on a standards track.
 
-The draft specification can be found here: [https://anoncreds-wg.github.io/anoncreds-spec/](https://anoncreds-wg.github.io/anoncreds-spec/))
-The source specification documents can be found here: [Specification Source](/spec).
+- This work is being conducted under the [Community Specification License v1.0](1._Community_Specification_License-v1.md)
+- The draft specification can be found here: [https://anoncreds-wg.github.io/anoncreds-spec/](https://anoncreds-wg.github.io/anoncreds-spec/))
+- The source specification documents can be found here: [Specification Source](/spec)
 
 This repository contains guidelines for [contributing](#contributions) to the specification and submitting [edits via GitHub pull requests](/EditingTheSpec.md).
 
@@ -18,7 +19,13 @@ This repository contains guidelines for [contributing](#contributions) to the sp
 The scope and background for this work can be found in the [Scope](2._Scope.md) in
 this repository. The <tl;dr> summary is the following:
 
-AnonCreds provides capabilities that many see as important for digital identity use cases in particular, and verifiable data in general. These features include:
+The open source AnonCreds implementations
+([here](https://github.com/hyperledger/indy-sdk/blob/master/libindy/src/api/anoncreds.rs)
+and [here](https://github.com/hyperledger/indy-shared-rs/tree/main/indy-credx))
+found in [Hyperledger
+Indy](https://www.hyperledger.org/projects/hyperledger-indy) provides
+capabilities that many see as important for digital identity use cases in
+particular, and verifiable data in general. These features include:
 
 - A full implementation of the Layer 3 verifiable credential “Trust Triangle” of the [Trust over IP Model](https://trustoverip.org/wp-content/toip-model/).
 - Complete flows for issuing verifiable credentials (Issuer to Holder), and requesting, generating and verifying presentations of verifiable claims (Holder to Verifier).
