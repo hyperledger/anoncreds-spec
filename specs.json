@@ -6,10 +6,10 @@
       "spec_directory": "./spec",
       "output_path": "./docs",
       "markdown_paths": [
-        "0_header.md",
-        "1_about.md",
-        "2_abstract.md",
-        "3_anoncreds_glossary.md"
+        "header.md",
+        "about.md",
+        "abstract.md",
+        "anoncreds_glossary.md"
       ],
       "logo": "",
       "logo_link": "https://github.com/AnonCreds-WG/anoncreds-spec",

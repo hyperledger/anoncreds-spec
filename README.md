@@ -8,8 +8,10 @@ open source project. The extensive use of AnonCreds around the world has made it
 standard, and the AnonCreds Working Group (AnonCreds-WG) has been established to formalize the
 specification and place it on a standards track.
 
-The draft specification can be found here: *To be added*
+The draft specification can be found here: [https://anoncreds-wg.github.io/anoncreds-spec/](https://anoncreds-wg.github.io/anoncreds-spec/))
 The source specification documents can be found here: [Specification Source](/spec).
+
+This repository contains guidelines for [contributing](#contributions) to the specification and submitting [edits via GitHub pull requests](/EditingTheSpec.md).
 
 ## Background
 
@@ -28,19 +30,27 @@ AnonCreds provides capabilities that many see as important for digital identity 
   - The use of predicate proofs to reduce the sharing of PII and potentially correlating data, especially dates (birth, credential issuance/expiry, etc.).
   - A revocation scheme that proves a presentation is based on credentials that have not been revoked by the issuers without revealing correlatable revocation identifiers.
 
-The AnonCreds working group is producing an AnonCreds v1.0 specification describes the existing implementation minus any dependency on the Hyperledger Indy ledger. Once
-sufficient progress has been made on the v1.0 specification, a forward looking version will be started that evolves the specification to add new elements while
-retaining the core features of AnonCreds (listed above). Such a future version is likely to include features such as replacing CL Signatures with BBS+ Signatures,
-defining a more scalable revocation scheme, and possibly aligning the data model with the in progress W3C Verifiable Credential v2.0 Data Model. Those
-participating in this Working Group will define the exact direction of future versions of the AnonCreds specification.
+The AnonCreds working group is producing an AnonCreds v1.0 specification
+describes the existing implementation minus any dependency on the Hyperledger
+Indy ledger. Once sufficient progress has been made on the v1.0 specification, a
+forward looking version will be started that evolves the specification to add
+new elements while retaining the core features of AnonCreds (listed above). Such
+a future version is likely to include features such as replacing CL Signatures
+with BBS+ Signatures, defining a more scalable revocation scheme, and possibly
+aligning the data model with the in progress W3C Verifiable Credential v2.0 Data
+Model. Those participating in this Working Group will define the exact direction
+of future versions of the AnonCreds specification.
 
 ## Contributions
 
-This work is being carried out under the [Community Specification License v1.0](1._Community_Specification_License-v1.md). Any person
-or organization willing to adhere to this license is welcome to participate in this Working Group and contribute to the development
-of the specification. Please read the [Contributions](6._Contributing.md) document in this repo for details. For those unfamiliar
-with the Community Specification License, you can think of it as analogous to an open source code license, such as Apache 2.0,
-but for specifications.
+This work is being carried out under the [Community Specification License
+v1.0](1._Community_Specification_License-v1.md). Any person or organization
+willing to adhere to this license is welcome to participate in this Working
+Group and contribute to the development of the specification. Please read the
+[Contributions](6._Contributing.md) document in this repo for details. For those
+unfamiliar with the Community Specification License, you can think of it as
+analogous to an open source code license, such as Apache 2.0, but for
+specifications.
 
 All participants in this working group must follow the group's [Code of Conduct](8._Code_of_Conduct.md).
 
@@ -49,7 +59,7 @@ All participants in this working group must follow the group's [Code of Conduct]
 Meetings of the Working Group are held weekly on Mondays at 7AM
 Pacific/Vancouver time. That is 16:00 CET for most of the year, except for the
 periods around the daylight savings time changes. Meeting details, agendas,
-notes and links to the recordings are posted on the repository Wiki.
+notes and links to the recordings are posted on the repository Wiki (to be done).
 
 ## Working Group Communications
 
