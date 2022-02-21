@@ -9,7 +9,15 @@
         "header.md",
         "about.md",
         "abstract.md",
-        "anoncreds_glossary.md"
+        "anoncreds_glossary.md",
+        "introduction.md",
+        "data_model_descriptions.md",
+        "data_flow_setup.md",
+        "data_flow_issuance.md",
+        "data_flow_presentation.md",
+        "data_flow_revocation.md",
+        "anoncreds_conventions.md",
+        "appendix_data_models.md"
       ],
       "logo": "",
       "logo_link": "https://github.com/AnonCreds-WG/anoncreds-spec",
