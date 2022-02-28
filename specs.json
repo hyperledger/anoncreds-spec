@@ -18,6 +18,9 @@
         "data_flow_presentation.md",
         "data_flow_revocation.md",
         "anoncreds_conventions.md",
+        "iana_considerations.md",
+        "security_considerations.md",
+        "privacy_considerations.md",
         "normative_references.md",
         "informative_references.md",
         "acknowledgements_authors.md"

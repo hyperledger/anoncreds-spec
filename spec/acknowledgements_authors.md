@@ -7,8 +7,14 @@ This specification is the work of the AnonCreds Working Group, which includes do
 of active and dedicated participants.  In particular, the following individuals
 contributed ideas, feedback, and wording that influenced this specification:
 
-To Be Determined.
+::: todo
+Add list of contributors.
+:::
+
 
 ## Authors' Addresses
 
-To be added.
+::: todo
+Add authors' addresses.
+:::
+
