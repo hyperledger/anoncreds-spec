@@ -1,6 +1,6 @@
-## AnonCreds Glossary
+## Terminology
 
-A glossary of AnonCreds terms, including the objects that are used in the various AnonCreds operations (issue credential, generate proof, etc.).
+These terms are defined by this specification:
 
 [[def: Schema]]
 
