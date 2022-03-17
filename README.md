@@ -70,4 +70,4 @@ notes and links to the recordings are posted on the repository Wiki (to be done)
 
 ## Working Group Communications
 
-The working group has a Slack channel for participants at: [https://anoncreds-wg.slack.com/](https://anoncreds-wg.slack.com/)
+The working group has a Discord channel for participants at: [https://discord.com/channels/945392050797441125/](https://discord.com/channels/945392050797441125/)
