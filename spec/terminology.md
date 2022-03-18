@@ -29,7 +29,7 @@ These terms are defined by this specification:
 
 [[def: Revoc_Reg_Entry]]
 
-
+[[def: zCap]]
 ::: todo
 Finalize glossary entries
 
