@@ -31,18 +31,18 @@ sequenceDiagram
     rect rgb(191, 223, 255)
         Note right of L: Issuer: Create, Store and Publish CredDef
     end
-    I ->> L: Request Schema
+    I ->> L: Request Schema ( schema_id )
     L ->> I: Return Schema
-    I ->> I: indy_issuer_create_and_store_credential_def (<schema>)
+    I ->> I: create_and_store_credential_def ( schema )
     Note right of I: store public/private keys and correctness proof
-    I ->> L: Publish CredDef (<cred_def_id>, <cred_def_json>)
+    I ->> L: Publish CredDef ( cred_def_id,  cred_def_json )
     rect rgb(191, 223, 255)
         Note right of L: Issuer: Create, Store and Publish Revocation Registry (Optional)
     end
     I ->> I: indy_issuer_create_and_store_revoc_reg
     Note right of I: get keys
     Note right of I: store revoc_reg_def, revoc_reg_accum, priv_key, tails_generator
-    I ->> L: Publish RevReg (<revoc_reg_id>, <revoc_reg_def_json>, <revoc_reg_entry_json>)
+    I ->> L: Publish RevReg (revoc_reg_id, revoc_reg_def_json, revoc_reg_entry_json)
     rect rgb(191, 223, 255)
         Note right of L: Holder: Create and Store Link Secret
     end
