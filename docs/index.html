@@ -113,11 +113,42 @@ NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “NOT RECOMMENDED”
 “MAY”, and “OPTIONAL” in this document are to be interpreted as
 described in BCP 14 [RFC2119] [RFC8174] when, and only when, they
 appear in all capitals, as shown here.</p>
-<h2 id="terminology"><a class="toc-anchor" href="#terminology" >§</a> Terminology</h2>
-<p>These terms are defined by this specification:</p>
 <dl>
-<dt><span id="term:schema">Schema</span></dt>
-<dd>A SCHEMA object is a template defining the set of attributes (also known as names, claims) in an AnonCreds verifiable credential. A SCHEMA must be accessible to all verifiable credential participants, issuers, holders and verifiers.</dd>
+<dt><a class="term-reference" href="#term:claim">claim</a><a class="term-reference" href="#term:issuer">issuer</a>~ A SCHEMA object is a template that defines a set of attribute (also known as names or <a class="term-reference" href="#term:claim">claim</a>s) which are going to be used by <a class="term-reference" href="#term:issuer">issuer</a>s for issuance of <a path-0="www.w3.org"path-1="TR"path-2="vc-data-model"path-3=""href="https://www.w3.org/TR/vc-data-model/" >Verifiable Credentials</a> within a Hyperledger Indy network. SCHEMAs have a name, version and can be <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="node"path-3="en"path-4="latest"path-5="transactions.html#schema"href="https://hyperledger-indy.readthedocs.io/projects/node/en/latest/transactions.html#schema" >written</a> to the ledger by any entity with proper permissions. SCHEMAs can be <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="node"path-3="en"path-4="latest"path-5="requests.html#get-schema"href="https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-schema" >read</a>from a Hyperledger Indy Node by any client.</dt>
+<dd>
+<p>SCHEMAs define the list of attribute(names) of issued credentials based on a <a class="term-reference" href="#term:cred_def">CRED_DEF</a> (see below).</p>
+</dd>
+<dt><span id="term:cred_def">CRED_DEF</span></dt>
+<dd>
+<p>A CRED_DEF (short for “credential definition”, also known as CLAIM_DEF) object ontains data required for credential issuance as well as
+credential validation and can be <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="node"path-3="en"path-4="latest"path-5="requests.html#get-claim-def"href="https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-claim-def" >read</a> by any Hyperledger Indy client. A CRED_DEF object references a <a class="term-reference" href="#term:schema">SCHEMA</a>, references a DID of the <a class="term-reference" href="#term:issuer">issuer</a> and can be <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="node"path-3="en"path-4="latest"path-5="requests.html#claim-def"href="https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#claim-def" >written</a> by any <a class="term-reference" href="#term:issuer">issuer</a> who intends to issue credentials based on that specific <a class="term-reference" href="#term:schema">SCHEMA</a> to the ledger and has the proper permissions in doing so. A <a class="term-reference" href="#term:schema">SCHEMA</a> is in a 1:n relation with CRED_DEF, meaning there can be many CRED_DEFs related to a SCHEMA while a CRED_DEF can only derive from one <a class="term-reference" href="#term:schema">SCHEMA</a>. A CRED_DEF must be accessible to all credential participants, issuers, holders, and verifiers. CRED_DEFs are public data structures that are stored in an indy ledger. A public key of the <a class="term-reference" href="#term:issuer">issuer</a> is included within the CRED_DEF which allows validation of the credentials signed by the issuer’s private key. When credentials are issued by using the issuers CRED_DEF, the attribute(names) of the <a class="term-reference" href="#term:schema">SCHEMA</a> have to be used.</p>
+</dd>
+<dd>
+<p>A private_CRED_DEF is an object stored with the <a class="term-reference" href="#term:issuer">issuer</a> that contains the private keys and the attributes related to a CRED_DEF. These private keys are used to create signature proofs for the issued anonymous credentials, which then can be validated in a derived form by a <a class="term-reference" href="#term:verifier">verifier</a>. A private_CRED_DEF never leaves the <a class="term-reference" href="#term:issuer">Issuer</a>'s domain and are stored securely.</p>
+</dd>
+<dd>
+<p>Revokable Verifiable Credentials require CRED_DEFs which also reference a <a class="term-reference" href="#term:rev_reg_def">REV_REG_DEF</a> (see below).</p>
+</dd>
+<dt><span id="term:rev_reg_def">REV_REG_DEF</span></dt>
+<dd>
+<p>A REV_REG_DEF object (short for “revocation registry definition”) contains information required for <a class="term-reference" href="#term:verifier">verifier</a>s in order to enable them to verify whether a (revokable) verifiable credential has been revoked by the issuer since issuance.</p>
+</dd>
+<dd>
+<p>REV_REG_DEFs are only needed for revokable verifiable credentials and are most commonly <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="node"path-3="en"path-4="latest"path-5="requests.html#claim-def"href="https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#claim-def" >written</a> to the ledger by the owner of a <a class="term-reference" href="#term:cred_def">CRED_DEF</a> immediatly after the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> has been written. They can be <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="node"path-3="en"path-4="latest"path-5="requests.html#get-attrib"href="https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-attrib" >read</a> from a Hyperledger Indy Node by any client and are updated in case of the revocation of a credential, which is based on the used <a class="term-reference" href="#term:claim_def">CLAIM_DEF</a>.</p>
+</dd>
+<dd>
+<p>Further details about Hyperledger Indy’s revocation process can be found <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="hipe"path-3="en"path-4="latest"path-5="text"path-6="0011-cred-revocation"path-7="README.html"href="https://hyperledger-indy.readthedocs.io/projects/hipe/en/latest/text/0011-cred-revocation/README.html" >here</a>.</p>
+</dd>
+<dt><span id="term:rev_reg_entry">REV_REG_ENTRY</span></dt>
+<dd>
+<p>A REV_REG_ENTRY object (short for “revocation registry entry”) marks the current status of one or more revokable verifiable credentials (“revoked” or “not revoked”) in the ledger in a privacy preserving manner. A REV_REG_ENTRY is <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="node"path-3="en"path-4="latest"path-5="requests.html#revoc-reg-entry"href="https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#revoc-reg-entry" >written</a> by the owner of a REV_REG_DEF respectively the issuer of the credential(s) based on a <a class="term-reference" href="#term:cred_def">CRED_DEF</a> and its REV_REG_DEF.</p>
+</dd>
+<dd>
+<p>Any REV_REG_ENTRY condensed with further required information can be <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="node"path-3="en"path-4="latest"path-5="requests.html#get-revoc-reg-delta"href="https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-revoc-reg-delta" >read</a> by any Hyperledger Indy client.</p>
+</dd>
+<dd>
+<p>Further details about Hyperledger Indy’s revocation process can be found <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="hipe"path-3="en"path-4="latest"path-5="text"path-6="0011-cred-revocation"path-7="README.html"href="https://hyperledger-indy.readthedocs.io/projects/hipe/en/latest/text/0011-cred-revocation/README.html" >here</a>.</p>
+</dd>
 </dl>
 <div id="todo-2" class="notice todo"><a class="notice-link" href="#todo-2">TODO</a><p>Finalize glossary entries</p>
 <p><strong>Question</strong>: Should the items that are AnonCreds data models be included in this?</p>
@@ -418,7 +449,6 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li><a href="#table-of-contents" >Table of Contents</a></li>
 <li><a href="#introduction" >Introduction</a></li>
 <li><a href="#requirements-notation-and-conventions" >Requirements, Notation and Conventions</a></li>
-<li><a href="#terminology" >Terminology</a></li>
 <li><a href="#anoncreds-data-model-descriptions" >AnonCreds Data Model Descriptions</a></li>
 <li><a href="#anoncreds-data-flows" >AnonCreds Data Flows</a>
 <ul>
