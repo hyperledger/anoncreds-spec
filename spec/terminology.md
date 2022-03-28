@@ -49,7 +49,7 @@ credential validation and can be [read](https://hyperledger-indy.readthedocs.io/
 
 ~ Further details about Hyperledger Indy's revocation process can be found [here](https://hyperledger-indy.readthedocs.io/projects/hipe/en/latest/text/0011-cred-revocation/README.html).
 
-
+::: todo
 Finalize glossary entries
 
 **Question**: Should the items that are AnonCreds data models be included in this?
