@@ -2,7 +2,7 @@
 
 These terms are defined by this specification:
 [[def: subject]]
-~ A subject, also known as an identity subject, is the entity that a digital identity belongs to.  
+~ A subject, also known as an identity subject, is the entity about whom [[ref: claim]]s are made.  
 
 [[def: claim]]
 ~ A claim is a part of digital identity related to a [[ref: subject]]. A claim can be attested by the identity subject itself, or it can be asserted by another entity. 
@@ -18,11 +18,11 @@ These terms are defined by this specification:
 ~ A verifier is an entity that validates identity information from a [[ref: holder]] to grant access to goods and services.
 
 [[def: holder]]
-~ A holder, also known as an identity holder, is the entity that is in possession of the [[ref: credential]]s. In most use cases, the holder is also the identity [[ref: subject]]. A holder can interact with an issuer to obtain anonymous credentials. It can also create derived information from anonymous credentials that can be presented to a [[ref: verifier]] to gain access to goods and services.
+~ A holder, also known as an identity holder, is an entity that is in possession of a [[ref: credential]]. In many use cases, the holder is also the identity [[ref: subject]]. A holder can interact with an issuer to obtain anonymous credentials. It can also derive information from anonymous credentials that can be presented to a [[ref: verifier]] to gain access to goods and services.
 
 [[def: SCHEMA]]
 
-~ A SCHEMA object is a template that defines a set of attribute(names) which are going to be used by [[ref: issuer]]s for issuance of [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) within a Hyperledger Indy network. SCHEMAs have a name, version and can be [written](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/transactions.html#schema) to the ledger by any entity with proper permissions. SCHEMAs can be [read](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-schema)from a Hyperledger Indy Node by any client.
+~ A SCHEMA object is a template that defines a set of attribute (also known as names or [[ref: claim]]s) which are going to be used by [[ref: issuer]]s for issuance of [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) within a Hyperledger Indy network. SCHEMAs have a name, version and can be [written](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/transactions.html#schema) to the ledger by any entity with proper permissions. SCHEMAs can be [read](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-schema)from a Hyperledger Indy Node by any client.
 
 ~ SCHEMAs define the list of attribute(names) of issued credentials based on a [[ref: CRED_DEF]] (see below).
 
