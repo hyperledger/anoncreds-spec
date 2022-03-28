@@ -20,20 +20,20 @@ These terms are defined by this specification:
 [[def: Holder]]
 ~ A holder, also known as an identity holder, is the entity that is in possession of the credentials. In most use cases, the holder is also the identity subject. A holder can interact with an issuer to obtain anonymous credentials. It can also create derived information from anonymous credentials that can be presented to a verifier to gain access to goods and services.
 
-[[def: Schema]]
+[[def: SCHEMA]]
 
 ~ A SCHEMA object is a template defining the set of attributes (also known as names, claims) in an AnonCreds verifiable credential. A SCHEMA must be accessible to all verifiable credential participants, issuers, holders, and verifiers.
 
-[[def: Claim_Def]]
+[[def: CLAIM_DEF]]
 
 ~ A CLAIM_DEF object derived from a SCHEMA contains key information regarding the issuer. A SCHEMA is in a 1:n relation with CLAIM_DEF, meaning there can be many CLAIM_DEFs related to a SCHEMA while a CLAIM_DEF can only derive from one SCHEMA. A CLAIM_DEF must be accessible to all verifiable credential participants, issuers, holders, and verifiers.
 
-[[def: Revoc_Reg_Def]]
+[[def: REV_REG_DEF]]
+~ A REV_REG_DEF object (short for “revocation registry definition”) contains information required for verifiers in order to enable them to verify whether a (revokable) verifiable credential has been revoked by the issuer since issuance. A REV_REG_DEF is only required for revokable AnonCreds and is written to the ledger by the owner (issuer) of the CLAIM_DEF immediately after the CLAIM_DEF is written. 
 
-[[def: Revoc_Reg_Entry]]
+[[def: REV_REG_ENTRY]]
+~ A REV_REG_ENTRY object (short for “revocation registry entry”) marks the current status of one or more revokable verifiable credentials (“revoked” or “not revoked”) in the ledger in a privacy preserving manner. A REV_REG_ENTRY can only be written by the owner of a REV_REG_DEF, who is also the owner of CLAIM_DEF. 
 
-[[def: zCap]]
-::: todo
 Finalize glossary entries
 
 **Question**: Should the items that are AnonCreds data models be included in this?
