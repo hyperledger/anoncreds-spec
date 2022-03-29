@@ -20,30 +20,35 @@ sequenceDiagram
     participant L as Verifiable Data Registry
     participant SC as Schema Publisher
     participant I as Issuer
-    participant H as Holder    
-    
-    Note over L, H: Schema Publisher: Publish Schema
-    
-    SC ->> L: Publish Schema(Schema)
-    L ->> SC: Schema ID,<br>Schema Transaction ID
-        
-    Note over L, H: Issuer: Create, Store and Publish CredDef
-   
-    I ->> L: Request Schema (schema_id)
+    participant H as Holder
+    participant V as Verifier
+
+    rect rgb(191, 223, 255)
+        Note right of L: Schema Publisher: Publish Schema
+    end
+    SC ->> L: Publish Schema (Schema)
+    L ->> SC: Schema ID, Schema Transaction ID
+
+    rect rgb(191, 223, 255)
+        Note right of L: Issuer: Create, Store and Publish CredDef
+    end
+    I ->> L: Request Schema ( schema_id )
     L ->> I: Return Schema
-    I ->> I: create_and_store_credential_def<br>(Schema, tag, support_revocation)
-    Note right of I:   store public / <br> private keys and<br>correctness proof    
+    I ->> I: create_and_store_credential_def ( Schema, tag, support_revocation )
+    Note right of I: store public/private keys and correctness proof
     I ->> L: Publish CredDef (CredDef)
 
-    Note over L, H: Issuer: Create, Store and Publish Revocation Registry (Optional)
-    
+    rect rgb(191, 223, 255)
+        Note right of L: Issuer: Create, Store and Publish Revocation Registry (Optional)
+    end
     I ->> I: create_and_store_revoc_reg (intCredDef)
     Note right of I: get keys
-    Note right of I: store revoc_reg_def,<br>revoc_reg_accum,<br>priv_key,<br>tails_generator
-    I ->> L: Publish RevReg <br>(revoc_reg_id,<br>revoc_reg_def_json,<br>revoc_reg_entry_json)
+    Note right of I: store revoc_reg_def, revoc_reg_accum, priv_key, tails_generator
+    I ->> L: Publish RevReg (revoc_reg_id, revoc_reg_def_json, revoc_reg_entry_json)
     
-    Note over L, H: Holder: Create and Store Link Secret
-    
+    rect rgb(191, 223, 255)
+        Note right of L: Holder: Create and Store Link Secret
+    end
     H ->> H: indy_prover_create_master_secret
     H ->> H: store master secret
 ```
