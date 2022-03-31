@@ -127,6 +127,16 @@ In AnonCreds, the CredDef and CredDef identifier include the following elements.
   credential. The private keys will later be used to sign the claims when
   credentials to be issued are created.
 * Other information necessary for the cryptographic signing of credentials.
+* Information necessary for the revocation of credentials, if revocation is to
+  be supported.
+
+We'll initially cover the generation and data for a CRED_DEF created with the
+option of revoking credentials not activated. Following that ([in this
+section](#generating-a-cred_def-with-revocation-support)), we describe the
+additions to the generation process and data structures when support for
+revocations is activated for a given CRED_DEF.
+
+##### Generating a CRED_DEF Without Revocation Support
 
 Prior to creating the CredDef, the Issuer must get an instance of the Schema to
 be used, including the identifier for the Schema in the form of a Hyperledger
@@ -224,11 +234,94 @@ as follows: `<issuer DID>:<object type>:<signature_type>:<Schema TXN_ID>:tag>`. 
 * `Schema TXN_ID`: The `ref` item from the CredDef
 * `tag`: The `tag` item from the CredDef.
 
+##### Generating a CRED_DEF With Revocation Support
+
+The issuer enables the ability to revoke credentials produced from a CRED_DEF by
+passing to the CRED_DEF generation process the flag `support_revocation` as
+`true`. When revocation is to be supported, additional data related to
+revocation is generated and added to the CRED_DEF JSON objects defined above. In
+the following the additional steps in the CRED_DEF generation process to support
+revocation are described, along with the additional data produced in that
+process.
+
+The following describes the process for generating the revocation portion of the
+CRED_DEF data when the CRED_DEF is created with the `support_revocation` flag
+set to `true`. This process extends the process for generating a CRED_DEF in the
+[previous section](#issuer-create-and-publish-creddef-object) of this document.
+
+``` todo
+Describe the revocation data generation process for the CredDef.
+Provide a reference to the published articles on revocation used here.
+```
+
+An intCredDef with revocation enabled as the following format.  In this, the
+details of the `primary` element are hidden, as they are the same as was covered
+above.
+
+```jsonc
+
+To Do.
+
+```
+
+A CRED_DEF with revocation enabled has the following format (from [this example
+CRED_DEF](https://indyscan.io/tx/SOVRIN_MAINNET/domain/55204) on the Sovrin
+MainNet). In this, the details of the `primary` element are hidden, as they are
+the same as was covered above.
+
+```jsonc
+{
+  "data": {
+    "primary": {...},
+    "revocation": {
+      "g": "1 154...813 1 11C...D0D 2 095..8A8",
+      "g_dash": "1 1F0...000",
+      "h": "1 131...8A8",
+      "h0": "1 1AF...8A8",
+      "h1": "1 242...8A8",
+      "h2": "1 072...8A8",
+      "h_cap": "1 196...000",
+      "htilde": "1 1D5...8A8",
+      "pk": "1 0E7...8A8",
+      "u": "1 18E...000",
+      "y": "1 068...000"
+    }
+  },
+  "ref": 54753,
+  "signature_type": "CL",
+  "tag": "state_license"
+}
+```
+
+The elements with ellipses (e.g. `1F0...000`) in `g` are 64 digits hex integers.
+The rest of the elements are the same structure as `g` but containing either 3
+or 6 hex integers, as noted below. In the following, only the `revocation` item
+is described, as the rest of items (`primary`, `ref`, etc.) are described above.
+
+* `revocation` is the data used for managing the revocation status of
+  credentials issued using this CredDef.
+* `g` is the ...
+* `g_dash` is the ...
+* `h` is the ...
+* `h0` is the ...
+* `h1` is the ...
+* `h2` is the ...
+* `h_cap` is the ...
+* `htilde` is the ...
+* `pk` is the ...
+* `u` is the ...
+* `y` is the ...
+
+##### Publishing the CRED_DEF on a Verifiable Data Registry
+
 Once constructed, the CredDef is published by the Issuer to a Verifiable Data
 Registry, currently a Hyperledger Indy ledger. For example, see [this
 CredDef](https://indyscan.io/tx/SOVRIN_MAINNET/domain/73905) that is published
-on the Sovrin MainNet ledger.
+on the Sovrin MainNet ledger. There is no difference in publishing
+a CRED_DEF with or without the ability to revoke credentials.
 
 #### Issuer Create and Publish Revocation Registry Object
+
+
 
 #### Holder Create and Store Link Secret
