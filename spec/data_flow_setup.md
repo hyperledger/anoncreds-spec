@@ -200,9 +200,9 @@ MainNet):
 }
 ```
 
-A CredDef is a data structure that stores a cryptographic public key that can be used to verify CL-RSA signatures over a block of L messages m1,m2,...,mL. The CredDef contains a public key fragment for each message signed by signatures generated from its respective private key. The length of the block of messages, L, being signed is defined by referencing a specific Schema with a certain number of attributes, A = a1,a2,.., and setting L to A+1. The additional message being signed as part of a credential is for a master_secret attribute which is included in all credentials. This value is blindly contributed to the credential during issuance and used to bind the issued credential to the entity it was issued to. 
+A CredDef is a data structure that stores a cryptographic public key that can be used to verify CL-RSA signatures over a block of L messages m1,m2,...,mL. The CredDef contains a public key fragment for each message being signed in signatures generated from the respective private key. The length of the block of messages, L, being signed is defined by referencing a specific Schema with a certain number of attributes, A = a1,a2,.., and setting L to A+1. The additional message being signed as part of a credential is for a master_secret attribute which is included in all credentials. This value is blindly contributed to the credential during issuance and used to bind the issued credential to the entity it was issued to. 
 
-All integers within the CredDef example are shown with ellipses (e.g. `123...789`). They are 2048-bit integers represented as 617 decimal digits. These integers belong to a RSA-2048 group characterised by the n defined in the CredDef. 
+All integers within the above CredDef example json are shown with ellipses (e.g. `123...789`). They are 2048-bit integers represented as 617 decimal digits. These integers belong to an RSA-2048 group characterised by the n defined in the CredDef. 
 
 * `primary` is the data used for generating credentials.
 * `n` is a safe RSA-2048 number. A large semiprime number such that n = p.q, where p and q are safe primes. A safe prime p is a prime number such that p = 2p'+ 1, where p' is also a prime. Note: p and q are the private key for the public CL-RSA key this CredDef represents.
