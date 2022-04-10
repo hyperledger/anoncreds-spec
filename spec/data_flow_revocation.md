@@ -1,4 +1,4 @@
-### Credential Revocation Data Flows
+### AnonCreds Revocation Data Flow
 
 ::: todo
 Sumamrize the impacts of revocation on the various other flows
