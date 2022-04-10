@@ -1,4 +1,4 @@
-### AnonCreds Presentation Data Flow
+### Credential Presentation Data Flow
 
 ::: todo
 Document the steps of Presentation -- Presentation Request, Generate Presentation and Verify Presentation

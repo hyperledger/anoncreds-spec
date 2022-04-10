@@ -2,11 +2,28 @@
 
 This section of the specification describes the major data flows within AnonCreds:
 
-* Setup, including operations by a Schema Publisher (possibly the Issuer), Issuers and Holders
-* Credential issuance, including operations by both the Issuer and Holder
-* Present Proof, including operations by both the Verifier and the Holder
+* [Setup Data Flow](#setup-data-flow), including operations by an Issuer (possibly also the Schema Publisher) and Holder
+* [Credential Issuance](#credential-issuance-data-flow), including operations by both the Issuer and Holder
+* [Credential Presentation](#credential-presentation-data-flow), including operations by both the Holder and the Verifier
+* [Credential Revocation](#credential-revocation-data-flows), including operations by the Verifier (and optionally by the holder)
 
-### AnonCreds Setup Data Flow
+```mermaid
+sequenceDiagram
+    autonumber
+    participant L as Verifiable<br>Data Registry
+    participant I as Issuer<br>(possibly also<br>Schema Publisher)
+    participant H as Holder   
+    participant V as Verifier 
+
+    Note over L, V: Setup Data Flow
+    Note over L, V: Credential Issuance Data Flow
+    Note over L, V: Credential Presentation Data Flow
+    Note over L, V: Credential Revocation Data Flow
+```
+
+Each of the aforementioned data flows involve different data objects and actors, which are described in detail in the following sections.
+
+### Setup Data Flow
 
 The following sequence diagram summarizes the the setup operations performed by a Schema Publisher, the Issuer (one required and one optional) in preparing to issue a type of AnonCred credential, and the one setup operation performed by each Holder. On successfully completing the operations, the Issuer is able to issue credentials of the given type to the Holder. The subsections below the diagram detail each of the operations.
 
@@ -17,15 +34,15 @@ Question: Should there be an operation to cover creating the published DID for t
 ```mermaid
 sequenceDiagram
     autonumber
-    participant L as Verifiable Data Registry
-    participant SC as Schema Publisher
-    participant I as Issuer
-    participant H as Holder    
+    participant L as Verifiable<br>Data Registry
+    participant I as Issuer<br>(possibly also<br>Schema Publisher)
+    participant H as Holder   
+    participant V as Verifier 
     
     Note over L, H: Schema Publisher: Publish Schema
     
-    SC ->> L: Publish Schema(Schema)
-    L ->> SC: Schema ID,<br>Schema Transaction ID
+    I ->> L: Publish Schema (Schema)
+    L ->> I: Schema ID,<br>Schema Transaction ID
         
     Note over L, H: Issuer: Create, Store and Publish CredDef
    

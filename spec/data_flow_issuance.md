@@ -1,4 +1,4 @@
-### Verifiable Credential Issuance Data Flow
+### Credential Issuance Data Flow
 
 ::: todo
 Document the steps of Issuance -- Credential Offer, Credential Request and Issue Credential
