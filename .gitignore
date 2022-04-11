@@ -103,9 +103,6 @@ dist
 # TernJS port file
 .tern-port
 
-# spec-up generated output
-docs/
-
 # Netbeans
 nbproject/
 
