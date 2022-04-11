@@ -113,14 +113,87 @@ NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “NOT RECOMMENDED”
 “MAY”, and “OPTIONAL” in this document are to be interpreted as
 described in BCP 14 [RFC2119] [RFC8174] when, and only when, they
 appear in all capitals, as shown here.</p>
+<h2 id="terminology"><a class="toc-anchor" href="#terminology" >§</a> Terminology</h2>
 <dl>
-<dt><a class="term-reference" href="#term:claim">claim</a><a class="term-reference" href="#term:issuer">issuer</a>~ A SCHEMA object is a template that defines a set of attribute (also known as names or <a class="term-reference" href="#term:claim">claim</a>s) which are going to be used by <a class="term-reference" href="#term:issuer">issuer</a>s for issuance of <a path-0="www.w3.org"path-1="TR"path-2="vc-data-model"path-3=""href="https://www.w3.org/TR/vc-data-model/" >Verifiable Credentials</a> within a Hyperledger Indy network. SCHEMAs have a name, version and can be <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="node"path-3="en"path-4="latest"path-5="transactions.html#schema"href="https://hyperledger-indy.readthedocs.io/projects/node/en/latest/transactions.html#schema" >written</a> to the ledger by any entity with proper permissions. SCHEMAs can be <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="node"path-3="en"path-4="latest"path-5="requests.html#get-schema"href="https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-schema" >read</a>from a Hyperledger Indy Node by any client.</dt>
+<dt><span id="term:subject">subject</span></dt>
+<dd>
+<p>A subject, also known as an identity subject, is the entity about whom <a class="term-reference" href="#term:claim">claim</a>s are made.</p>
+</dd>
+<dt><span id="term:claim">claim</span></dt>
+<dd>
+<p>A claim is a part of digital identity related to a <a class="term-reference" href="#term:subject">subject</a>. A claim can be attested by the identity subject itself, or it can be asserted by another entity.</p>
+</dd>
+<dt><span id="term:credential">credential</span></dt>
+<dd>
+<p>A credential is a set of <a class="term-reference" href="#term:claim">claim</a>s about an identity <a class="term-reference" href="#term:subject">subject</a>. A verifiable credential is a tamper-proof credential whose authorship is cryptographically verifiable. An anonymous credential, also known as AnonCreds, is a verifiable credential that has privacy-preserving properties to enable data minimization and correlation resistance.</p>
+</dd>
+<dt><span id="term:issuer">issuer</span></dt>
+<dd>
+<p>An issuer is one of the three entities that interact with each other within the domain of digital identities. It can assert <a class="term-reference" href="#term:claim">claim</a>s about a <a class="term-reference" href="#term:subject">subject</a> in the form of a tamper-proof credential whose origins are cryptographically verifiable.</p>
+</dd>
+<dt><span id="term:verifier">verifier</span></dt>
+<dd>
+<p>A verifier is an entity that validates identity information from a <a class="term-reference" href="#term:holder">holder</a> to grant access to goods and services.</p>
+</dd>
+<dt><span id="term:holder">holder</span></dt>
+<dd>
+<p>A holder, also known as an identity holder, is an entity that is in possession of a <a class="term-reference" href="#term:credential">credential</a>. In many use cases, the holder is also the identity <a class="term-reference" href="#term:subject">subject</a>. A holder can interact with an issuer to obtain anonymous credentials. It can also derive information from anonymous credentials that can be presented to a <a class="term-reference" href="#term:verifier">verifier</a> to gain access to goods and services.</p>
+</dd>
+<dt><span id="term:link-secret">link secret</span></dt>
+<dd>
+<p>One of the most significant differences between the AnonCreds and W3C <a path-0="www.w3.org"path-1="TR"path-2="vc-data-model"path-3=""href="https://www.w3.org/TR/vc-data-model/" >Verifiable Credentials</a> is how a credential is bound to the <a class="term-reference" href="#term:holder">holder</a>. With the Verifiable Credential, the holder binding happens without additional interactions between the <a class="term-reference" href="#term:holder">holder</a> and <a class="term-reference" href="#term:issuer">issuer</a>. However, this approach comes with a lack of privacy for the <a class="term-reference" href="#term:holder">holder</a>s.
+The correlatability of credentials due to the necessity of revealing a persistent identifier related to the <a class="term-reference" href="#term:holder">holder</a> is one such privacy issue.</p>
+</dd>
+<dd>
+<p>AnonCreds are bound to the <a class="term-reference" href="#term:holder">holder</a> with a non-correlatable secret only known to the <a class="term-reference" href="#term:holder">holder</a> itself called a link secret*. Instead of a persistent identifier, the link secret as a blind attribute is sent to the  <a class="term-reference" href="#term:issuer">issuer</a> during credential issuance. The issuer signs every attribute (including the blinded link secret and other <a class="term-reference" href="#term:claims">claims</a>) individually, enabling <a class="term-reference" href="#term:selective-disclosure">selective disclosure</a> (see below). It means the <a class="term-reference" href="#term:issuer">issuer</a> does not know the exact value of the link secret, and the <a class="term-reference" href="#term:holder">holder</a> can prove the ownership of credentials to a <a class="term-reference" href="#term:verifier">verifier</a> without disclosing a persistent identifier.</p>
+</dd>
+<dd>
+<p>*) The link secret is known as master secret in the Hyperledger Indy source code. However, the term “master secret” is outside the source code and older publications deprecated.</p>
+</dd>
+<dt><span id="term:zero-knowledge-proofs">zero-knowledge proofs</span></dt>
+<dd>
+<p>In cryptography, the zero-knowledge proof is a method by which an entity can prove that they know a certain value without disclosing the value itself. Zero-knowledge proofs can enable <a class="term-reference" href="#term:holder">holder</a>s to:</p>
+</dd>
+<dd>
+<ul>
+<li>Combine multiple credentials into a single proof to present to a <a class="term-reference" href="#term:verifier">verifier</a> without revealing any correlatable identifier.</li>
+</ul>
+</dd>
+<dd>
+<ul>
+<li><a class="term-reference" href="#term:selective-disclosure">selective disclosure</a> (see below) and disclose only necessary <a class="term-reference" href="#term:claim">claim</a>s to a <a class="term-reference" href="#term:verifier">verifier</a>.</li>
+</ul>
+</dd>
+<dd>
+<ul>
+<li>use <a class="term-reference" href="#term:predicates">predicates</a> (see below) for enclosing logical expressions, such as the <a class="term-reference" href="#term:holder">holder</a> being older than 18 without disclosing the value.</li>
+</ul>
+</dd>
+<dd>
+<p>AnonCreds are capable of all three features mentioned above.</p>
+</dd>
+<dt><span id="term:selective-disclosure">selective disclosure</span></dt>
+<dd>
+<p>Selective disclosure is the ability to disclose partial information from an issued credential by disclosing only a subset of <a class="term-reference" href="#term:claim">claim</a>s.</p>
+</dd>
+<dt><span id="term:predicates">predicates</span></dt>
+<dd>
+<p>A predicate is a boolean assertion about the value of a <a class="term-reference" href="#term:claim">claim</a> without disclosing the value itself. In contrast to any signature suite and algorithm implemented according to the W3C <a path-0="www.w3.org"path-1="TR"path-2="vc-data-model"path-3=""href="https://www.w3.org/TR/vc-data-model/" >Verifiable Credentials</a>, predicates are fully supported by AnonCreds.</p>
+</dd>
+<dt><span id="term:schema">SCHEMA</span></dt>
+<dd>
+<p>A SCHEMA object is a template that defines a set of attribute (also known as names or <a class="term-reference" href="#term:claim">claim</a>s) which are going to be used by <a class="term-reference" href="#term:issuer">issuer</a>s for issuance of <a path-0="www.w3.org"path-1="TR"path-2="vc-data-model"path-3=""href="https://www.w3.org/TR/vc-data-model/" >Verifiable Credentials</a> within a Hyperledger Indy network. SCHEMAs have a name, version and can be <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="node"path-3="en"path-4="latest"path-5="transactions.html#schema"href="https://hyperledger-indy.readthedocs.io/projects/node/en/latest/transactions.html#schema" >written</a> to the ledger by any entity with proper permissions. SCHEMAs can be <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="node"path-3="en"path-4="latest"path-5="requests.html#get-schema"href="https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-schema" >read</a>from a Hyperledger Indy Node by any client.</p>
+</dd>
 <dd>
 <p>SCHEMAs define the list of attribute(names) of issued credentials based on a <a class="term-reference" href="#term:cred_def">CRED_DEF</a> (see below).</p>
 </dd>
+<dt><span id="term:schema-publisher">SCHEMA publisher</span></dt>
+<dd>
+<p>A SCHEMA publisher is an entity that creates a <a class="term-reference" href="#term:schema">SCHEMA</a> to the ledger. It can be the <a class="term-reference" href="#term:issuer">issuer</a>, but it can also be another entity that creates a <a class="term-reference" href="#term:schema">SCHEMA</a> that can be used by many <a class="term-reference" href="#term:issuer">issuer</a>s to create <a class="term-reference" href="#term:cred_def">CRED_DEF</a>s (see below).</p>
+</dd>
 <dt><span id="term:cred_def">CRED_DEF</span></dt>
 <dd>
-<p>A CRED_DEF (short for “credential definition”, also known as CLAIM_DEF) object ontains data required for credential issuance as well as
+<p>A CRED_DEF (short for “credential definition”, also known as CLAIM_DEF) object contains data required for credential issuance as well as
 credential validation and can be <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="node"path-3="en"path-4="latest"path-5="requests.html#get-claim-def"href="https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-claim-def" >read</a> by any Hyperledger Indy client. A CRED_DEF object references a <a class="term-reference" href="#term:schema">SCHEMA</a>, references a DID of the <a class="term-reference" href="#term:issuer">issuer</a> and can be <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="node"path-3="en"path-4="latest"path-5="requests.html#claim-def"href="https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#claim-def" >written</a> by any <a class="term-reference" href="#term:issuer">issuer</a> who intends to issue credentials based on that specific <a class="term-reference" href="#term:schema">SCHEMA</a> to the ledger and has the proper permissions in doing so. A <a class="term-reference" href="#term:schema">SCHEMA</a> is in a 1:n relation with CRED_DEF, meaning there can be many CRED_DEFs related to a SCHEMA while a CRED_DEF can only derive from one <a class="term-reference" href="#term:schema">SCHEMA</a>. A CRED_DEF must be accessible to all credential participants, issuers, holders, and verifiers. CRED_DEFs are public data structures that are stored in an indy ledger. A public key of the <a class="term-reference" href="#term:issuer">issuer</a> is included within the CRED_DEF which allows validation of the credentials signed by the issuer’s private key. When credentials are issued by using the issuers CRED_DEF, the attribute(names) of the <a class="term-reference" href="#term:schema">SCHEMA</a> have to be used.</p>
 </dd>
 <dd>
@@ -481,6 +554,7 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li><a href="#table-of-contents" >Table of Contents</a></li>
 <li><a href="#introduction" >Introduction</a></li>
 <li><a href="#requirements-notation-and-conventions" >Requirements, Notation and Conventions</a></li>
+<li><a href="#terminology" >Terminology</a></li>
 <li><a href="#anoncreds-data-model-descriptions" >AnonCreds Data Model Descriptions</a></li>
 <li><a href="#anoncreds-data-flows" >AnonCreds Data Flows</a>
 <ul>
