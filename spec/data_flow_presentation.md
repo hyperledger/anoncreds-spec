@@ -1,11 +1,19 @@
 ### AnonCreds Presentation Data Flow
 
-::: todo
-Document the steps of Presentation -- Presentation Request, Generate Presentation and Verify Presentation
-:::
+```mermaid
+sequenceDiagram
+    autonumber
+    participant L as Verifiable<br>Data Registry
+    participant SP as Schema Publisher
+    participant I as Issuer
+    participant H as Holder   
+    participant V as Verifier 
+
+    Note over L, V: TODO: Show sequence of steps for credential presentation
+```
 
 ::: todo
-At the top, include a picture of the flow -- likely a sequence diagram of the interactions.
+Document the steps of Presentation -- Presentation Request, Generate Presentation and Verify Presentation
 :::
 
 #### Construct Presentation Request
