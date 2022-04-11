@@ -7,7 +7,7 @@
 ~ A claim is a part of digital identity related to a [[ref: subject]]. A claim can be attested by the identity subject itself, or it can be asserted by another entity. 
 
 [[def: credential]]
-~ A credential is a set of [[ref: claim]]s about an identity [[ref: subject]]. A verifiable credential is a tamper-proof credential whose authorship is cryptographically verifiable. An anonymous credential is a verifiable credential that has privacy-preserving properties to enable data minimization and correlation resistance. 
+~ A credential is a set of [[ref: claim]]s about an identity [[ref: subject]]. A verifiable credential is a tamper-proof credential whose authorship is cryptographically verifiable. An anonymous credential, also known as AnonCreds, is a verifiable credential that has privacy-preserving properties to enable data minimization and correlation resistance. 
 
 [[def: issuer]]
 ~ An issuer is one of the three entities that interact with each other within the domain of digital identities. It can assert [[ref: claim]]s about a [[ref: subject]] in the form of a tamper-proof credential whose origins are cryptographically verifiable. 
@@ -20,13 +20,27 @@
 ~ A holder, also known as an identity holder, is an entity that is in possession of a [[ref: credential]]. In many use cases, the holder is also the identity [[ref: subject]]. A holder can interact with an issuer to obtain anonymous credentials. It can also derive information from anonymous credentials that can be presented to a [[ref: verifier]] to gain access to goods and services.
 
 [[def: link secret]]
-~ One of the most significant differences between the AnonCreds and W3C Verifiable Credentials is how a credential is bound to the [[ref: holder]]. With the Verifiable Credential, the holder binding happens without additional interactions between the [[ref: holder]] and [[ref: issuer]]. However, this convenience comes with a lack of privacy.
+~ One of the most significant differences between the AnonCreds and W3C [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) is how a credential is bound to the [[ref: holder]]. With the Verifiable Credential, the holder binding happens without additional interactions between the [[ref: holder]] and [[ref: issuer]]. However, this approach comes with a lack of privacy for the [[ref: holder]]s.
 The correlatability of credentials due to the necessity of revealing a persistent identifier related to the [[ref: holder]] is one such privacy issue. 
 
 ~ AnonCreds are bound to the [[ref: holder]] with a non-correlatable secret only known to the [[ref: holder]] itself called a link secret (also known as master secret). Instead of a persistent identifier, the link secret as a blind attribute is sent to the  [[ref: issuer]] during credential issuance. The issuer signs every attribute (including the blinded link secret and other [[ref: claims]]) individually, enabling [[ref: selective disclosure]] (see below). It means the [[ref: issuer ]] does not know the exact value of the link secret, and the [[ref: holder]] can prove the ownership of credentials to a [[ref: verifier]] without disclosing a persistent identifier.
 
+[[def: zero-knowledge proofs]]
+~ In cryptography, the zero-knowledge proof is a method by which an entity can prove that they know a certain value without disclosing the value itself. Zero-knowledge proofs can enable [[ref: holder]]s to:
+~ * Combine multiple credentials into a single proof to present to a [[ref: verifier]] without revealing any correlatable identifier.
+~ * [[ref: selective disclosure]] (see below) and disclose only necessary [[ref: claim]]s to a [[ref: verifier]].
+~ * use [[ref: predicates]] (see below) for enclosing logical expressions, such as the [[ref: holder]] being older than 18 without disclosing the value.
+~ AnonCreds are capable of all three features mentioned above.
+
 [[def: selective disclosure]]
-~ To be defined
+~ Selective disclosure is the ability to disclose partial information from an issued credential by disclosing only a subset of [[ref: claim]]s.
+
+[[def: predicates]]
+~ a predicate is a boolean assertion about the value of a [[ref: claim]] without disclosing the value itself. 
+::: todo
+none of the signature suites / algos in VC data model are capable of predicates. Should we mention it somewhere prominently?
+:::
+
 
 [[def: SCHEMA]]
 ~ A SCHEMA object is a template that defines a set of attribute (also known as names or [[ref: claim]]s) which are going to be used by [[ref: issuer]]s for issuance of [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) within a Hyperledger Indy network. SCHEMAs have a name, version and can be [written](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/transactions.html#schema) to the ledger by any entity with proper permissions. SCHEMAs can be [read](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-schema)from a Hyperledger Indy Node by any client.
