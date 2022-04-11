@@ -2,9 +2,27 @@
 
 This section of the specification describes the major data flows within AnonCreds:
 
-* Setup, including operations by a Schema Publisher (possibly the Issuer), Issuers and Holders
-* Credential issuance, including operations by both the Issuer and Holder
-* Present Proof, including operations by both the Verifier and the Holder
+* [AnonCreds Setup](#anoncreds-setup-data-flow), including operations by an Issuer (possibly also the Schema Publisher) and Holder
+* [AnonCreds Issuance](#anoncreds-issuance-data-flow), including operations by both the Issuer and Holder
+* [AnonCreds Presentation](#anoncreds-presentation-data-flow), including operations by both the Holder and the Verifier
+* [AnonCreds Revocation](#anoncreds-revocation-data-flow), including operations by the Verifier (and optionally by the holder)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant L as Verifiable<br>Data Registry
+    participant SP as Schema Publisher
+    participant I as Issuer
+    participant H as Holder   
+    participant V as Verifier 
+
+    Note over L, V: AnonCreds Setup Data Flow
+    Note over L, V: AnonCreds Issuance Data Flow
+    Note over L, V: AnonCreds Presentation Data Flow
+    Note over L, V: AnonCreds Revocation Data Flow
+```
+
+Each of the aforementioned data flows involve different data objects and actors, which are described in detail in the following sections.
 
 ### AnonCreds Setup Data Flow
 
@@ -17,40 +35,38 @@ Question: Should there be an operation to cover creating the published DID for t
 ```mermaid
 sequenceDiagram
     autonumber
-    participant L as Verifiable Data Registry
-    participant SC as Schema Publisher
+    participant L as Verifiable<br>Data Registry
+    participant SP as Schema Publisher
     participant I as Issuer
-    participant H as Holder
-    participant V as Verifier
-
-    rect rgb(191, 223, 255)
-        Note right of L: Schema Publisher: Publish Schema
-    end
-    SC ->> L: Publish Schema (Schema)
-    L ->> SC: Schema ID, Schema Transaction ID
-
-    rect rgb(191, 223, 255)
-        Note right of L: Issuer: Create, Store and Publish CredDef
-    end
-    I ->> L: Request Schema ( schema_id )
+    participant H as Holder   
+    
+    Note over L, H: Schema Publisher: Publish Schema
+    
+    SP ->> L: Publish Schema (Schema)
+    L ->> I: Schema ID,<br>Schema Transaction ID
+        
+    Note over L, H: Issuer: Create, Store and Publish CredDef
+   
+    I ->> L: Request Schema (schema_id)
     L ->> I: Return Schema
-    I ->> I: create_and_store_credential_def ( Schema, tag, support_revocation )
-    Note right of I: store public/private keys and correctness proof
+    I ->> I: create_and_store_credential_def<br>(Schema, tag, support_revocation)
+    Note right of I:   store public / <br> private keys and<br>correctness proof    
     I ->> L: Publish CredDef (CredDef)
 
-    rect rgb(191, 223, 255)
-        Note right of L: Issuer: Create, Store and Publish Revocation Registry (Optional)
-    end
+    Note over L, H: Issuer: Create, Store and Publish Revocation Registry (Optional)
+    
     I ->> I: create_and_store_revoc_reg (intCredDef)
     Note right of I: get keys
-    Note right of I: store revoc_reg_def, revoc_reg_accum, priv_key, tails_generator
-    I ->> L: Publish RevReg (revoc_reg_id, revoc_reg_def_json, revoc_reg_entry_json)
+    Note right of I: store revoc_reg_def,<br>revoc_reg_accum,<br>priv_key,<br>tails_generator
+    I ->> L: Publish RevReg <br>(revoc_reg_id,<br>revoc_reg_def_json,<br>revoc_reg_entry_json)
     
-    rect rgb(191, 223, 255)
-        Note right of L: Holder: Create and Store Link Secret
-    end
+    Note over L, H: Holder: Create and Store Link Secret
+    
     H ->> H: indy_prover_create_master_secret
     H ->> H: store master secret
+    rect rgb(191, 223, 255)
+      Note left of H: 💡The "Verifier" role is<br>omitted in this<br>diagram, since<br>it is not required<br>for the setup
+    end
 ```
 
 #### Schema Publisher: Publish Schema Object

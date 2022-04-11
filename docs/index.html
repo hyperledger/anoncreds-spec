@@ -160,10 +160,26 @@ credential validation and can be <a path-0="hyperledger-indy.readthedocs.io"path
 <h2 id="anoncreds-data-flows"><a class="toc-anchor" href="#anoncreds-data-flows" >§</a> AnonCreds Data Flows</h2>
 <p>This section of the specification describes the major data flows within AnonCreds:</p>
 <ul>
-<li>Setup, including operations by a Schema Publisher (possibly the Issuer), Issuers and Holders</li>
-<li>Credential issuance, including operations by both the Issuer and Holder</li>
-<li>Present Proof, including operations by both the Verifier and the Holder</li>
+<li><a href="#anoncreds-setup-data-flow" >AnonCreds Setup</a>, including operations by an Issuer (possibly also the Schema Publisher) and Holder</li>
+<li><a href="#anoncreds-issuance-data-flow" >AnonCreds Issuance</a>, including operations by both the Issuer and Holder</li>
+<li><a href="#anoncreds-presentation-data-flow" >AnonCreds Presentation</a>, including operations by both the Holder and the Verifier</li>
+<li><a href="#anoncreds-revocation-data-flow" >AnonCreds Revocation</a>, including operations by the Verifier (and optionally by the holder)</li>
 </ul>
+<div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant L as Verifiable<br>Data Registry
+    participant SP as Schema Publisher
+    participant I as Issuer
+    participant H as Holder   
+    participant V as Verifier 
+
+    Note over L, V: AnonCreds Setup Data Flow
+    Note over L, V: AnonCreds Issuance Data Flow
+    Note over L, V: AnonCreds Presentation Data Flow
+    Note over L, V: AnonCreds Revocation Data Flow
+</div>
+<p>Each of the aforementioned data flows involve different data objects and actors, which are described in detail in the following sections.</p>
 <h3 id="anoncreds-setup-data-flow"><a class="toc-anchor" href="#anoncreds-setup-data-flow" >§</a> AnonCreds Setup Data Flow</h3>
 <p>The following sequence diagram summarizes the the setup operations performed by a Schema Publisher, the Issuer (one required and one optional) in preparing to issue a type of AnonCred credential, and the one setup operation performed by each Holder. On successfully completing the operations, the Issuer is able to issue credentials of the given type to the Holder. The subsections below the diagram detail each of the operations.</p>
 <pre class="language-todo"><code class="language-todo">Question: Should there be an operation to cover creating the published DID for the Schema Publisher and Issuer?
@@ -171,40 +187,38 @@ credential validation and can be <a path-0="hyperledger-indy.readthedocs.io"path
 <div class="mermaid">
 sequenceDiagram
     autonumber
-    participant L as Verifiable Data Registry
-    participant SC as Schema Publisher
+    participant L as Verifiable<br>Data Registry
+    participant SP as Schema Publisher
     participant I as Issuer
-    participant H as Holder
-    participant V as Verifier
-
-    rect rgb(191, 223, 255)
-        Note right of L: Schema Publisher: Publish Schema
-    end
-    SC ->> L: Publish Schema (Schema)
-    L ->> SC: Schema ID, Schema Transaction ID
-
-    rect rgb(191, 223, 255)
-        Note right of L: Issuer: Create, Store and Publish CredDef
-    end
-    I ->> L: Request Schema ( schema_id )
+    participant H as Holder   
+    
+    Note over L, H: Schema Publisher: Publish Schema
+    
+    SP ->> L: Publish Schema (Schema)
+    L ->> I: Schema ID,<br>Schema Transaction ID
+        
+    Note over L, H: Issuer: Create, Store and Publish CredDef
+   
+    I ->> L: Request Schema (schema_id)
     L ->> I: Return Schema
-    I ->> I: create_and_store_credential_def ( Schema, tag, support_revocation )
-    Note right of I: store public/private keys and correctness proof
+    I ->> I: create_and_store_credential_def<br>(Schema, tag, support_revocation)
+    Note right of I:   store public / <br> private keys and<br>correctness proof    
     I ->> L: Publish CredDef (CredDef)
 
-    rect rgb(191, 223, 255)
-        Note right of L: Issuer: Create, Store and Publish Revocation Registry (Optional)
-    end
+    Note over L, H: Issuer: Create, Store and Publish Revocation Registry (Optional)
+    
     I ->> I: create_and_store_revoc_reg (intCredDef)
     Note right of I: get keys
-    Note right of I: store revoc_reg_def, revoc_reg_accum, priv_key, tails_generator
-    I ->> L: Publish RevReg (revoc_reg_id, revoc_reg_def_json, revoc_reg_entry_json)
+    Note right of I: store revoc_reg_def,<br>revoc_reg_accum,<br>priv_key,<br>tails_generator
+    I ->> L: Publish RevReg <br>(revoc_reg_id,<br>revoc_reg_def_json,<br>revoc_reg_entry_json)
     
-    rect rgb(191, 223, 255)
-        Note right of L: Holder: Create and Store Link Secret
-    end
+    Note over L, H: Holder: Create and Store Link Secret
+    
     H ->> H: indy_prover_create_master_secret
     H ->> H: store master secret
+    rect rgb(191, 223, 255)
+      Note left of H: 💡The "Verifier" role is<br>omitted in this<br>diagram, since<br>it is not required<br>for the setup
+    end
 </div>
 <h4 id="schema-publisher-publish-schema-object"><a class="toc-anchor" href="#schema-publisher-publish-schema-object" >§</a> Schema Publisher: Publish Schema Object</h4>
 <p>Each type of AnonCred credential is based on a Schema published to a Verifiable
@@ -368,45 +382,63 @@ CredDef</a> that is published
 on the Sovrin MainNet ledger.</p>
 <h4 id="issuer-create-and-publish-revocation-registry-object"><a class="toc-anchor" href="#issuer-create-and-publish-revocation-registry-object" >§</a> Issuer Create and Publish Revocation Registry Object</h4>
 <h4 id="holder-create-and-store-link-secret"><a class="toc-anchor" href="#holder-create-and-store-link-secret" >§</a> Holder Create and Store Link Secret</h4>
-<h3 id="verifiable-credential-issuance-data-flow"><a class="toc-anchor" href="#verifiable-credential-issuance-data-flow" >§</a> Verifiable Credential Issuance Data Flow</h3>
-<div id="todo-4" class="notice todo"><a class="notice-link" href="#todo-4">TODO</a><p>Document the steps of Issuance – Credential Offer, Credential Request and Issue Credential</p>
+<h3 id="anoncreds-issuance-data-flow"><a class="toc-anchor" href="#anoncreds-issuance-data-flow" >§</a> AnonCreds Issuance Data Flow</h3>
+<div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant L as Verifiable<br>Data Registry
+    participant SP as Schema Publisher
+    participant I as Issuer
+    participant H as Holder   
+    participant V as Verifier 
+
+    Note over L, V: TODO: Show sequence of steps for credential issuance
 </div>
-<div id="todo-5" class="notice todo"><a class="notice-link" href="#todo-5">TODO</a><p>At the top, include a picture of the flow – likely a sequence diagram of the interactions.</p>
+<div id="todo-4" class="notice todo"><a class="notice-link" href="#todo-4">TODO</a><p>Document the steps of Issuance – Credential Offer, Credential Request and Issue Credential</p>
 </div>
 <h4 id="credential-offer"><a class="toc-anchor" href="#credential-offer" >§</a> Credential Offer</h4>
 <h4 id="credential-request"><a class="toc-anchor" href="#credential-request" >§</a> Credential Request</h4>
 <h4 id="issue-credential"><a class="toc-anchor" href="#issue-credential" >§</a> Issue Credential</h4>
 <h3 id="anoncreds-presentation-data-flow"><a class="toc-anchor" href="#anoncreds-presentation-data-flow" >§</a> AnonCreds Presentation Data Flow</h3>
-<div id="todo-6" class="notice todo"><a class="notice-link" href="#todo-6">TODO</a><p>Document the steps of Presentation – Presentation Request, Generate Presentation and Verify Presentation</p>
+<div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant L as Verifiable<br>Data Registry
+    participant SP as Schema Publisher
+    participant I as Issuer
+    participant H as Holder   
+    participant V as Verifier 
+
+    Note over L, V: TODO: Show sequence of steps for credential presentation
 </div>
-<div id="todo-7" class="notice todo"><a class="notice-link" href="#todo-7">TODO</a><p>At the top, include a picture of the flow – likely a sequence diagram of the interactions.</p>
+<div id="todo-5" class="notice todo"><a class="notice-link" href="#todo-5">TODO</a><p>Document the steps of Presentation – Presentation Request, Generate Presentation and Verify Presentation</p>
 </div>
 <h4 id="construct-presentation-request"><a class="toc-anchor" href="#construct-presentation-request" >§</a> Construct Presentation Request</h4>
 <h4 id="generate-presentation"><a class="toc-anchor" href="#generate-presentation" >§</a> Generate Presentation</h4>
 <h4 id="verify-presentation"><a class="toc-anchor" href="#verify-presentation" >§</a> Verify Presentation</h4>
-<h3 id="anoncreds-revocation-data-flows"><a class="toc-anchor" href="#anoncreds-revocation-data-flows" >§</a> AnonCreds Revocation Data Flows</h3>
-<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>Sumamrize the impacts of revocation on the various other flows</p>
+<h3 id="anoncreds-revocation-data-flow"><a class="toc-anchor" href="#anoncreds-revocation-data-flow" >§</a> AnonCreds Revocation Data Flow</h3>
+<div id="todo-6" class="notice todo"><a class="notice-link" href="#todo-6">TODO</a><p>Sumamrize the impacts of revocation on the various other flows</p>
 </div>
 <h4 id="anoncreds-issuer-setup-with-revocation"><a class="toc-anchor" href="#anoncreds-issuer-setup-with-revocation" >§</a> AnonCreds Issuer Setup With Revocation</h4>
 <h4 id="anoncreds-issuance-with-revocation"><a class="toc-anchor" href="#anoncreds-issuance-with-revocation" >§</a> AnonCreds Issuance with Revocation</h4>
 <h4 id="anoncreds-presentation-with-revocation"><a class="toc-anchor" href="#anoncreds-presentation-with-revocation" >§</a> AnonCreds Presentation with Revocation</h4>
 <h2 id="anoncreds-conventions"><a class="toc-anchor" href="#anoncreds-conventions" >§</a> AnonCreds Conventions</h2>
-<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
+<div id="todo-7" class="notice todo"><a class="notice-link" href="#todo-7">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
 </div>
 <h2 id="iana-considerations"><a class="toc-anchor" href="#iana-considerations" >§</a> IANA Considerations</h2>
 <p>This document has no IANA actions.</p>
 <h2 id="security-considerations"><a class="toc-anchor" href="#security-considerations" >§</a> Security Considerations</h2>
-<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>Add security considerations.</p>
+<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>Add security considerations.</p>
 </div>
 <h2 id="privacy-considerations"><a class="toc-anchor" href="#privacy-considerations" >§</a> Privacy Considerations</h2>
-<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><p>Add privacy considerations.</p>
+<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>Add privacy considerations.</p>
 </div>
 <h2 id="references"><a class="toc-anchor" href="#references" >§</a> References</h2>
 <h3 id="normative-references"><a class="toc-anchor" href="#normative-references" >§</a> Normative References</h3>
-<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><p>Add normative references</p>
+<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>Add normative references</p>
 </div>
 <h3 id="informative-references"><a class="toc-anchor" href="#informative-references" >§</a> Informative References</h3>
-<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><p>Add informative references</p>
+<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><p>Add informative references</p>
 </div>
 <h2 id="acknowledgements"><a class="toc-anchor" href="#acknowledgements" >§</a> Acknowledgements</h2>
 <p>AnonCreds was initially created as part of the Open Source Hyperledger
@@ -414,10 +446,10 @@ Indy project.</p>
 <p>This specification is the work of the AnonCreds Working Group, which includes dozens
 of active and dedicated participants.  In particular, the following individuals
 contributed ideas, feedback, and wording that influenced this specification:</p>
-<div id="todo-14" class="notice todo"><a class="notice-link" href="#todo-14">TODO</a><p>Add list of contributors.</p>
+<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><p>Add list of contributors.</p>
 </div>
 <h2 id="authors-addresses"><a class="toc-anchor" href="#authors-addresses" >§</a> Authors’ Addresses</h2>
-<div id="todo-15" class="notice todo"><a class="notice-link" href="#todo-15">TODO</a><p>Add authors’ addresses.</p>
+<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><p>Add authors’ addresses.</p>
 </div>
 
                     </article>    
@@ -460,7 +492,7 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li><a href="#holder-create-and-store-link-secret" >Holder Create and Store Link Secret</a></li>
 </ul>
 </li>
-<li><a href="#verifiable-credential-issuance-data-flow" >Verifiable Credential Issuance Data Flow</a>
+<li><a href="#anoncreds-issuance-data-flow" >AnonCreds Issuance Data Flow</a>
 <ul>
 <li><a href="#credential-offer" >Credential Offer</a></li>
 <li><a href="#credential-request" >Credential Request</a></li>
@@ -474,7 +506,7 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li><a href="#verify-presentation" >Verify Presentation</a></li>
 </ul>
 </li>
-<li><a href="#anoncreds-revocation-data-flows" >AnonCreds Revocation Data Flows</a>
+<li><a href="#anoncreds-revocation-data-flow" >AnonCreds Revocation Data Flow</a>
 <ul>
 <li><a href="#anoncreds-issuer-setup-with-revocation" >AnonCreds Issuer Setup With Revocation</a></li>
 <li><a href="#anoncreds-issuance-with-revocation" >AnonCreds Issuance with Revocation</a></li>
