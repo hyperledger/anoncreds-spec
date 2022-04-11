@@ -4,7 +4,8 @@
 sequenceDiagram
     autonumber
     participant L as Verifiable<br>Data Registry
-    participant I as Issuer<br>(possibly also<br>Schema Publisher)
+    participant SP as Schema Publisher
+    participant I as Issuer
     participant H as Holder   
     participant V as Verifier 
 

@@ -2,16 +2,17 @@
 
 This section of the specification describes the major data flows within AnonCreds:
 
-* [AnonCreds Setup](#anon-creds-setup-data-flow), including operations by an Issuer (possibly also the Schema Publisher) and Holder
-* [AnonCreds Issuance](#anon-creds-issuance-data-flow), including operations by both the Issuer and Holder
-* [AnonCreds Presentation](#anon-creds-presentation-data-flow), including operations by both the Holder and the Verifier
-* [AnonCreds Revocation](#anon-creds-revocation-data-flow), including operations by the Verifier (and optionally by the holder)
+* [AnonCreds Setup](#anoncreds-setup-data-flow), including operations by an Issuer (possibly also the Schema Publisher) and Holder
+* [AnonCreds Issuance](#anoncreds-issuance-data-flow), including operations by both the Issuer and Holder
+* [AnonCreds Presentation](#anoncreds-presentation-data-flow), including operations by both the Holder and the Verifier
+* [AnonCreds Revocation](#anoncreds-revocation-data-flow), including operations by the Verifier (and optionally by the holder)
 
 ```mermaid
 sequenceDiagram
     autonumber
     participant L as Verifiable<br>Data Registry
-    participant I as Issuer<br>(possibly also<br>Schema Publisher)
+    participant SP as Schema Publisher
+    participant I as Issuer
     participant H as Holder   
     participant V as Verifier 
 
@@ -35,13 +36,13 @@ Question: Should there be an operation to cover creating the published DID for t
 sequenceDiagram
     autonumber
     participant L as Verifiable<br>Data Registry
-    participant I as Issuer<br>(possibly also<br>Schema Publisher)
+    participant SP as Schema Publisher
+    participant I as Issuer
     participant H as Holder   
-    participant V as Verifier 
     
     Note over L, H: Schema Publisher: Publish Schema
     
-    I ->> L: Publish Schema (Schema)
+    SP ->> L: Publish Schema (Schema)
     L ->> I: Schema ID,<br>Schema Transaction ID
         
     Note over L, H: Issuer: Create, Store and Publish CredDef
@@ -63,6 +64,9 @@ sequenceDiagram
     
     H ->> H: indy_prover_create_master_secret
     H ->> H: store master secret
+    rect rgb(191, 223, 255)
+      Note left of H: 💡The "Verifier" role is<br>omitted in this<br>diagram, since<br>it is not required<br>for the setup
+    end
 ```
 
 #### Schema Publisher: Publish Schema Object
