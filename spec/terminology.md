@@ -19,9 +19,22 @@
 [[def: holder]]
 ~ A holder, also known as an identity holder, is an entity that is in possession of a [[ref: credential]]. In many use cases, the holder is also the identity [[ref: subject]]. A holder can interact with an issuer to obtain anonymous credentials. It can also derive information from anonymous credentials that can be presented to a [[ref: verifier]] to gain access to goods and services.
 
+[[def: link secret]]
+~ One of the most significant differences between the AnonCreds and W3C Verifiable Credentials is how a credential is bound to the [[ref: holder]]. With the Verifiable Credential, the holder binding happens without additional interactions between the [[ref: holder]] and [[ref: issuer]]. However, this convenience comes with a lack of privacy.
+The correlatability of credentials due to the necessity of revealing a persistent identifier related to the [[ref: holder]] is one such privacy issue. 
+
+~ AnonCreds are bound to the [[ref: holder]] with a non-correlatable secret only known to the [[ref: holder]] itself called a link secret (also known as master secret). Instead of a persistent identifier, the link secret as a blind attribute is sent to the  [[ref: issuer]] during credential issuance. The issuer signs every attribute (including the blinded link secret and other [[ref: claims]]) individually, enabling [[ref: selective disclosure]] (see below). It means the [[ref: issuer ]] does not know the exact value of the link secret, and the [[ref: holder]] can prove the ownership of credentials to a [[ref: verifier]] without disclosing a persistent identifier.
+
+[[def: selective disclosure]]
+~ To be defined
+
+[[def: SCHEMA]]
 ~ A SCHEMA object is a template that defines a set of attribute (also known as names or [[ref: claim]]s) which are going to be used by [[ref: issuer]]s for issuance of [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) within a Hyperledger Indy network. SCHEMAs have a name, version and can be [written](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/transactions.html#schema) to the ledger by any entity with proper permissions. SCHEMAs can be [read](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-schema)from a Hyperledger Indy Node by any client.
 
 ~ SCHEMAs define the list of attribute(names) of issued credentials based on a [[ref: CRED_DEF]] (see below).
+
+[[def: SCHEMA publisher]]
+~ A SCHEMA publisher is an entity that creates a [[ref: SCHEMA]] to the ledger. It can be the [[ref: issuer]], but it can also be another entity that creates a [[ref: SCHEMA]] that can be used by many [[ref: issuer]]s to create [[ref: CRED_DEF]]s (see below).
 
 [[def: CRED_DEF]]
 ~ A CRED_DEF (short for "credential definition", also known as CLAIM_DEF) object ontains data required for credential issuance as well as
