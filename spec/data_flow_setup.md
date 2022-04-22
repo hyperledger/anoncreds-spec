@@ -26,7 +26,7 @@ Each of the aforementioned data flows involve different data objects and actors,
 
 ### AnonCreds Setup Data Flow
 
-The following sequence diagram summarizes the the setup operations performed by a [[ref: SCHEMA]] Publisher, the Issuer (one required and one optional) in preparing to issue a type of AnonCred credential, and the one setup operation performed by each Holder. On successfully completing the operations, the Issuer is able to issue credentials of the given type to the Holder. The subsections below the diagram detail each of the operations.
+The following sequence diagram summarizes the setup operations performed by a [[ref: SCHEMA Publisher]], the [[ref: Issuer]] (one required and one optional) in preparing to issue an AnonCred credential based on provided [[ref: SCHEMA]], and the one setup operation performed by each [[ref: Holder]]. On successfully completing the operations, the [[ref: Issuer]] is able to issue credentials based on the given [[ref: SCHEMA]] to the [[ref: Holder]]. The subsections below the diagram detail each of these operations.
 
 ::: todo
 Question: Should there be an operation to cover creating the published DID for the SCHEMA Publisher and Issuer?
@@ -73,15 +73,15 @@ sequenceDiagram
 
 Each type of AnonCred credential is based on a [[ref: SCHEMA]] published to a Verifiable
 Data Registry (VDR), an instance of Hyperledger Indy in this version of
-AnonCreds. The [[ref: SCHEMA]] is defined and published by the [[ref: SCHEMA]] Publisher. Any issuer
-who can reference the [[ref: SCHEMA]] (including the [[ref: SCHEMA]] Publisher) MAY issue
+AnonCreds. The [[ref: SCHEMA]] is defined and published by the [[ref: SCHEMA Publisher]]. Any issuer
+who can reference the [[ref: SCHEMA]] (including the [[ref: SCHEMA Publisher]]) MAY issue
 credentials of that type by creating and publishing a [[ref: CRED_DEF]] based on the
 [[ref: SCHEMA]]. This part of the specification covers the operation to create and
 publish a [[ref: SCHEMA]]. The flow of operations to publish a [[ref: SCHEMA]] is illustrated in
 the `SCHEMA Publisher: Publish SCHEMA` section of the [AnonCreds Setup Data
 Flow](#anoncreds-setup-data-flow) sequence diagram.
 
-The [[ref: SCHEMA]] is a JSON structure that can be manually constructed containing the
+The [[ref: SCHEMA]] is a JSON structure that can be manually constructed, containing the
 list of attributes (claims) that will be included in each AnonCred credential of
 this type and the items that will make up the `schema_id` for the [[ref: SCHEMA]]. The
 following is an example [[ref: SCHEMA]]:
@@ -109,11 +109,11 @@ following is an example [[ref: SCHEMA]]:
     separated format MAY be enforced. The `version` will be part of the published `schema_id`.
 
 The `name` and `version` items are used to form a schema_id for the [[ref: SCHEMA]]. The
-`schema_id` is namespaced by the publisher of the [[ref: SCHEMA]], as follows: `<publisher
+`schema_id` is namespaced by the Publisher of the [[ref: SCHEMA]], as follows: `<publisher
 DID>:<object type>:<name>:version>`. The elements of the identifier, separated
 by `:`'s are:
 
-* `publisher DID`: The DID of the publisher of the schema.
+* `publisher DID`: The DID of the [[ref: SCHEMA Publisher]].
 * `object type`: The type of object. `2` is used for [[ref: SCHEMA]].
 * `name`: The `name` item from the [[ref: SCHEMA]].
 * `version`: The `version` item from the [[ref: SCHEMA]].
@@ -144,21 +144,21 @@ In AnonCreds, the [[ref: CRED_DEF]] and [[ref: CRED_DEF]] identifier include the
   credentials to be issued are created.
 * Other information necessary for the cryptographic signing of credentials.
 * Information necessary for the revocation of credentials, if revocation is to
-  be supported by the Issuer for this type of credential.
+  be enabled by the Issuer for this type of credential.
 
 We'll initially cover the generation and data for a [[ref: CRED_DEF]] created without the
-option of revoking credentials. Following that, ([in this
-section](#generating-a-cred_def-with-revocation-support)), we describe the
-additions to the generation process and data structures when support for
-revocations is activated for a given [[ref: CRED_DEF]].
+option of revoking credentials. In the succeeding
+[section](#generating-a-cred_def-with-revocation-enabled), we describe the
+additions to the generation process and data structures when
+credential revocation is enabled for a given [[ref: CRED_DEF]].
 
 ##### Retrieving the SCHEMA Object
 
 Prior to creating a [[ref: CRED_DEF]], the Issuer must get an instance of the
 [[ref: SCHEMA]] upon which the [[ref: CRED_DEF]] will be created, including the
 identifier for the [[ref: SCHEMA]] in the form of a Hyperledger Indy `TXN_ID`.
-If the Issuer is also the [[ref: SCHEMA]] Publisher, they will already have the
-[[ref: SCHEMA]] (with `TXN_ID`). If not the Issuer must request that information
+If the Issuer is also the [[ref: SCHEMA Publisher]], they will already have the
+[[ref: SCHEMA]] (with `TXN_ID`). If not, the Issuer must request that information
 from the VDR (Hyperledger Indy instance) on which the [[ref: SCHEMA]] is
 published. Hyperledger Indy requires that the [[ref: SCHEMA]] and [[ref: CRED_DEF]]
 must be on the same ledger instance.
@@ -172,27 +172,27 @@ The [[ref: CRED_DEF]] is a JSON structure that is generated using cryptographic 
 * A `tag`, an arbitrary string defined by the Issuer, enabling an Issuer to
   create multiple [[ref: CRED_DEF]]s for the same [[ref: SCHEMA]].
 * An optional flag `support_revocation` (default `false`) which if true
-  generates some additional data in the [[ref: CRED_DEF]] to support credential
+  generates some additional data in the [[ref: CRED_DEF]] to enable credential
   revocation. The additional data generated when this flag is `true` is covered
   in the [next section](#issuer-create-and-publish-revocation-registry-object)
   of this document.
 
 The operation produces two objects, as follows.
 
-* The INT_CRED_DEF, an internally managed object that includes the private keys
+* The [[ref: PRIVATE_CRED_DEF]], an internally managed object that includes the private keys
   generated for the [[ref: CRED_DEF]] and stored securely by the issuer.
 * The [[ref: CRED_DEF]], that includes the public keys generated for the [[ref:
   CRED_DEF]], returned to the calling function and then published on a VDR
   (currently Hyperledger Indy).
 
 The following describes the process for generating the [[ref: CRED_DEF]] and
-INT_CRED_DEF data.
+[[ref: PRIVATE_CRED_DEF]] data.
 
 ::: todo
 Describe the generation process for the CRED_DEF.
 :::
 
-The INT_CRED_DEF produced by the generation process has the following format:
+The [[ref: PRIVATE_CRED_DEF]] produced by the generation process has the following format:
 
 ```json
 
@@ -235,8 +235,8 @@ The integers shown with ellipses (e.g. `123...789`) are all very long integers o
 
 * `primary` is the data used for generating credentials.
 * `n` is the ...
-* `r` is a list of the attributes in the credential, with an associated public key for each.
-  * `master_secret` is in all [[ref: CRED_DEF]]s and is for signing attribute that will be put into the credential from the Holder.
+* `r` is a list of attribute names which are going to be used in the credential, each with an associated public key.
+  * `master_secret` (should be [[ref: link secret]]) is the name of an attribute that can be found in each [[ref: CRED_DEF]]. The associated private key is used for signing a blinded value given by the [[ref: Holder]] to the [[ref: Issuer]] during credential issuance, binding the credential to the [[ref: Holder]].
   * The rest of the attributes in the list are those defined in the [[ref: SCHEMA]].
   * The attribute names are normalized (lower case, spaces removed) and listed in the [[ref: CRED_DEF]] in alphabetical order.
 * `rctxt` is the ...
@@ -259,9 +259,9 @@ as follows: `<issuer DID>:<object type>:<signature_type>:<SCHEMA TXN_ID>:tag>`. 
 
 The issuer enables the ability to revoke credentials produced from a [[ref: CRED_DEF]] by
 passing to the [[ref: CRED_DEF]] generation process the flag `support_revocation` as
-`true`. When revocation is to be supported, additional data related to
+`true`. When revocation is to enabled for a [[ref: CRED_DEF]], additional data related to
 revocation is generated and added to the [[ref: CRED_DEF]] JSON objects defined above. In
-the following the additional steps in the [[ref: CRED_DEF]] generation process to support
+the following the additional steps in the [[ref: CRED_DEF]] generation process to enable
 revocation are described, along with the additional data produced in that
 process.
 
@@ -275,7 +275,7 @@ Describe the revocation data generation process for the CRED_DEF.
 Provide a reference to the published articles on revocation used here.
 :::
 
-An INT_CRED_DEF with revocation enabled has the following format.  In this, the
+An [[ref: PRIVATE_CRED_DEF]] with revocation enabled has the following format.  In this, the
 details of the `primary` element are hidden, as they are the same as was covered
 above.
 
