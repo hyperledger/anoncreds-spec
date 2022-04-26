@@ -142,8 +142,8 @@ WQL Query Examples
     ```
 
 3. Get all credentials where 
-   1. `cred_def_id` is "NcYxi...TAG_1" and `issuer_did` is "NcYxiDXkpYi6ov5FcYDi1e" OR 
-   2. `cred_def_id` is "CnEDk...TAG_1" and `issuer_did` is "CnEDk9HrMnmiHXEV1WFgbVCRteYnPqsJwrTdcZaNhFVW".
+   1. `cred_def_id` is "NcYxi...TAG_1" AND `issuer_did` is "NcYxiDXkpYi6ov5FcYDi1e" OR 
+   2. `cred_def_id` is "CnEDk...TAG_1" AND `issuer_did` is "CnEDk9HrMnmiHXEV1WFgbVCRteYnPqsJwrTdcZaNhFVW".
    
     ```json
     "restrictions": [
