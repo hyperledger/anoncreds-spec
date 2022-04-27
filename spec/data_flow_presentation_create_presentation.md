@@ -5,19 +5,24 @@ presentation request received from the Verifier.
 
 Either a corresponding credential with optionally revealed attributes or a self-attested attribute must 
 be provided for each requested attribute.
-A presentation request may request multiple credentials from different schemas and multiple issuers.
-
-All required schemas, public keys and revocation registries must be provided. 
-
+A presentation request may request multiple credentials from different schemas and multiple issuers,
+which should reside in the Holder's wallet.
 
 
 ##### Protocol description
-indy-anoncreds/docs/dev/anoncred.pdf
 
-Before the Holder can generate the proof, all required credentials need to be searched in the wallet
+[Link: indy-anoncreds/docs/dev/anoncred.pdf](indy-anoncreds/docs/dev/anoncred.pdf)
+
+Before the Holder can generate the proof, he needs to collect all required credentials from the Holder wallet
 based on the provided proof request.
+
+The holder then needs to prepare a document indicating attributes and predicates to reveal. 
+
+Finally, all required schemas, public keys and revocation registries must be provided, typically by querying the
+verifiable data registry (VDR).
+
 1. `indy_prover_search_credentials_for_proof_req`: Instead of immediately returning fetched credentials, this API call
-    returns a search_handle that can be used later to fetch records by small batches 
+    returns a `search_handle` that can be used to fetch records by small batches 
     (with `indy_prover_fetch_credentials_for_proof_req`).
 
    ```rust
@@ -32,8 +37,10 @@ based on the provided proof request.
 
     * `wallet_handle`: wallet handle (created by `open_wallet`).
     * `proof_request_json`: proof request in JSON format
-    * `extra_query_json`: (optional) list of extra queries that will be applied to correspondent 
-      attribute/predicate `<attr_referent>` /  `<predicate_referent>`
+    * `extra_query_json`: (optional) list of extra queries that will be applied to the correspondent 
+      attribute/predicate `<attr_referent>` /  `<predicate_referent>`, see [wql_query](#wql_query)  
+      ::: todo Link to presentation request document
+      :::
       * Example: 
   
           ```json
@@ -95,7 +102,7 @@ based on the provided proof request.
                  "to": Optional<int>, - timestamp of interval ending
              }
              ```
-         NOTE: The list of length less than the requested count means that the search iterator
+         NOTE: The list of length less than the requested `count` means that the search iterator
          correspondent to the requested `item_referent` is completed.  
 
 
@@ -107,30 +114,10 @@ based on the provided proof request.
     ```
     * `search_handle`: Search handle (created by `indy_prover_search_credentials_for_proof_req`)
 
+4. `requested_credentials_json`: Holder defines how to reveal attributes and predicates. 
+   Either a credential (`cred_id`) or self-attested attribute for each requested attribute and predicate
+   in the following JSON format:
 
-4. `indy_prover_create_proof`: Creates a proof according to the given proof request
-   * Either a corresponding credential with optionally revealed attributes or self-attested attribute must be provided
-     for each requested attribute (see `indy_prover_get_credentials_for_pool_req`).
-   * A proof request may request multiple credentials from different schemas and different issuers.
-   * All required schemas, public keys and revocation registries must be provided.
-   * The proof request also contains nonce.
-   * The proof contains either proof or self-attested attribute value for each requested attribute.
-   
-    ```rust
-    pub extern fn indy_prover_create_proof(command_handle: CommandHandle,
-                                           wallet_handle: WalletHandle,
-                                           proof_request_json: *const c_char,
-                                           requested_credentials_json: *const c_char,
-                                           master_secret_id: *const c_char,
-                                           schemas_json: *const c_char,
-                                           credential_defs_json: *const c_char,
-                                           rev_states_json: *const c_char,
-                                           cb: Option<extern fn(command_handle_: CommandHandle, err: ErrorCode,
-                                                                proof_json: *const c_char)>) -> ErrorCode {
-    ```
-   * `wallet_handle`: wallet handle (created by `open_wallet`).
-   * `proof_request_json`: proof request in JSON format
-   * `requested_credentials_json`: either a credential or self-attested attribute for each requested attribute
      ```json
      {
         "self_attested_attributes": {
@@ -156,17 +143,69 @@ based on the provided proof request.
         }
      }
      ```
-     
-   * `master_secret_id`: the id of the master secret stored in the wallet
-   * `schemas_json`: all schemas participating in the proof request
+    
+    Example: 
+    ```json
+    {
+        "self_attested_attributes": {
+            "attr1_referent": "Alice",
+            "attr2_referent": "Garcia"
+        },
+        "requested_attributes": {
+            "attr3_referent": {
+                "cred_id": "123",
+                "revealed": true
+            },
+            "attr4_referent": {
+                "cred_id": "456",
+                "revealed": true
+            }
+        },
+        "requested_predicates": {
+            "predicate1_referent": {
+              "cred_id": "680"
+            }
+          }
+    }
+    ```
+
+5. `indy_prover_create_proof`: Creates a proof according to the given proof request
+   * Either a corresponding credential with optionally revealed attributes or a self-attested attribute must be provided
+     for each requested attribute (see `indy_prover_get_credentials_for_pool_req`).
+   * A proof request may request multiple credentials from different schemas and different issuers.
+   * All required schemas, public keys and revocation registries must be provided.
+   * The proof request also contains nonce.
+   * The proof contains either proof or self-attested attribute value for each requested attribute.
+   
+    ```rust
+    pub extern fn indy_prover_create_proof(command_handle: CommandHandle,
+                                           wallet_handle: WalletHandle,
+                                           proof_request_json: *const c_char,
+                                           requested_credentials_json: *const c_char,
+                                           master_secret_id: *const c_char,
+                                           schemas_json: *const c_char,
+                                           credential_defs_json: *const c_char,
+                                           rev_states_json: *const c_char,
+                                           cb: Option<extern fn(command_handle_: CommandHandle, err: ErrorCode,
+                                                                proof_json: *const c_char)>) -> ErrorCode {
+    ```
+   * `wallet_handle`: wallet handle (created by `open_wallet`).
+   * `proof_request_json`: proof request in JSON format
+   * `requested_credentials_json`: document specifying either a credential or self-attested 
+      attribute for each requested attribute in JSON format
+   * `master_secret_id`: the id of the master secret stored in the wallet.
+     * Notes: 
+       * A Master Secret is an item of Private Data used by a Holder to guarantee that a credential uniquely applies to them. 
+       * The Master Secret is an input that combines data from multiple Credentials to prove that the Credentials have a common subject (the Holder).
+   * `schemas_json`: collection of all schemas participating in the proof request
      ```json
      {
-         <schema1_id>: <schema1>,
-         <schema2_id>: <schema2>,
-         <schema3_id>: <schema3>,
+         "schema1_id": <schema1>,
+         "schema2_id": <schema2>,
+         "schema3_id": <schema3>,
      }
      ```
-   * `credential_defs_json`: all credential definitions participating in the proof request
+   * `credential_defs_json`: collection of all credential definitions participating in the proof request
      ```json
      {
          "cred_def1_id": <credential_def1>,
@@ -174,7 +213,7 @@ based on the provided proof request.
          "cred_def3_id": <credential_def3>,
      }
      ```
-   * `rev_states_json`: all revocation states participating in the proof request
+   * `rev_states_json`: collection all revocation states participating in the proof request
      ```json
      {
          "rev_reg_def1_id or credential_1_id": {
@@ -190,12 +229,12 @@ based on the provided proof request.
      }
      ```
      
-      Note: use `credential_id` instead `rev_reg_id` in case proving several credentials from the same revocation registry.
+      Note: use `credential_id` instead of `rev_reg_id` in case of proving several credentials from the same revocation registry.
    * `cb`: Callback that takes command result as parameter.
-
-
-
-The presentation created by the Holder has the following JSON format:
+   * `Returns`
+       * `proof_json`: Proof presentation for the given proof request.
+       
+The resulting presentation created by the Holder has the following JSON format:
 
 ```json
 {
@@ -281,33 +320,26 @@ Example:
             "attr6_referent": "123-45-6789"
         },
      "unrevealed_attrs": {
-
      },
      "predicates": {
-      "predicate1_referent": {
-       "sub_proof_index": 0
-      }
+          "predicate1_referent": {
+              "sub_proof_index": 0
+          }
      }
-     },
-     "proof": [
-
-     ]#ValidityProofthatAcmecancheck"identifiers": [
-      #IdentifiersofcredentialswereusedforProofbuilding{
-      "schema_id": job_certificate_schema_id,
-      "cred_def_id": faber_transcript_cred_def_id,
-      "rev_reg_id": None,
-      "timestamp": None
-     }
-     }
-    }
+    "proof" : [] //# Validity Proof, to be checked by Verifier 
+    "identifiers" : [ //# Identifiers of credentials that were used for Presentation building
+        {
+            "schema_id": "transcript_schema_id",
+            "cred_def_id": "123",
+            "rev_reg_id": "123_123",
+            "timestamp": 1550503925
+        },
+        {
+            "schema_id": "job_certificate_schema_id",
+            "cred_def_id": "456",
+            "rev_reg_id": "456_456",
+            "timestamp": 1550503945
+        }
+    ]
+}
 ```
-
-
-
-    wallet_handle: wallet handler (created by Wallet::open_wallet).
-    proof_request_json: proof request json { "name": string, "version": string, "nonce": string, "requested_attributes": { // set of requested attributes "<attr_referent>": <attr_info>, // see below ..., }, "requested_predicates": { // set of requested predicates "<predicate_referent>": <predicate_info>, // see below ..., }, "non_revoked": Optional<<non_revoc_interval>>, // see below, // If specified prover must proof non-revocation // for date in this interval for each attribute // (can be overridden on attribute level) }
-    requested_credentials_json: either a credential or self-attested attribute for each requested attribute { "self_attested_attributes": { "self_attested_attribute_referent": string }, "requested_attributes": { "requested_attribute_referent_1": {"cred_id": string, "timestamp": Optional, revealed: }}, "requested_attribute_referent_2": {"cred_id": string, "timestamp": Optional, revealed: }} }, "requested_predicates": { "requested_predicates_referent_1": {"cred_id": string, "timestamp": Optional }}, } }
-    master_secret_id: the id of the master secret stored in the wallet
-    schemas_json: all schemas json participating in the proof request { <schema1_id>: <schema1_json>, <schema2_id>: <schema2_json>, <schema3_id>: <schema3_json>, }
-    credential_defs_json: all credential definitions json participating in the proof request { "cred_def1_id": <credential_def1_json>, "cred_def2_id": <credential_def2_json>, "cred_def3_id": <credential_def3_json>, }
-    rev_states_json: all revocation states json participating in the proof request { "rev_reg_def1_id": { "timestamp1": <rev_state1>, "timestamp2": <rev_state2>, }, "rev_reg_def2_id": { "timestamp3": <rev_state3> }, "rev_reg_def3_id": { "timestamp4": <rev_state4> }, }

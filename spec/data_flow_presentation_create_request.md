@@ -119,9 +119,9 @@ The list of allowed keys that can be combined into complex queries includes:
 
 WQL Query Examples
 
-1. Get all credentials where subject like ‘Acme%’ and issue_date > specified data. 
-  (Note: the name of the issue date tag begins with a tilde, 
-  telling the wallet to store its value unencrypted, which makes the $gt operator possible.)
+1. Get all credentials where subject like `Acme%` and issue_date `>` specified data. 
+  (Note: the name of the `issue_date` tag begins with a tilde, 
+  telling the wallet to store its value unencrypted, which makes the `$gt` operator possible.)
     ```json
     "restrictions": {
         "~subject": {"$like": "Acme%"},
@@ -157,13 +157,6 @@ WQL Query Examples
         }
     ]
     ```
-
-::: todo check if OR statement is correct
-:::
-
-::: todo 
-check if predicate types are ">=" etc. vs. "GE"
-:::
 
 Example of a complete presentation request for several attributes and a predicate:
 ```json
