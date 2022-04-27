@@ -1,6 +1,6 @@
 #### Generate Presentation
 
-In step 3, the Holder creates the verifiable presentation according to the 
+In step 3, 4, and 5, the Holder collects the required information and creates the verifiable presentation according to the 
 presentation request received from the Verifier.
 
 Either a corresponding credential with optionally revealed attributes or a self-attested attribute must 
@@ -233,8 +233,12 @@ verifiable data registry (VDR).
    * `cb`: Callback that takes command result as parameter.
    * `Returns`
        * `proof_json`: Proof presentation for the given proof request.
+         * For each requested attribute either a proof (with optionally revealed attribute value) or
+          self-attested attribute value is provided.
+         * Each proof is associated with a credential and corresponding schema_id, cred_def_id, rev_reg_id and timestamp.
+         * There is also aggregated proof part common for all credential proofs.
        
-The resulting presentation created by the Holder has the following JSON format:
+The resulting presentation `proof_json` created by the Holder has the following JSON format:
 
 ```json
 {
@@ -343,3 +347,4 @@ Example:
     ]
 }
 ```
+In step 6, the Holder sends the verifiable presentation to the Verifier.
