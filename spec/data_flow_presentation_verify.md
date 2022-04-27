@@ -1,6 +1,8 @@
 #### Verify Presentation
 
-In step 7, 8, and 9, the Verifier collects the required information and verifies the verifiable presentation and accepts it if the
+In step 7, 8, and 9 of the 
+[AnonCreds Presentation Data Flow](./data_flow_presentation_overview.md#anoncreds-presentation-data-flow), 
+the Verifier collects the required information and verifies the verifiable presentation and accepts it if the
 signature is valid, otherwise rejects the verifiable presentation.
 
 ```rust

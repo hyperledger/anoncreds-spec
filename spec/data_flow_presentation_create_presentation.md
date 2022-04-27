@@ -1,7 +1,8 @@
 #### Generate Presentation
 
-In step 3, 4, and 5, the Holder collects the required information and creates the verifiable presentation according to the 
-presentation request received from the Verifier.
+In step 3, 4, and 5 of the [AnonCreds Presentation Data Flow](./data_flow_presentation_overview.md#anoncreds-presentation-data-flow), 
+the Holder collects the required information and creates the verifiable presentation according to the
+[presentation request](./data_flow_presentation_create_request.md#create-presentation-request) received from the Verifier.
 
 Either a corresponding credential with optionally revealed attributes or a self-attested attribute must 
 be provided for each requested attribute.
@@ -14,7 +15,7 @@ which should reside in the Holder's wallet.
 [Link: indy-anoncreds/docs/dev/anoncred.pdf](indy-anoncreds/docs/dev/anoncred.pdf)
 
 Before the Holder can generate the proof, he needs to collect all required credentials from the Holder wallet
-based on the provided proof request.
+based on the provided presentation request.
 
 The holder then needs to prepare a document indicating attributes and predicates to reveal. 
 
@@ -347,4 +348,5 @@ Example:
     ]
 }
 ```
-In step 6, the Holder sends the verifiable presentation to the Verifier.
+In step 6 of the [AnonCreds Presentation Data Flow](./data_flow_presentation_overview.md#anoncreds-presentation-data-flow), 
+the Holder sends the verifiable presentation to the Verifier.
