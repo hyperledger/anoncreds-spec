@@ -118,7 +118,7 @@ The list of allowed keys that can be combined into complex queries includes:
     "attr::<attribute name>::value": <attribute raw value>, - to filter based on value of a specific attribute
 ```
 
-WQL Query Examples
+##### WQL Query Examples
 
 1. Get all credentials where subject like `Acme%` and issue_date `>` specified data. 
   (Note: the name of the `issue_date` tag begins with a tilde, 
@@ -159,7 +159,7 @@ WQL Query Examples
     ]
     ```
 
-Example of a complete presentation request for several attributes and a predicate:
+##### Example of a complete presentation request
 ```json
 {   
     "nonce": "verifierNonce",

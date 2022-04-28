@@ -17,11 +17,12 @@ pub extern fn indy_verifier_verify_proof(command_handle: CommandHandle,
                                                               valid: bool)>) -> ErrorCode {}
 ```
 
-* `proof_request_json`: proof request in JSON format
-* `proof_json`: proof presentation for the given proof request
-* `schemas_json`: collection of all schemas participating in the proof
-* `credential_defs_json`: collection of all credential definitions participating in the proof
-* `rev_reg_defs_json`: collection of all revocation registry definitions participating in the proof
+* `proof_request_json`: Proof request in JSON format.
+* `proof_json`: Proof for the given proof request.
+* `schemas_json`: Collection of all schemas participating in the proof.
+* `credential_defs_json`: Collection of all credential definitions participating in the proof.
+* `rev_reg_defs_json`: Collection of all revocation registry definitions participating in the proof.
+
    ```json
    {
        "rev_reg_def1_id": <rev_reg_def1>,
@@ -30,7 +31,7 @@ pub extern fn indy_verifier_verify_proof(command_handle: CommandHandle,
    }
     ```
 
-* `rev_regs_json`: collection of all revocation registries participating in the proof
+* `rev_regs_json`: Collection of all revocation registries participating in the proof.
     ```json
     {
         "rev_reg_def1_id": {
