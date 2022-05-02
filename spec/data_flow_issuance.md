@@ -42,22 +42,68 @@ sequenceDiagram
 
 The issuance of an anonymous [[ref:credential]] takes several steps and involves the roles [[ref:issuer]], [[ref:holder]] as well as the [[ref: Verifiable Data Registry]] (see diagramm above).
 
-The [[ref:issuer]] prepares a [[ref:Credential Offer]] for the [[ref:holder]] (step 1). A [[ref:Credential Offer]] includes information about what kind of [[ref:credential]] (based on which [[ref: CRED_DEF]]) the [[ref:issuer]] is intending to issue to the [[ref:holder]]. The [[ref:issuer]] sends the [[ref:Credential Offer]] to the [[ref:holder]] (step 2), who evaluates the incoming offer (step 3) and subsequently fetches required data (the [[ref:CRED_DEF]]) from the [[ref: Verifiable Data Registry]] (step 4).
+The [[ref:issuer]] prepares a [[ref:Credential Offer]] for the [[ref:holder]] (step 1). A [[ref:Credential Offer]] is optional for the [[ref:holfer]] and includes information about what kind of [[ref:credential]] (based on which [[ref: CRED_DEF]]) the [[ref:issuer]] is intending to issue to the [[ref:holder]]. The [[ref:issuer]] sends the [[ref:Credential Offer]] to the [[ref:holder]] (step 2), who evaluates the incoming offer (step 3) and subsequently fetches required data (the [[ref:CRED_DEF]]) from the [[ref: Verifiable Data Registry]] (step 4).
 
 Based on the [[ref:CRED_DEF]] received from the [[ref:Verfiable Data Registry]] (step 5), the [[ref:holder]] prepares a [[ref:Credential Request]] (step 6). A [[ref: Credential Request]] is a formal request from a [[ref:holder]] to an [[ref:issuer]] to get a [[ref:credential]] based on the given [[ref:CRED_DEF]] issued to the [[ref:holder]]. The [[ref:holder]] sends the [[ref: Credential Request]] to the [[ref:issuer]] (step 7), who then evaluates the incoming request (step 8).
 
 The [[ref:issuer]] can decide whether to accept the received [[ref: Credential Request]] and issues the [[ref:credential]] (step 9) in the case of request acceptance. The [[ref:issuer]] sends the credential to the [[ref:holder]] (step 10), who then can store the received [[ref:credential]] in his wallet.
 
 
-::: todo
-Document the steps of Issuance -- Credential Offer, Credential Request and Issue Credential
-:::
-
-
 #### Credential Offer
 
+Credential Offer is optional. Issuer creates it.
+
+```rust
+pub extern fn indy_issuer_create_credential_offer(command_handle: i32,
+                                                  wallet_handle: i32,
+                                                  cred_def_id: *const c_char,
+                                                  cb: Option<extern fn(xcommand_handle: i32, err: ErrorCode,
+                                                cred_offer_json: *const c_char)>) -> ErrorCode
+```
+
+* `cred_def_id`: The unique ID of the [[ref:CRED_DEF]], that will be used for the Credential Offer
+* `Returns`: 
+
+```json
+{
+    "schema_id": string,
+    "cred_def_id": string,
+    // Fields below can depend on Cred Def type
+    "nonce": string,
+    "key_correctness_proof" : <key_correctness_proof>
+}
+
+```
+* `schema_id`: The ID of the [[ref:SCHEMA]] on which the [[ref:CRED_DEF]] for the offered [[ref:Credential]] is based
+* `cred_def_id`: The ID of the [[ref:CRED_DEF]] on which the [[ref:Credential]] to be issued will be based
+* `nonce`: TODO
+* `key_correctness_proof`: TODO
+
+Send offer to holder.
 
 
 #### Credential Request
 
+```rust
+pub extern fn indy_prover_create_credential_req(command_handle: i32,
+                                                wallet_handle: i32,
+                                                prover_did: *const c_char,
+                                                cred_offer_json: *const c_char,
+                                                cred_def_json: *const c_char,
+                                                master_secret_id: *const c_char,
+                                                cb: Option<extern fn(xcommand_handle: i32, err: ErrorCode,
+                                                cred_req_json: *const c_char)>) -> ErrorCode
+```
+
+ * `command_handle`: command handle to map callback to user context
+ * `wallet_handle`: wallet handler (created by open_wallet)
+ * `prover_did`: a DID of the prover
+ * `cred_offer_json`: credential offer as a json containing information about the issuer and a credential
+ * `cred_def_json`: credential definition json related to <cred_def_id> in <cred_offer_json> 
+ * `master_secret_id`: the id of the master secret stored in the wallet
+ * `cb: Callback that`: takes command result as parameter.
+
+
 #### Issue Credential
+
+TODO
