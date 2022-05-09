@@ -233,7 +233,7 @@ MainNet):
 
 A [[ref: CRED_DEF]] is a data structure that stores a cryptographic public key that can be used to verify CL-RSA signatures over a block of `L` messages `m1,m2,...,mL`. The [[ref: CRED_DEF]] contains a public key fragment for each message being signed by signatures generated with the respective private key. The length of the block of messages, `L`, being signed is defined by referencing a specific Schema with a certain number of attributes, `A = a1,a2,..` and setting `L` to `A+1`. The additional message being signed as part of a credential is for a `master_secret` attribute which is included in all credentials. This value is blindly contributed to the credential during issuance and used to bind the issued credential to the entity it was issued to. 
 
-All integers within the above [[ref: CRED_DEF]] example json are shown with ellipses (e.g. `123...789`). They are 2048-bit integers represented as `617` decimal digits. These integers belong to an RSA-2048 group characterised by the `n` defined in the Cred[[ref: CRED_DEF]]Def. 
+All integers within the above [[ref: CRED_DEF]] example json are shown with ellipses (e.g. `123...789`). They are 2048-bit integers represented as `617` decimal digits. These integers belong to an RSA-2048 group characterised by the `n` defined in the [[ref: CRED_DEF]]. 
 
 * `primary` is the data used for generating credentials.
 * `n` is a safe RSA-2048 number. A large semiprime number such that `n = p.q`, where `p` and `q` are safe primes. A safe prime `p` is a prime number such that `p = 2p'+ 1`, where `p'` is also a prime. Note: `p` and `q` are the private key for the public CL-RSA key this [[ref: CRED_DEF]] represents.
@@ -246,7 +246,7 @@ All integers within the above [[ref: CRED_DEF]] example json are shown with elli
 * `z` is equal to `s^(xz)`, where `xz` is a randomly selected integer between `2` and `p'q'-1`. This makes up part of the CL-RSA public key, independent of the message blocks being signed.
 * `ref` is the `TXN_ID` on the Hyperledger Indy ledger for the [[ref: SCHEMA]] from which the list of attributes is pulled.
 * `signature_type` is always `CL` in this version of AnonCreds.
-* `tag` is the `tag` value (a string) passed in by the Issuer to an AnonCred's [[ref: CRED_DEF]] create and store implementation.
+* `tag` is the `tag` value (a string) passed in by the [[ref: Issuer]] to an AnonCred's [[ref: CRED_DEF]] create and store implementation.
 
 The [[ref: SCHEMA]] `TXN_ID` and `tag` items are used to form a `cred_def_id` for the [[ref: CRED_DEF]]. The `CRED_DEF_id` is namespaced by the Issuer of the CreDef,
 as follows: `<issuer DID>:<object type>:<signature_type>:<SCHEMA TXN_ID>:tag>`. The elements of the identifier, separated by `:`'s are:
