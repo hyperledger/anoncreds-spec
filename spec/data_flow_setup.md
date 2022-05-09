@@ -248,7 +248,7 @@ All integers within the above [[ref: CRED_DEF]] example json are shown with elli
 * `signature_type` is always `CL` in this version of AnonCreds.
 * `tag` is the `tag` value (a string) passed in by the [[ref: Issuer]] to an AnonCred's [[ref: CRED_DEF]] create and store implementation.
 
-The [[ref: SCHEMA]] `TXN_ID` and `tag` items are used to form a `cred_def_id` for the [[ref: CRED_DEF]]. The `CRED_DEF_id` is namespaced by the Issuer of the CreDef,
+The [[ref: SCHEMA]] `TXN_ID` and `tag` items are used to form a `cred_def_id` for the [[ref: CRED_DEF]]. The `CRED_DEF_id` is namespaced by the [[ref: Issuer]] of the [[ref: CRED_DEF]],
 as follows: `<issuer DID>:<object type>:<signature_type>:<SCHEMA TXN_ID>:tag>`. The elements of the identifier, separated by `:`'s are:
 
 * `issuer DID`: The DID of the Issuer, the issuer of the [[ref: CRED_DEF]].
