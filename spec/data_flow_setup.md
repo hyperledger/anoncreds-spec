@@ -345,5 +345,21 @@ a [[ref: CRED_DEF]] with or without the ability to revoke credentials.
 #### Issuer Create and Publish Revocation Registry Object
 
 
-
 #### Holder Create and Store Link Secret
+
+To prepare to use AnonCreds credentials, the [[ref: Holder]] must create a
+[[ref: link secret]], a unique identifier that is kept private. The [[ref: link
+secret]] is used during the credential issuance process and in the generation of
+a proof, serving to proof to the verifier that the credential was issued to the
+entity presenting the proof.
+
+The [[ref: link secret]] is a sufficiently random unique identifier. For
+example, in the Hyperledger Indy implementation, the [[ref: link secret]] is
+produced by a call to the Rust
+[uuid](https://docs.rs/uuid/0.5.1/uuid/index.html) Crate's `new_v4()` method to
+achieve sufficient randomness.
+
+Once generated, the [[ref: lin_secret]] is stored locally by the [[ref: Holder]]
+for use as needed in subsequent issuance and presentation interactions. If
+lost, the [[ref: Holder]] will not be able to generate a proof that the
+credential was issued to them.
