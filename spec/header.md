@@ -18,5 +18,6 @@ AnonCreds Specification
 
 ~ [GitHub repo](https://github.com/AnonCreds-WG/anoncreds-spec)
 ~ [Commit history](https://github.com/AnonCreds-WG/anoncreds-spec/commits/main)
+~ [Discord](https://discord.gg/hYmBNhTFY9)
 
 ------------------------------------
