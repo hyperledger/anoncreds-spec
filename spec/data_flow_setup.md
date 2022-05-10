@@ -345,5 +345,4 @@ a [[ref: CRED_DEF]] with or without the ability to revoke credentials.
 #### Issuer Create and Publish Revocation Registry Object
 
 
-
 #### Holder Create and Store Link Secret
