@@ -6,8 +6,20 @@
 [[def: claim]]
 ~ A claim is a part of digital identity related to a [[ref: subject]]. A claim can be attested by the identity subject itself, or it can be asserted by another entity. 
 
+[[def: Correctness Proof]]
+~ TODO
+
 [[def: credential]]
 ~ A credential is a set of [[ref: claim]]s about an identity [[ref: subject]]. A verifiable credential is a tamper-proof credential whose authorship is cryptographically verifiable. An anonymous credential, also known as AnonCreds, is a verifiable credential that has privacy-preserving properties to enable data minimization and correlation resistance. 
+
+[[def: Credential Offer]]
+~ TODO
+
+[[def: Credential Request]]
+~ TODO
+
+[[def: DID]]
+~ TODO
 
 [[def: issuer]]
 ~ An issuer is one of the three entities that interact with each other within the domain of digital identities. It can assert [[ref: claim]]s about a [[ref: subject]] in the form of a tamper-proof credential whose origins are cryptographically verifiable. 
@@ -48,15 +60,6 @@ The correlatability of credentials due to the necessity of revealing a persisten
 [[def: SCHEMA publisher]]
 ~ A SCHEMA publisher is an entity that creates a [[ref: SCHEMA]] to the ledger. It can be the [[ref: issuer]], but it can also be another entity that creates a [[ref: SCHEMA]] that can be used by many [[ref: issuer]]s to create [[ref: CRED_DEF]]s (see below).
 
-[[def: Credential Offer]]
-~ TODO
-
-[[def: Credential Request]]
-~ TODO
-
-[[def: Verifiable Data Registry]]
-~ TODO
-
 [[def: CRED_DEF]]
 ~ A CRED_DEF (short for "credential definition", also known as CLAIM_DEF) object contains data required for credential issuance as well as
 credential validation and can be [read](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-claim-def) by any Hyperledger Indy client. A CRED_DEF object references a [[ref: SCHEMA]], references a DID of the [[ref: issuer]] and can be [written](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#claim-def) by any [[ref: issuer]] who intends to issue credentials based on that specific [[ref: SCHEMA]] to the ledger and has the proper permissions in doing so. A [[ref: SCHEMA]] is in a 1:n relation with CRED_DEF, meaning there can be many CRED_DEFs related to a SCHEMA while a CRED_DEF can only derive from one [[ref: SCHEMA]]. A CRED_DEF must be accessible to all credential participants, issuers, holders, and verifiers. CRED_DEFs are public data structures that are stored in an indy ledger. A public key of the [[ref: issuer]] is included within the CRED_DEF which allows validation of the credentials signed by the issuer's private key. When credentials are issued by using the issuers CRED_DEF, the attribute(names) of the [[ref: SCHEMA]] have to be used.
@@ -80,6 +83,9 @@ credential validation and can be [read](https://hyperledger-indy.readthedocs.io/
 
 ~ Further details about Hyperledger Indy's revocation process can be found [here](https://hyperledger-indy.readthedocs.io/projects/hipe/en/latest/text/0011-cred-revocation/README.html).
 
+
+[[def: Verifiable Data Registry]]
+~ TODO
 
 ::: todo
 Finalize glossary entries
