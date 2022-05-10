@@ -1,6 +1,6 @@
 #### Create Presentation Request
 The Verifier starts the process in 
-step 1 of the [AnonCreds Presentation Data Flow](./data_flow_presentation_overview.md#anoncreds-presentation-data-flow)
+step 1 of the [AnonCreds Presentation Data Flow](#anoncreds-presentation-data-flow)
 by creating and sending a presentation request to the Holder.
 
 The presentation request provides information about the required attributes and predicates to be revealed
@@ -201,5 +201,5 @@ The list of allowed keys that can be combined into complex queries includes:
     }
 }
 ```
-In step 2 of the [AnonCreds Presentation Data Flow](./data_flow_presentation_overview.md#anoncreds-presentation-data-flow), 
+In step 2 of the [AnonCreds Presentation Data Flow](#anoncreds-presentation-data-flow), 
 the Verifier sends the presentation request to the Holder.

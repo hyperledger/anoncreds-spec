@@ -36,5 +36,6 @@ presentation request to the Verifier.
 In step 7, 8, and 9, the Verifier collects the required information and verifies the verifiable presentation and accepts it if the 
 signature is valid, otherwise rejects the verifiable presentation.
 
-::: todo Question: VDR access for schema, revocation etc. retrieval mandatory?
+::: todo 
+Question: VDR access for schema, revocation etc. retrieval mandatory?
 :::

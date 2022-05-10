@@ -28,9 +28,9 @@ Each of the aforementioned data flows involve different data objects and actors,
 
 The following sequence diagram summarizes the the setup operations performed by a Schema Publisher, the Issuer (one required and one optional) in preparing to issue a type of AnonCred credential, and the one setup operation performed by each Holder. On successfully completing the operations, the Issuer is able to issue credentials of the given type to the Holder. The subsections below the diagram detail each of the operations.
 
-``` todo
+::: todo
 Question: Should there be an operation to cover creating the published DID for the Schema Publisher and Issuer?
-```
+:::
 
 ```mermaid
 sequenceDiagram
@@ -86,7 +86,7 @@ list of attributes (claims) that will be included in each AnonCred credential of
 this type and the items that will make up the `schema_id` for the Schema. The
 following is an example Schema:
 
-``` jsonc
+``` json
 {
     "attr_names": [
         "birthlocation",
@@ -173,13 +173,13 @@ The operation produces two objects, as follows.
 
 The following describes the process for generating the CredDef data.
 
-``` todo
+::: todo
 Describe the generation process for the CredDef.
-```
+:::
 
 The intCredDef produced by the generation process has the following format:
 
-```jsonc
+```json
 
 To Do.
 
@@ -189,7 +189,7 @@ The CredDef has the following format (from [this example
 CredDef](https://indyscan.io/tx/SOVRIN_MAINNET/domain/99654) on the Sovrin
 MainNet):
 
-```jsonc
+```json
 {
   "data": {
     "primary": {

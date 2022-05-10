@@ -1,8 +1,8 @@
 #### Generate Presentation
 
-In step 3, 4, and 5 of the [AnonCreds Presentation Data Flow](./data_flow_presentation_overview.md#anoncreds-presentation-data-flow), 
+In step 3, 4, and 5 of the [AnonCreds Presentation Data Flow](#anoncreds-presentation-data-flow), 
 the Holder collects the required information and creates the verifiable presentation according to the
-[presentation request](./data_flow_presentation_create_request.md#example-of-a-complete-presentation-request) received from the Verifier.
+[presentation request](#example-of-a-complete-presentation-request) received from the Verifier.
 
 Either a corresponding credential with optionally revealed attributes or a self-attested attribute must 
 be provided for each requested attribute.
@@ -42,7 +42,7 @@ Once all required information is available, the Holder generates the presentatio
     * `proof_request_json`: Proof request in JSON format.
     * `extra_query_json`: (Optional) list of extra queries that will be applied to the correspondent 
       attribute/predicate `<attr_referent>` /  `<predicate_referent>`, 
-      see [wql_query](./data_flow_presentation_create_request.md#wql-query-examples).
+      see [wql_query](#wql-query-examples).
     
       * Example: 
   
@@ -175,7 +175,7 @@ Once all required information is available, the Holder generates the presentatio
    ```
 
 5. `indy_prover_create_proof`: This API creates a presentation according to the 
-   [presentation request](./data_flow_presentation_create_request.md#example-of-a-complete-presentation-request)
+   [presentation request](#example-of-a-complete-presentation-request)
    * Either a corresponding credential with optionally revealed attributes or a self-attested attribute must be provided
      for each requested attribute (see `indy_prover_get_credentials_for_pool_req`).
    * A proof request may request multiple credentials from different schemas and different issuers.
@@ -353,7 +353,7 @@ The resulting presentation `proof_json` created by the Holder has the following 
     ]
 }
 ```
-In step 6 of the [AnonCreds Presentation Data Flow](./data_flow_presentation_overview.md#anoncreds-presentation-data-flow), 
+In step 6 of the [AnonCreds Presentation Data Flow](#anoncreds-presentation-data-flow), 
 the Holder sends the verifiable presentation to the Verifier.
 
 
