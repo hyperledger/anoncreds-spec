@@ -17,4 +17,3 @@ Add list of contributors.
 ::: todo
 Add authors' addresses.
 :::
-
