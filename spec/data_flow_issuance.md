@@ -29,9 +29,9 @@ opt Credential Offer is optional
   I ->> H: Send Credential Offer
   H ->> H: Process Credential Offer
 end
-  H ->> L: Request SCHEMA and CRED_DEF
-  L ->> H: Return SCHEMA and CRED_DEF
-  H ->> H: Create Credential Request<br>by using SCHEMA and CRED_DEF
+  H ->> L: Request CRED_DEF
+  L ->> H: Return CRED_DEF
+  H ->> H: Create Credential Request
   H ->> I: Send Credential Request
   I ->> I: Process Credential Request
   I ->> I: Issue Credential
@@ -48,14 +48,14 @@ The [[ref:issuer]] prepares a [[ref:Credential Offer]] for the [[ref:holder]] (s
 
 Based on the [[ref:CRED_DEF]] received from the [[ref:Verfiable Data Registry]] (step 5), the [[ref:holder]] prepares a [[ref:Credential Request]] (step 6). A [[ref: Credential Request]] is a formal request from a [[ref:holder]] to an [[ref:issuer]] to get a [[ref:credential]] based on the given [[ref:CRED_DEF]] issued to the [[ref:holder]]. The [[ref:holder]] sends the [[ref: Credential Request]] to the [[ref:issuer]] (step 7), who then evaluates the incoming request (step 8).
 
-The [[ref:issuer]] can decide whether to accept the received [[ref: Credential Request]] and issues the [[ref:credential]] (step 9) in the case of request acceptance. The [[ref:issuer]] sends the credential to the [[ref:holder]] (step 10), who then can store the received [[ref:credential]] in his wallet.
+The [[ref:issuer]] can decide whether to accept the received [[ref: Credential Request]] and issues the [[ref:credential]] (step 9) in the case of request acceptance. The [[ref:issuer]] sends the credential to the [[ref:holder]] (step 10), who then can store the received [[ref:credential]] in his wallet (step 11).
 
 
 #### Credential Offer
 
 Before issuing a credential to the [[ref:holder]], the [[ref:issuer]] can send a [[ref:Credential Offer]] to the [[ref:holder]] (steps 1 and 2), which contains information about the credential the [[ref:issuer]] intends to issue and send to the [[ref:holder]]. This step is optional, and can be omitted. In case of omission, the issue credential flow begins with the [[ref: holder]] creating a [[ref: Credential Request]] for the [[ref:issuer]] (step 6, see [[ref: TODOREFERENCE]]).
 
-For creating a [[ref:Credential Offer]] the [[ref:issuer]] is required to fetch the [[ref:SCHEMA]], the [[ref:CRED_DEF]] as well as its correctness proof from the [[ref: Verifiable Data Registry]].
+For creating a [[ref:Credential Offer]] the [[ref:issuer]] is required to fetch the [[ref:CRED_DEF]] as well as its correctness proof from the [[ref: Verifiable Data Registry]].
 
 The resulting JSON for a [[ref:Credential Offer]] is shown here:
 
@@ -75,31 +75,35 @@ The resulting JSON for a [[ref:Credential Offer]] is shown here:
 
 The [[ref:issuer]] sends the [[ref:Credential Offer]] JSON to the [[ref:holder]], who then can reply with a [[ref:Credential Request]] in order to obtain the offered credential.
 
+:::todo
+ - Is the credential offer also signed by the issuer?
+ - Add info to key_correctness_proof
+ - Add reference to "issue credential" into the part, when offer omission is described
+ - Describe usage of nonce
+:::
 
 #### Credential Request
 
-A [[ref:Credential Request]] is a formal request from a [[ref:holder]] to an [[ref:issuer]] to get a [[ref:credential]] issued by the [[ref:issuer]] to the [[ref:holder]]. A [[ref: Credential Request]] can be either sent by the [[ref:holder]] as reply to a [[ref:Credential Offer]] sent by an [[ref:issuer]], or it can be sent in order to initiate the credential issuance flow from the [[ref:holder]]s perspective without a preceding [[ref:Credential Offer]].
+A [[ref:Credential Request]] is a formal request from a [[ref:holder]] to an [[ref:issuer]] to get a [[ref:credential]] based on a concrete [[ref:CRED_DEF]] issued by the [[ref:issuer]] to the [[ref:holder]]. A [[ref: Credential Request]] can be either sent by the [[ref:holder]] as reply to a [[ref:Credential Offer]] sent by an [[ref:issuer]], or it can be sent standalone in order to initiate the credential issuance flow from the [[ref:holder]]s side without a preceding [[ref:Credential Offer]]. 
 
-In order to be able as a [[ref:holder]] to express within a [[ref:Credential Request]] to the [[ref:issuer]] which kind of credential the [[ref:issuer]] shall issue to the [[ref:holder]], the [[ref:holder]] requires the [[ref:SCHEMA]] and the [[ref:CRED_DEF]] from the [[ref:Verifiable Data Registry]] if not available in local storage. Furthermore the [[ref:holder]] requires his [[ref:link secret]] in a blinded form, as well as the corresponding [[ref: Correctness Proof]] of the [[ref:link secret]].
+In order to be able as a [[ref:holder]] to express within a [[ref:Credential Request]] to the [[ref:issuer]] which kind of credential the [[ref:issuer]] shall issue to the [[ref:holder]], the [[ref:holder]] requires the [[ref:SCHEMA]] and the [[ref:CRED_DEF]] from the [[ref:Verifiable Data Registry]] if not already available in local storage. In case the [[ref:Credential Request]] shall be a reply to a preceding [[ref:Credential Offer]] from an [[ref:issuer]], the [[ref:Credential Request]] has to reference the same [[ref:CRED_DEF]] as mentioned in the preceding [[ref:Credential Offer]]. Besides the [[ref:CRED_DEF]] and [[ref:SCHEMA]], the [[ref:holder]] also requires his [[ref:link secret]] in a blinded form, as well as the corresponding [[ref: Correctness Proof]] of his [[ref:link secret]].
 
 ::: todo
-How does the link secret get blinded? How does the cryptography work? How does it work with correctness proof? ==> Out of scope?
+- How does the link secret get blinded? How does the cryptography work? How does it work with correctness proof? ==> Out of scope?
+- Describe usage of nonce
 :::
 
 The resulting JSON for a [[ref:Credential Request]] is shown here:
 
 ```json
- cred_req_json: Credential request json for creation of credential by Issuer
-     {
-      "prover_did" : string,
-      "cred_def_id" : string,
-         // Fields below can depend on Cred Def type
-      "blinded_ms" : string,
-      "blinded_ms_correctness_proof" : string,
-      "nonce": string
-    }
-
- 
+{
+  "prover_did" : string,
+  "cred_def_id" : string,
+  // Fields below can depend on Cred Def type
+  "blinded_ms" : string,
+  "blinded_ms_correctness_proof" : string,
+  "nonce": string
+}
 ```
 * `prover_did`: The [[ref:DID]] of the [[ref:holder]].
 * `cred_def_id`: The ID of the [[ref:CRED_DEF]] on which the [[ref:Credential]] to be issued shall be based.
@@ -111,7 +115,7 @@ The resulting JSON for a [[ref:Credential Request]] is shown here:
 ```json
  cred_req_metadata_json: Credential request metadata json for further processing of received form 
 ```
-Figure out how cred_req_metadata_json looks like. Is this even required yet / sent to the issuer? Seems to me like it is stored locally and loaded when an issuer "replies" to the credential request with an issued credential.
+Figure out how cred_req_metadata_json looks like. Is this even required yet / sent to the issuer? Seems to me like it is stored locally and loaded when an issuer "replies" to the credential request with an issued credential, so that the credential can be mapped to the preceding credential request.
 :::
 
 The [[ref:issuer]] sends the [[ref:Credential Request]] JSON to the [[ref:issuer]], who then can reply with an issued credential to the [[ref:holder]].
