@@ -77,6 +77,7 @@ The [[ref:issuer]] sends the [[ref:Credential Offer]] JSON to the [[ref:holder]]
 
 :::todo
  - Is the credential offer also signed by the issuer?
+ - Is the fact, that the credential offer is optional, correct? https://github.com/hyperledger/indy-sdk/tree/master/docs/design/002-anoncreds rather says "Cred Request must match Cred Offer"
  - Add info to key_correctness_proof
  - Add reference to "issue credential" into the part, when offer omission is described
  - Describe usage of nonce
@@ -123,4 +124,32 @@ The [[ref:issuer]] sends the [[ref:Credential Request]] JSON to the [[ref:issuer
 
 #### Issue Credential
 
-TODO
+After the [[ref:issuer]] received the [[ref:Credential Request]] from the [[ref:holder]], the [[ref:issuer]] is able to issue a credential to the [[ref:holder]]. Therefore the [[ref:issuer]] needs to execute the following steps:
+
+1. The [[ref:issuer]] has to fetch the [[ref:CRED_DEF]] for the `cred_def_id` given in the [[ref:Credential Request]] either from the ledger (or his local storage if already available).
+2. Every raw attribute value for each attribute in the [[ref:CRED_DEF]], which the [[ref:issuer]] intends to issue to the [[ref:holder]], needs to be defined and set.
+3. The [[ref:issuer]] has to fetch the [[ref:holder]]`s blinded [[ref:link secret]] from the given the [[ref:Credential Request]]. The blinded [[ref:link secret]] is treated as raw attribute value.
+4. Every raw attribute value, that cannot successfully be parsed into an iteger, has to be encoded. The same rule applies to the [[ref:link secret]].
+5. Every raw attribute value, that can successfully be parsed into an integer (e.g. "2015"), does not have to be encoded explicitely. In this case it is sufficient to use the raw value also as encoded value.
+6. Every encoded attribute value has to be signed by using the corresponding private key as defined in the private part of the [[ref:CRED_DEF]].
+7. The [[ref:issuer]] has to provide the raw and encoded versions of the attribute values in a JSON as follows:
+
+
+```json
+{
+    "first_name": {"raw": "Alice", "encoded": "1139481716457488690172217916278103335"},
+    "last_name": {"raw": "Garcia", "encoded": "5321642780241790123587902456789123452"},
+    "degree": {"raw": "Bachelor of Science, Marketing", "encoded": "12434523576212321"},
+    "status": {"raw": "graduated", "encoded": "2213454313412354"},
+    "ssn": {"raw": "123-45-6789", "encoded": "3124141231422543541"},
+    "year": {"raw": "2015", "encoded": "2015"},
+    "average": {"raw": "5", "encoded": "5"}
+}
+```
+
+:::todo
+- TODO: Probably use the same attributes for SCHEMA and CRED_DEF all over the spec
+- What kind of encoding algorithm for strings is used? Seems like this is not defined explicitely (https://jira.hyperledger.org/browse/IS-786)
+- Go deeper into signing with CL?
+- The shown JSON above is not what the holder gets from the issuer! Provide what holder gets!
+:::
