@@ -348,9 +348,13 @@ a [[ref: CRED_DEF]] with or without the ability to revoke credentials.
 #### Holder Create and Store Link Secret
 
 To prepare to use AnonCreds credentials, the [[ref: Holder]] must create a
-[[ref: link secret]], a unique identifier that is kept private. The [[ref: link
-secret]] is used during the credential issuance process and in the generation of
-a presentation. For the latter, it allows the [[ref: holder]] to create a zero
+[[ref: link secret]], a unique identifier that allows credentials issued to a
+[[ref: Holder]] to be bound to that [[ref: Holder]] and presented without
+revealing a unique identifier, thus avoiding correlation of credentials by
+[[ref: Verifier]]s. The [[ref: link_secret]] is kept private by the [[ref:
+Holder]]. The [[ref: link secret]] is used during the credential issuance
+process to bind the credential to the [[ref: holder]] and in the generation of a
+presentation. For the latter, it allows the [[ref: holder]] to create a zero
 knowledge proof that they were issued the credential by demonstrating knowledge
 of the value of the [[ref: link_secret]] without sharing it. The details of how
 the [[ref: link_secret]] is used to do this is provided in the issuance,
@@ -366,7 +370,14 @@ Once generated, the [[ref: link_secret]] is stored locally by the [[ref:
 Holder]] for use in subsequent issuance and presentation interactions. If lost,
 the [[ref: Holder]] will not be able to generate a proof that the credential was
 issued to them. The [[ref: holder]] generates only a single [[ref:
-link_secret]], using it for all credentials the [[ref: holder]] is issued. This allows for
-[[ref: verifier]]s to know that all of the credentials used in generating a presentation
-with attributes from multiple credentials were all issued with the same [[ref:
-link_secret]].
+link_secret]], using it for all credentials the [[ref: holder]] is issued. This
+allows for [[ref: verifier]]s to verify that all of the credentials used in
+generating a presentation with attributes from multiple credentials were all
+issued to the same [[ref: Holder]] without requiring the [[ref: Holder]] to
+disclose the unique identifier ([[ref: link_secret]]) that binds these
+credentials together.
+
+A [[ref: Holder]] may choose to generate multiple link secrets, using different
+ones when being issued credentials. When doing so, a presentation of multiple
+credentials may result in the proofs of the binding of the different credentials
+to the [[ref: Holder]] use different [[ref: link_secret]]s.
