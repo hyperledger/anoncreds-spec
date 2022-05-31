@@ -1,6 +1,6 @@
 ### AnonCreds Issuance Data Flow
 
-The issuance of an anonymous [[ref:credential]] takes several steps and involves the roles [[ref:issuer]], [[ref:holder]] as well as the [[ref: Verifiable Data Registry]] (see diagramm below).
+The issuance of an anonymous [[ref:credential]] requires several steps and involves the roles [[ref:issuer]], [[ref:holder]] as well as the [[ref: Verifiable Data Registry]] (see diagramm below).
 
 ```mermaid
 sequenceDiagram
@@ -9,24 +9,13 @@ sequenceDiagram
     participant I as Issuer
     participant H as Holder  
 
-
-    %%I ->> I: issuer_create_credential_offer<br>(wallet_handle, cred_def_id)
-    %%I ->> H: Send offer-credential
-    %%H ->> H: Process offer-credential
-    %%H ->> H: build_get_cred_def_request(issuer_DID, cred_def_id)
-    %%H ->> L: submit_request(pool_handle, get_cred_def_request)
-    %%H ->> H: parse_get_cred_def_response(get_cred_def_response)
-    %%H ->> I: prover_create_credential_req(wallet_handle, issuer_DID,<br>credential_offer, cred_def, master_secret_id)
-    %%H ->> I: send credential request
- 
-    %%I ->> I: Prepare RAW attribute values and encode them
-    %%I ->> I: issuer_create_credential(wallet_handle,<br>credential_offer, credential_request <br>transcript_cred_values, None, None)
-    %%I ->> H: Send credential
-    %%H ->> H: prover_store_credential(wallet_handle, None,<br>credential_request, meta_data, %%credential,<br>credential_definition, None)
-
   I ->> I: Create Credential Offer
   I ->> H: Send Credential Offer
   H ->> H: Process Credential Offer
+  opt
+    H ->> L: Request SCHEMA
+    L ->> H: Return SCHEMA
+  end
   H ->> L: Request CRED_DEF
   L ->> H: Return CRED_DEF
   H ->> H: Create Credential Request
@@ -38,20 +27,20 @@ sequenceDiagram
 
 
   rect rgb(191, 223, 255)
-    Note left of H: 💡The "Verifier" and "Schema Publisher" roles are<br>omitted in this diagram, since it is not required<br>for the credential issuance data flow.
+    Note left of H: 💡The "Verifier" and "Schema Publisher" roles are<br>omitted in this diagram, since they is not required<br>for the credential issuance data flow.
   end
 ```
 
-The [[ref:issuer]] prepares a [[ref:Credential Offer]] for the [[ref:holder]] (step 1). A [[ref:Credential Offer]] includes information about what kind of [[ref:credential]] (based on which [[ref: CRED_DEF]]) the [[ref:issuer]] is intending to issue to the [[ref:holder]]. The [[ref:issuer]] sends the [[ref:Credential Offer]] to the [[ref:holder]] (step 2), who evaluates the incoming offer (step 3) and subsequently fetches required data (the [[ref:CRED_DEF]]) from the [[ref: Verifiable Data Registry]] (step 4).
+The [[ref:issuer]] prepares a [[ref:Credential Offer]] for the [[ref:holder]] (step 1). A [[ref:Credential Offer]] includes information about what kind of [[ref:credential]] (based on which [[ref: CRED_DEF]]) the [[ref:issuer]] is intending to issue to the [[ref:holder]]. The [[ref:issuer]] sends the [[ref:Credential Offer]] to the [[ref:holder]] (step 2), who then evaluates the incoming offer (step 3) and subsequently fetches required data (the [[ref:CRED_DEF]]) from the [[ref: Verifiable Data Registry]] (step 4-7).
 
-Based on the [[ref:CRED_DEF]] received from the [[ref:Verfiable Data Registry]] (step 5), the [[ref:holder]] prepares a [[ref:Credential Request]] (step 6). A [[ref: Credential Request]] is a formal request from a [[ref:holder]] to an [[ref:issuer]] to get a [[ref:credential]] based on the given [[ref:CRED_DEF]] issued to the [[ref:holder]]. The [[ref:holder]] sends the [[ref: Credential Request]] to the [[ref:issuer]] (step 7), who then evaluates the incoming request (step 8).
+Based on the [[ref:CRED_DEF]] received from the [[ref:Verfiable Data Registry]], the [[ref:holder]] prepares a [[ref:Credential Request]] (step 8). A [[ref: Credential Request]] is a formal request from a [[ref:holder]] to an [[ref:issuer]] to get a [[ref:credential]] based on the given [[ref:CRED_DEF]] issued to the [[ref:holder]]. The [[ref:holder]] sends the [[ref: Credential Request]] to the [[ref:issuer]] (step 9), who then evaluates the incoming request (step 10).
 
-The [[ref:issuer]] can decide whether to accept the received [[ref: Credential Request]] and issues the [[ref:credential]] (step 9) in the case of request acceptance. The [[ref:issuer]] sends the credential to the [[ref:holder]] (step 10), who then can store the received [[ref:credential]] in his wallet (step 11).
+The [[ref:issuer]] can decide whether to accept the received [[ref: Credential Request]] and issues the [[ref:credential]] (step 11) in the case of request acceptance. The [[ref:issuer]] sends the credential to the [[ref:holder]] (step 12), who then can store the received [[ref:credential]] in his wallet (step 13).
 
 
 #### Credential Offer
 
-Before issuing a credential to the [[ref:holder]], the [[ref:issuer]] has to send a [[ref:Credential Offer]] to the [[ref:holder]] (step 1 and 2), which contains information about the credential the [[ref:issuer]] intends to issue and send to the [[ref:holder]]. For creating a [[ref:Credential Offer]], the [[ref:issuer]] is required to fetch the [[ref:CRED_DEF]] as well as its correctness proof from the [[ref: Verifiable Data Registry]].
+Before issuing a credential to the [[ref:holder]], the [[ref:issuer]] has to send a [[ref:Credential Offer]] to the potential [[ref:holder]] (step 1 and 2). A [[ref:Credential Offer]] contains information about the credential the [[ref:issuer]] intends to issue and send to the [[ref:holder]]. For creating a [[ref:Credential Offer]], the [[ref:issuer]] is required to fetch the [[ref:CRED_DEF]] as well as its correctness proof from the [[ref: Verifiable Data Registry]]. The [[ref:issuer]] also prepares a [[ref:nonce]] which will be embedded within the [[ref:Credential Offer]] in order to prevent replay attacks and authenticate between protocol steps.
 
 The resulting JSON for a created [[ref:Credential Offer]] is shown here:
 
@@ -66,10 +55,12 @@ The resulting JSON for a created [[ref:Credential Offer]] is shown here:
 ```
 * `schema_id`: The ID of the [[ref:SCHEMA]] on which the [[ref:CRED_DEF]] for the offered [[ref:Credential]] is based.
 * `cred_def_id`: The ID of the [[ref:CRED_DEF]] on which the [[ref:Credential]] to be issued will be based.
-* `nonce`: Used for avoiding replay attacks. Has to be reused within a [[ref:Credential Request]] by the [[ref:holder]].
+* `nonce`: Used for preventing replay attacks and authentication between protocol steps. Has to be reused within a [[ref:Credential Request]] by the [[ref:holder]].
 * `key_correctness_proof`: TODO.
 
-The [[ref:issuer]] sends the [[ref:Credential Offer]] JSON to the [[ref:holder]], who then can reply with a [[ref:Credential Request]] in order to obtain the offered credential.
+The [[ref:issuer]] sends the [[ref:Credential Offer]] to the [[ref:holder]] (step 2), who then can process the [[ref: Credential Offer]] (step 3). In order to figure out, which kind of credential (which [[ref:CRED_DEF]] and attributes) are offered to the [[ref:holder]], the [[ref:holder]] needs to fetch the underlying [[ref:SCHEMA]] from the [[ref:Verifiable Data Registry]] by using the ```schema_id``` as provided in the received [[ref:Credential Offer]], since the referenced [[ref:SCHEMA]] contains all attribute names of the offered credential (step 4 + 5). 
+
+In case the credential respectively its attributes is of interest for the [[ref:holder]], the [[ref:holder]] can reply to the issuer`s [[ref:Credential Offer]] with a [[ref:Credential Request]] in order to ask the issuer for issuance of the offered credential and its attributes.
 
 :::todo
  - Add info to key_correctness_proof
@@ -79,13 +70,14 @@ The [[ref:issuer]] sends the [[ref:Credential Offer]] JSON to the [[ref:holder]]
 
 A [[ref:Credential Request]] is a formal request from a [[ref:holder]] to an [[ref:issuer]] to get a [[ref:credential]] based on a concrete [[ref:CRED_DEF]] issued by the [[ref:issuer]] to the [[ref:holder]]. 
 
-In order to be able as a [[ref:holder]] to express within a [[ref:Credential Request]] to the [[ref:issuer]] which kind of credential the [[ref:issuer]] shall issue to the [[ref:holder]], the [[ref:holder]] requires the [[ref:SCHEMA]] and the [[ref:CRED_DEF]] from the [[ref:Verifiable Data Registry]] if not already available in local storage. The [[ref:Credential Request]] has to reference the same [[ref:CRED_DEF]] and [[ref:nonce]] as given in the preceding [[ref:Credential Offer]]. Besides the [[ref:CRED_DEF]] and [[ref:SCHEMA]], the [[ref:holder]] also requires his [[ref:link secret]] in a blinded form, as well as the corresponding [[ref: Correctness Proof]] of his [[ref:link secret]].
+In order to be able as a [[ref:holder]] to express within a [[ref:Credential Request]] to the [[ref:issuer]] which kind of credential the [[ref:issuer]] shall issue to the [[ref:holder]], the [[ref:holder]] requires the [[ref:CRED_DEF]] from the [[ref:Verifiable Data Registry]] if not already available in local storage (step 6 + 7). The [[ref:Credential Request]] has to reference the same [[ref:CRED_DEF]] and [[ref:nonce]] as given in the preceding [[ref:Credential Offer]]. Besides the [[ref:CRED_DEF]], the [[ref:holder]] also requires his [[ref:link secret]] in a blinded form, as well as the corresponding [[ref: Correctness Proof]] of his [[ref:link secret]]. The [[ref: holder]] has now all relevant data for creating the [[ref:Credential Request]] (step 8).
 
 ::: todo
 - How does the link secret get blinded? How does the cryptography work? How does it work with correctness proof? ==> Out of scope?
+- Does the holder really need to fetch the CRED_DEF from the ledger since the Credential Request only provides the cred_def_id, which the holder can obtain from the Credential offer?
 :::
 
-The resulting JSON for a [[ref:Credential Request]] is shown here:
+The resulting JSON for a created [[ref:Credential Request]] is shown here:
 
 ```json
 {
@@ -97,34 +89,37 @@ The resulting JSON for a [[ref:Credential Request]] is shown here:
   "nonce": string
 }
 ```
+
+:::todo
+is the ```prover_did``` the peer DID of the holder?
+:::
+
+
 * `prover_did`: The [[ref:DID]] of the [[ref:holder]].
 * `cred_def_id`: The ID of the [[ref:CRED_DEF]] on which the [[ref:Credential]] to be issued shall be based.
 * `blinded_ms`: The [[ref:link secret]] in its blinded form.
 * `blinded_ms_correctness_proof`: The [[ref: Correctness Proof]] of the blinded [[ref:link secret]].
-* `nonce`: Used for avoiding replay attacks. Reused from the received [[ref:Credential Offer]].
+* `nonce`: Used for preventing replay attacks and authentication between protocol steps. Reused from the initially received [[ref:Credential Offer]].
 
-::: todo
-```json
- cred_req_metadata_json: Credential request metadata json for further processing of received form 
-```
-Figure out how cred_req_metadata_json looks like. Is this even required yet / sent to the issuer? Seems to me like it is stored locally and loaded when an issuer "replies" to the credential request with an issued credential, so that the credential can be mapped to the preceding credential request.
-:::
-
-The [[ref:issuer]] sends the [[ref:Credential Request]] JSON to the [[ref:issuer]], who then can reply with an issued credential to the [[ref:holder]].
+The [[ref:issuer]] sends the [[ref:Credential Request]] to the [[ref:issuer]] (step 9), who then can reply to the [[ref:holder]] by sending an issued credential.
 
 
 #### Issue Credential
 
-After the [[ref:issuer]] received the [[ref:Credential Request]] from the [[ref:holder]], the [[ref:issuer]] is able to issue a credential to the [[ref:holder]]. Therefore the [[ref:issuer]] needs to execute the following steps:
+After the [[ref:issuer]] received the [[ref:Credential Request]] from the [[ref:holder]], the [[ref:issuer]] processes the [[ref:Credential Request]] and decides whether to issue the credential as requested in the [[ref:Credential Request]] to the [[ref:holder]]. 
 
-1. The [[ref:issuer]] has to fetch the [[ref:CRED_DEF]] for the `cred_def_id` given in the [[ref:Credential Request]] either from the ledger (or his local storage if already available).
-2. Every raw attribute value for each attribute in the [[ref:CRED_DEF]] respectively [[ref:Schema]], which the [[ref:issuer]] intends to issue to the [[ref:holder]], needs to be defined and set.
-3. The [[ref:issuer]] has to fetch the [[ref:holder]]`s blinded [[ref:link secret]] from the received the [[ref:Credential Request]]. The blinded [[ref:link secret]] is treated as raw attribute value.
-4. Every raw attribute value, that cannot successfully be parsed into an iteger, has to be encoded. The same rule applies to the blinded [[ref:link secret]].
-5. Every raw attribute value, that can successfully be parsed into an integer (e.g. "2015"), shall not be encoded explicitely. In this case it is sufficient to use the raw value also as encoded value.
-6. Every encoded attribute value has to be signed by using the corresponding private key as defined in the private part of the [[ref:CRED_DEF]].
-7. The [[ref:issuer]] has to provide the raw and encoded versions of the attribute values in a JSON as follows:
+In case the [[ref:issuer]] decides to issue the requested credential to the [[ref:holder]], the following steps have to be executed by the [[ref:issuer]]:
 
+:::todo
+- check nonce?
+- check link secret and correctness proof?
+:::
+
+1. The [[ref:issuer]] has to fetch the [[ref:CRED_DEF]] for the `cred_def_id` given in the received [[ref:Credential Request]] either from the ledger or local storage (if already available).
+2. Every raw attribute value for each attribute in the fetched [[ref:CRED_DEF]] (respectively its [[ref:Schema]]), which the [[ref:issuer]] intends to issue to the [[ref:holder]], needs to be set.
+3. The [[ref:issuer]] has to fetch and set the [[ref:holder]]`s blinded [[ref:link secret]] from the received [[ref:Credential Request]] as attribute value. The blinded [[ref:link secret]] is available in the received [[ref:Credential Request]] at ```blinded_ms```. The blinded [[ref:link secret]] is treated as raw attribute value.
+4. Every raw attribute value, which cannot successfully be parsed into an integer (e.g. "Alice"), must be encoded as integer. The same rule applies to the blinded [[ref:link secret]].
+5. Every raw attribute value, which can successfully be parsed into an integer (e.g. "2015"), shall not be encoded explicitely. In this case it is required to use the raw (integer) value also as the encoded one. The intermediate result of raw and encoded credential attribute values is as follows (cred_values_json):
 
 ```json
 {
@@ -134,14 +129,47 @@ After the [[ref:issuer]] received the [[ref:Credential Request]] from the [[ref:
     "status": {"raw": "graduated", "encoded": "2213454313412354"},
     "ssn": {"raw": "123-45-6789", "encoded": "3124141231422543541"},
     "year": {"raw": "2015", "encoded": "2015"},
-    "average": {"raw": "5", "encoded": "5"}
+    "average": {"raw": "5", "encoded": "5"},
+    "master_secret": "TODO: How does the link secret look like here?"
 }
 ```
 
 :::todo
-- TODO: Probably use the same attributes for SCHEMA and CRED_DEF all over the spec
+- Add the blinded link secret to (encoded) attributes above?
+- Is only the encoded or also raw version of the attribute signed?
+:::
+
+6. The [[ref:issuer]] has to sign each attribute value by using the corresponding private key for each attribute as defined in the private part of the [[ref:CRED_DEF]] earlier.
+7. The [[ref:issuer]] has to sign the whole credential data with its private key corresponding to his [[ref:DID]] and provide the signature as well as its correctness proof.
+
+:::todo
+- verify how exactly the signing happens for the whole credential
+:::
+
+The [[ref:issuer]] has to transmit the whole credential data to the [[ref:holder]] as follows:
+
+
+```json
+{
+    "schema_id": string,
+    "cred_def_id": string,
+    "values": <see cred_values_json above>,
+    // Fields below can depend on Cred Def type
+    "signature": <signature>,
+    "signature_correctness_proof": <signature_correctness_proof>
+}
+```
+* `schema_id`: The ID of the [[ref:SCHEMA]] on which the [[ref:CRED_DEF]] for the offered [[ref:Credential]] is based.
+* `cred_def_id`: The ID of the [[ref:CRED_DEF]] on which the [[ref:Credential]] issued is based.
+* `values`: The raw and encoded credential attribute values as JSON (cred_values_json).
+* `signature`: The signature of the whole credential data.
+* `signature_correctness_proof`: The signature correctness proof of the signature for the whole credential data.
+
+:::todo
 - What kind of encoding algorithm for strings is used? Seems like this is not defined explicitely (https://jira.hyperledger.org/browse/IS-786)
 - Go deeper into signing with CL?
-- The shown JSON above is not what the holder gets from the issuer! Provide what holder gets!
 - Encoding the blinded link secret is correct?
+- consider revocation data in case of revocation
 :::
+
+After the [[ref:issuer]] sent the credential data to the [[ref:holder]] (step 12), the [[ref:holder]] can accept and store the credential within his wallet (step 13). The credential issuance flow is completed at this point.
