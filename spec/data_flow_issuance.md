@@ -131,9 +131,8 @@ In case the [[ref:issuer]] decides to issue the requested credential to the [[re
 }
 ```
 
-1. The [[ref:issuer]] has to fetch and set the [[ref:holder]]`s blinded [[ref:link secret]] from the received [[ref:Credential Request]] as attribute value. The blinded [[ref:link secret]] is available in the received [[ref:Credential Request]] at ```blinded_ms```. 
-2. The [[ref:issuer]] has to sign each attribute value (including the blinded [[ref:link secret]]) by using the corresponding private key for each attribute as defined in the private part of the [[ref:CRED_DEF]] earlier.
-3. The [[ref:issuer]] has to sign the whole credential data with its private key corresponding to his [[ref:DID]] and provide the signature as well as its correctness proof.
+6. The [[ref:issuer]] has to fetch the [[ref:holder]]`s blinded [[ref:link secret]] from the received [[ref:Credential Request]]. The blinded [[ref:link secret]] is available in the received [[ref:Credential Request]] at ```blinded_ms```. 
+7. The [[ref:issuer]] has to sign each attribute value and the the blinded [[ref:link secret]] by using the corresponding private key for each attribute as defined in the private part of the [[ref:CRED_DEF]] earlier.
 
 :::todo
 - check how exactly the signing happens for the whole credential
