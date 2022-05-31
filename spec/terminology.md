@@ -21,6 +21,9 @@
 [[def: DID]]
 ~ TODO
 
+[[def: nonce]]
+~ TODO
+
 [[def: issuer]]
 ~ An issuer is one of the three entities that interact with each other within the domain of digital identities. It can assert [[ref: claim]]s about a [[ref: subject]] in the form of a tamper-proof credential whose origins are cryptographically verifiable. 
 
