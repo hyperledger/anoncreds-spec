@@ -116,7 +116,6 @@ In case the [[ref:issuer]] decides to issue the requested credential to the [[re
 
 1. The [[ref:issuer]] has to fetch the [[ref:CRED_DEF]] for the `cred_def_id` given in the received [[ref:Credential Request]] either from the ledger or local storage (if already available).
 2. Every raw attribute value for each attribute in the fetched [[ref:CRED_DEF]] (respectively its [[ref:Schema]]), which the [[ref:issuer]] intends to issue to the [[ref:holder]], needs to be set.
-3. The [[ref:issuer]] has to fetch and set the [[ref:holder]]`s blinded [[ref:link secret]] from the received [[ref:Credential Request]] as attribute value. The blinded [[ref:link secret]] is available in the received [[ref:Credential Request]] at ```blinded_ms```. The blinded [[ref:link secret]] is treated as raw attribute value.
 4. Every raw attribute value, which cannot successfully be parsed into an integer (e.g. "Alice"), must be encoded as integer. The same rule applies to the blinded [[ref:link secret]].
 5. Every raw attribute value, which can successfully be parsed into an integer (e.g. "2015"), shall not be encoded explicitely. In this case it is required to use the raw (integer) value also as the encoded one. The intermediate result of raw and encoded credential attribute values is as follows (cred_values_json):
 
@@ -129,17 +128,12 @@ In case the [[ref:issuer]] decides to issue the requested credential to the [[re
     "ssn": {"raw": "123-45-6789", "encoded": "3124141231422543541"},
     "year": {"raw": "2015", "encoded": "2015"},
     "average": {"raw": "5", "encoded": "5"},
-    "master_secret": "TODO: How does the link secret look like here?"
 }
 ```
 
-:::todo
-- Add the blinded link secret to (encoded) attributes above?
-- Is only the encoded or also raw version of the attribute signed?
-:::
-
-6. The [[ref:issuer]] has to sign each attribute value by using the corresponding private key for each attribute as defined in the private part of the [[ref:CRED_DEF]] earlier.
-7. The [[ref:issuer]] has to sign the whole credential data with its private key corresponding to his [[ref:DID]] and provide the signature as well as its correctness proof.
+1. The [[ref:issuer]] has to fetch and set the [[ref:holder]]`s blinded [[ref:link secret]] from the received [[ref:Credential Request]] as attribute value. The blinded [[ref:link secret]] is available in the received [[ref:Credential Request]] at ```blinded_ms```. 
+2. The [[ref:issuer]] has to sign each attribute value (including the blinded [[ref:link secret]]) by using the corresponding private key for each attribute as defined in the private part of the [[ref:CRED_DEF]] earlier.
+3. The [[ref:issuer]] has to sign the whole credential data with its private key corresponding to his [[ref:DID]] and provide the signature as well as its correctness proof.
 
 :::todo
 - check how exactly the signing happens for the whole credential
@@ -152,12 +146,63 @@ The [[ref:issuer]] has to transmit the whole credential data to the [[ref:holder
 {
     "schema_id": string,
     "cred_def_id": string,
-    "values": <see cred_values_json above>,
-    // Fields below can depend on Cred Def type
-    "signature": <signature>,
-    "signature_correctness_proof": <signature_correctness_proof>
+    "rev_reg_id": null,
+    "values": {
+        "first_name": {
+            "raw": "Alice",
+            "encoded": "1139481716457488690172217916278103335"
+        },
+        "last_name": {
+            "raw": "Garcia",
+            "encoded": "5321642780241790123587902456789123452"
+        },
+        "degree": {
+            "raw": "Bachelor of Science, Marketing",
+            "encoded": "12434523576212321"
+        },
+        "status": {
+            "raw": "graduated",
+            "encoded": "2213454313412354"
+        },
+        "ssn": {
+            "raw": "123-45-6789",
+            "encoded": "3124141231422543541"
+        },
+        "ssn": {
+            "raw": "123-45-6789",
+            "encoded": "3124141231422543541"
+        },
+        "year": {
+            "raw": "2015",
+            "encoded": "2015"
+        },
+        "average": {
+            "raw": "5",
+            "encoded": "5"
+        }
+    },
+    "signature": {
+        "p_credential": {
+            "m_2": "99219524012997799443220800218760023447537107640621419137185629243278403921312",
+            "a": "548556525746779881166502363060885...94013062295153997068252",
+            "e": "25934472305506205990702549148069757193...84639129199",
+            "v": "97742322561796582616103087460253...25643543159082080893049915977209167597"
+        },
+        "r_credential": null
+    },
+    "signature_correctness_proof": {
+        "se": "898650024692810554511924969312...143339518371824496555067302935",
+        "c": "93582993140981799598406702841334282100000866001274710165299804498679784215598"
+    },
+    "rev_reg": null,
+    "witness": null
 }
 ```
+
+:::todo
+- what is the naming scheme for the CL signatures in p_credential? Since the shown JSON is the result of two mixed examples, the signatures for more than the three presented attributes are missung. m_2 ist the link secret...
+:::
+
 * `schema_id`: The ID of the [[ref:SCHEMA]] on which the [[ref:CRED_DEF]] for the offered [[ref:Credential]] is based.
 * `cred_def_id`: The ID of the [[ref:CRED_DEF]] on which the [[ref:Credential]] issued is based.
 * `values`: The raw and encoded credential attribute values as JSON (cred_values_json).
@@ -165,6 +210,7 @@ The [[ref:issuer]] has to transmit the whole credential data to the [[ref:holder
 * `signature_correctness_proof`: The signature correctness proof of the signature for the whole credential data.
 
 :::todo
+- Add description for remaining keys of json shown above
 - What kind of encoding algorithm for strings is used? Seems like this is not defined explicitely (https://jira.hyperledger.org/browse/IS-786)
 - Go deeper into signing with CL?
 - Encoding the raw blinded link secret value and using it as encoded one is correct?
