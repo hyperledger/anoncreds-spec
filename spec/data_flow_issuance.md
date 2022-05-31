@@ -73,8 +73,7 @@ A [[ref:Credential Request]] is a formal request from a [[ref:holder]] to an [[r
 In order to be able as a [[ref:holder]] to express within a [[ref:Credential Request]] to the [[ref:issuer]] which kind of credential the [[ref:issuer]] shall issue to the [[ref:holder]], the [[ref:holder]] requires the [[ref:CRED_DEF]] from the [[ref:Verifiable Data Registry]] if not already available in local storage (step 6 + 7). The [[ref:Credential Request]] has to reference the same [[ref:CRED_DEF]] and [[ref:nonce]] as given in the preceding [[ref:Credential Offer]]. Besides the [[ref:CRED_DEF]], the [[ref:holder]] also requires his [[ref:link secret]] in a blinded form, as well as the corresponding [[ref: Correctness Proof]] of his [[ref:link secret]]. The [[ref: holder]] has now all relevant data for creating the [[ref:Credential Request]] (step 8).
 
 ::: todo
-- How does the link secret get blinded? How does the cryptography work? How does it work with correctness proof? ==> Out of scope?
-- Does the holder really need to fetch the CRED_DEF from the ledger since the Credential Request only provides the cred_def_id, which the holder can obtain from the Credential offer?
+- Add here: How does the link secret get blinded? How does the cryptography work? How does it work with correctness proof? 
 :::
 
 The resulting JSON for a created [[ref:Credential Request]] is shown here:
@@ -143,7 +142,7 @@ In case the [[ref:issuer]] decides to issue the requested credential to the [[re
 7. The [[ref:issuer]] has to sign the whole credential data with its private key corresponding to his [[ref:DID]] and provide the signature as well as its correctness proof.
 
 :::todo
-- verify how exactly the signing happens for the whole credential
+- check how exactly the signing happens for the whole credential
 :::
 
 The [[ref:issuer]] has to transmit the whole credential data to the [[ref:holder]] as follows:
@@ -168,7 +167,7 @@ The [[ref:issuer]] has to transmit the whole credential data to the [[ref:holder
 :::todo
 - What kind of encoding algorithm for strings is used? Seems like this is not defined explicitely (https://jira.hyperledger.org/browse/IS-786)
 - Go deeper into signing with CL?
-- Encoding the blinded link secret is correct?
+- Encoding the raw blinded link secret value and using it as encoded one is correct?
 - consider revocation data in case of revocation
 :::
 
