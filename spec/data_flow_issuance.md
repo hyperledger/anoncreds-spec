@@ -167,10 +167,6 @@ The [[ref:issuer]] has to transmit the whole credential data to the [[ref:holder
             "raw": "123-45-6789",
             "encoded": "3124141231422543541"
         },
-        "ssn": {
-            "raw": "123-45-6789",
-            "encoded": "3124141231422543541"
-        },
         "year": {
             "raw": "2015",
             "encoded": "2015"
@@ -199,14 +195,16 @@ The [[ref:issuer]] has to transmit the whole credential data to the [[ref:holder
 ```
 
 :::todo
-- what is the naming scheme for the CL signatures in p_credential? Since the shown JSON is the result of two mixed examples, the signatures for more than the three presented attributes are missung. m_2 ist the link secret...
+- what is the naming scheme for the CL signatures in p_credential? Since the shown JSON is the result of two mixed examples, the signatures for more than the three presented attributes are missung. m_2 is the link secret...
 :::
 
 * `schema_id`: The ID of the [[ref:SCHEMA]] on which the [[ref:CRED_DEF]] for the offered [[ref:Credential]] is based.
 * `cred_def_id`: The ID of the [[ref:CRED_DEF]] on which the [[ref:Credential]] issued is based.
 * `values`: The raw and encoded credential attribute values as JSON (cred_values_json).
-* `signature`: The signature of the whole credential data.
+* `signature`: The signatures of the separately signed attributes
 * `signature_correctness_proof`: The signature correctness proof of the signature for the whole credential data.
+* `rev_reg`: The revocation registry ID of the revocation registry, the issued credentials is assigned.
+* `witness`: Witness information. (See Revocation)
 
 :::todo
 - Add description for remaining keys of json shown above
