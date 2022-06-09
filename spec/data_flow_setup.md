@@ -336,12 +336,11 @@ previous section of this document.
 
 ##### Publishing the CRED_DEF on a Verifiable Data Registry
 
-Once constructed, the [[ref: CRED_DEF]] is published by the Issuer to a
-Verifiable Data Registry, currently a Hyperledger Indy ledger. For example, see
-[this CRED_DEF](https://indyscan.io/tx/SOVRIN_MAINNET/domain/73905) that is
-published on the Sovrin MainNet ledger. There is not a structural difference in
-publishing a [[ref: CRED_DEF]] with or without the ability to revoke
-credentials.
+Once constructed, the [[ref: CRED_DEF]] is published by the Issuer in a [[ref:
+Verifiable Data Registry]], currently a Hyperledger Indy ledger. For example,
+see [this CRED_DEF](https://indyscan.io/tx/SOVRIN_MAINNET/domain/73905) that is
+published in the Sovrin MainNet ledger. The full contents of the [[ref:
+CRED_DEF]] is placed in the ledger including the revocation section, if present.
 
 #### Issuer Create and Publish Revocation Registry Objects
 
@@ -493,7 +492,7 @@ To Do: Fill in the details about the PRIVATE_REV_REG
 
 ##### Publishing the Revocation Registry Object
 
-Once constructed, the [[ref: REV_REG]] is published by the [[ref: issuer]] to a
+Once constructed, the [[ref: REV_REG]] is published by the [[ref: issuer]] in a
 [[ref: Verifiable Data Registry]], currently a Hyperledger Indy ledger. For
 example, see [this REV_REG](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140386)
 that is published on the Sovrin MainNet ledger. The binary [[ref: TAILS_FILE]]
@@ -590,8 +589,8 @@ REV_REG_ENTRY]] where the credentials are initially all revoked, while this is
 
 ##### Publishing the Initial Initial Revocation Registry Entry Object
 
-Once constructed, the intial [[ref: REV_REG_ENTRY]] is published by the [[ref:
-issuer]] to a [[ref: Verifiable Data Registry]], currently a Hyperledger Indy
+Once constructed, the initial [[ref: REV_REG_ENTRY]] is published by the [[ref:
+issuer]] in a [[ref: Verifiable Data Registry]], currently a Hyperledger Indy
 ledger. For example, see [this
 REV_REG_ENTRY](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140392) that is
 published on the Sovrin MainNet ledger.
