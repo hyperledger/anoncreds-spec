@@ -7,10 +7,8 @@ This specification is the work of the AnonCreds Working Group, which includes do
 of active and dedicated participants.  In particular, the following individuals
 contributed ideas, feedback, and wording that influenced this specification:
 
-::: todo
-Add list of contributors.
-:::
-
+* Artur Philipp - IDUnion
+* Hakan Yildiz - Technische Universität Berlin
 
 ## Authors' Addresses
 
