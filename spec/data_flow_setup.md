@@ -590,6 +590,12 @@ REV_REG_ENTRY]] where the credentials are initially all revoked, while this is
 
 ##### Publishing the Initial Initial Revocation Registry Entry Object
 
+Once constructed, the initial [[ref: REV_REG_ENTRY]] is published by the [[ref:
+issuer]] in a [[ref: Verifiable Data Registry]], currently a Hyperledger Indy
+ledger. For example, see [this
+REV_REG_ENTRY](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140392) that is
+published on the Sovrin MainNet ledger.
+
 #### Holder Create and Store Link Secret
 
 To prepare to use AnonCreds credentials, the [[ref: Holder]] must create a
