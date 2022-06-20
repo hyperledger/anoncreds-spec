@@ -337,13 +337,258 @@ previous section of this document.
 
 ##### Publishing the CRED_DEF on a Verifiable Data Registry
 
-Once constructed, the [[ref: CRED_DEF]] is published by the Issuer to a Verifiable Data
-Registry, currently a Hyperledger Indy ledger. For example, see [this
-CRED_DEF](https://indyscan.io/tx/SOVRIN_MAINNET/domain/73905) that is published
-on the Sovrin MainNet ledger. There is no difference in publishing
-a [[ref: CRED_DEF]] with or without the ability to revoke credentials.
+Once constructed, the [[ref: CRED_DEF]] is published by the Issuer in a [[ref:
+Verifiable Data Registry]], currently a Hyperledger Indy ledger. For example,
+see [this CRED_DEF](https://indyscan.io/tx/SOVRIN_MAINNET/domain/73905) that is
+published in the Sovrin MainNet ledger. The full contents of the [[ref:
+CRED_DEF]] is placed in the ledger including the revocation section, if present.
 
-#### Issuer Create and Publish Revocation Registry Object
+#### Issuer Create and Publish Revocation Registry Objects
+
+Once the [[ref: issuer]] has created a [[ref: CRED_DEF]] with revocation
+enabled, the [[ref: issuer]] must also create and publish a [[ref: REV_REG]] and
+create and publish the first [[ref: REV_REG_ENTRY]] for the registry.
+
+In this section, we'll cover the create and publish steps for each
+of the [[ref: REV_REG]] and [[ref: REV_REG_ENTRY]] objects. The creation and
+publishing of the [[ref: REV_REG]] includes creating and publishing the
+[[ref: TAILS_FILE]] for the [[ref: REG_REV]].
+
+##### Creating the Revocation Registry Object
+
+A secure process must be run to create the revocation registry object, taking
+the following input parameters.
+
+* `type`: the type of revocation registry being created. For Hyperledger Indy
+  this is always "CL_ACCUM."
+* `cred_def_id`: the ID of the [[ref: CRED_DEF]] to which the [[ref: REV_REG]]
+  is to be associated
+* `tag`: an [[ref: issuer]]-defined tag that is included in the identifier for
+  the [[ref: REV_REG]]
+* `issuanceType`: an enumerated value that defines the initial state of
+  credentials in the [[ref: REV_REG]]: revoked ("ISSUANCE_ON_DEMAND") or
+  non-revoked ("ISSUANCE_BY_DEFAULT").
+* `maxCredNum`: The capacity of the [[ref: REV_REG]], a count of the number of
+  credentials that can be issued using the [[ref: REV_REG]].
+* `tailsLocation`: A URL indicating where the [[ref: TAILS_FILE]] for the [[ref
+  REV_REG]] will be available to all [[ref: holders]] of credential issued using
+  this revocation registry.
+
+Three outputs are generated from the process to generate the [[ref; REV_REG]]:
+the [[ref: REV_REG]] object itself, the [[ref: TAILS_FILE]] content, and the
+[[ref: PRIVATE_REV_REG]] object.
+
+###### REV_REG Object Generation
+
+The [[ref: REV_REG]] object has the following data model. This example is from
+[this transaction](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140386) on the
+Hyperledger Indy Sovrin MainNet.
+
+``` json
+{
+  "credDefId": "Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc",
+  "id": "Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc:CL_ACCUM:1-1024",
+  "revocDefType": "CL_ACCUM",
+  "tag": "1-1024",
+  "value": {
+    "issuanceType": "ISSUANCE_BY_DEFAULT",
+    "maxCredNum": 1024,
+    "publicKeys": {
+      "accumKey": {
+        "z": "1 0BB...386"
+      }
+    },
+    "tailsHash": "BrCqQS487HcdLeihGwnk65nWwavKYfrhSrMaUpYGvouH",
+    "tailsLocation": "https://api.portal.streetcred.id/agent/tails/BrCqQS487HcdLeihGwnk65nWwavKYfrhSrMaUpYGvouH"
+  }
+}
+```
+
+The items within the data model are as follows:
+
+* `credDefId`: the input parameter `cred_def_id`
+* `id`: the identifier of the [[ref: REV_REG]], a concatenation of the following
+  items separated by ":"s. An example [[ref: REV_REG]] identifier is in the data
+  model above.
+    * Issuer's DID -- the DID of the Issuer
+    * Object Type -- hardcoded to "`4`" for a [[ref: REV_REG]]
+    * The [[ref: CRED_DEF]] identifier, the input parameter `cred_def_id`
+    * Revocation Type, the input parameter `type`
+    * Tag, the input parameter `tag`
+* `revocDefType`, the input parameter `type`
+* `tag`, the input parameter `tag`
+* `issuanceType`, the input parameter `issuanceType`
+* `maxCredNum`, the input parameter `maxCredNum`
+* `z`, a public key used to sign the accumulator (described further below)
+* `tailsHash`, the calculated hash of the contents of the [[ref: TAILS_FILE]],
+  as described in the [next section](#tails-file-and-tails-file-generation) on
+  [[ref: TAILS_FILE]] generation.
+* `tailsFileLocation`, the input parameter `tailsLocation`
+
+As noted, most of the items come directly from the input parameters provided by
+the [[ref: issuer]]. The `z` [[ref: REV_REG]] accumulator public key is
+generated using (TODO: fill in details) algorithm. The use of the accumulator
+public key is discussed in the Credential Issuance section, when the publication
+of revocations is described. The calculation of the tailsHash is described in
+the [next section](#tails-file-and-tails-file-generation) on [[ref: TAILS_FILE]]
+generation.
+
+###### Tails File and Tails File Generation
+
+The second of the outcomes from creating of a [[ref: REV_REG]] is a [[ref:
+TAILS_FILE]]. The contents of a [[ref: TAILS_FILE]] is an array of calculated
+prime integers, one for each credential in the registry. Thus, if the [[ref:
+REV_REG]] has a capacity (`maxCredNum`) of 1000, the [[ref: TAILS_FILE]] holds
+an array of 1000 primes. Each credential issued using the [[ref: REV_REG]] is
+given its own index (1 to the capacity of the [[ref: REV_REG]]) into the array,
+the index of the prime for that credential. The contents of the [[ref;
+TAILS_FILE]] is needed by the [[ref: issuer]] to publish the current state of
+revocations within the [[ref: REV_REG]] and by the [[ref: holder]] to produce
+(if possible) a "proof of non-revocation" to show their issued credential has
+not been revoked.
+
+The process of generating the primes that populate the [[ref: TAILS_FILE]] is as
+follows:
+
+::: todo
+To Do: Document the process for generating the primes.
+:::
+
+Once generated, the array of primes is static, regardless of credential issuance
+or revocation events. Once generated, the SHA256 (TO BE VERIFIED) hash of the
+array of primes is calculated and returned to be inserted into the `tailsHash`
+item of the [[ref: REV_REG]] object (as described in the [previous
+section](#rev_reg-object-generation)). Typically, the array is streamed into a
+file (hence, the term "Tails File") and published to the location indicated by
+the `tailsLocation` input parameter provided by the [[ref: issuer]].
+
+The format of a [[ref: TAILS_FILE]] is as follows:
+
+::: todo
+To Do: Define the format of the Tails File
+:::
+
+While not required, the Indy community has created a component, the "[Indy Tails
+Server](https://github.com/bcgov/indy-tails-server)," which is basically a web
+server for tails files. [[ref: Holders]] get the `tailsLocation` during the
+issuance process, download the [[ref: TAILS_FILE]] (ideally) once and cache it
+for use when generating proofs of non-revocation when creating a presentation
+that uses its revocable verifiable credential. How the [[ref: TAILS_FILE]] is
+used is covered elsewhere in this specification:
+
+* in the section about the [[ref: issuer]] publishing credential revocation
+  state updates, and
+* in the section about [[ref: holders]] creating a proof of non-revocation.
+
+###### PRIVATE_REV_REG Object Generation
+
+In addition to generating the [[ref: REV_REG]] object, a [[ref:
+PRIVATE_REV_REG]] object is generated and securely stored by the [[ref:
+issuer]]. The data model and definition of the items in the [[ref:
+PRIVATE_REV_REG]] is as follows:
+
+::: todo
+To Do: Fill in the details about the PRIVATE_REV_REG
+:::
+
+##### Publishing the Revocation Registry Object
+
+Once constructed, the [[ref: REV_REG]] is published by the [[ref: issuer]] in a
+[[ref: Verifiable Data Registry]], currently a Hyperledger Indy ledger. For
+example, see [this REV_REG](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140386)
+that is published on the Sovrin MainNet ledger. The binary [[ref: TAILS_FILE]]
+associated with the [[ref: REV_REG]] can be downloaded from the `tailsLocation`
+in the [[ref: REV_REG]] object.
+
+##### Creating the Initial Revocation Registry Entry Object
+
+Published [[ref: REV_REG_ENTRY]] objects contain the state of the [[ref:
+REV_REG]] at a given point in time such that [[ref: holders]] can generate a
+proof of non-revocation (or not) about their specific credential and [[ref:
+verifiers]] can verify that proof. An initial [[ref: REV_REG_ENTRY]] is
+generated and published immediately on creation of the [[ref: REV_REG]] so that
+it can be used immediately by [[ref: holders]]. Over time, additional [[ref:
+REV_REG_ENTRY]] objects are generated and published as the revocation status of
+one or more credentials within the [[ref: REV_REG]] change.
+
+A secure process must be run to create the initial [[ref: REV_REG_ENTRY]] object,
+taking the following input parameters.
+
+* `type`: the type of revocation registry being created. For Hyperledger Indy
+  this is always "CL_ACCUM."
+* `rev_reg_id`: the ID of the [[ref: REV_REG]] for which the initial [[ref:
+  REV_REG_ENTRY]] is to be generated.
+    * The process uses this identifier to find the associated [[ref:
+      PRIVATE_REV_REG]] to access the information within that object.
+
+The process collects from the identified [[ref: PRIVATE_REV_REG]] information to
+calculate the cryptographic accumulator value for the initial [[ref:
+REV_REG_ENTRY]], including:
+
+* `issuanceType`: an enumerated value that defines the initial state of
+  credentials in the [[ref: REV_REG]]: revoked ("ISSUANCE_ON_DEMAND") or
+  non-revoked ("ISSUANCE_BY_DEFAULT").
+* `maxCredNum`: The capacity of the [[ref: REV_REG]], a count of the number of
+  credentials that can be issued using the [[ref: REV_REG]].
+* `tailsArray`: The contents of the [[ref: TAILS_FILE]], the array of primes,
+  one for each credential to be issued from the [[ref: REV_REG]].
+* `private_key`: The accumulator private key for the [[ref: REV_REG]].
+
+With the collected information, the process generates an identifier for the
+[[ref: REV_REG_ENTRY]] and the initial cryptographic accumulator for the [[ref:
+REV_REG]].
+
+The [[ref: REV_REG_ENTRY]] identifier is the [[ref: REV_REG]] identifier
+prefixed with the `REV_REG_ENTRY` object type (`5`) and a `:`. For example:
+
+* [[ref: REV_REG]] identifier:
+  `Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140389:mctc:CL_ACCUM:1-1024`
+* [[ref: REV_REG_ENTRY]] identifier:
+  `5:Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140389:mctc:CL_ACCUM:1-1024`
+
+All of the [[ref: REV_REG_ENTRY]] transactions for a given [[ref: REV_REG]]
+share the same identifier.
+
+In simple terms, the cryptographic accumulator at any given point in time is the
+(modulo) product of the primes for each non-revoked credential in the [[ref:
+REV_REG]]. Initially, based on the value of `ISSUANCE_TYPE`, all of the
+credentials are either revoked, or unrevoked. If all of the credentials are
+revoked, the accumulator value is effectively `0`, if all are unrevoked, the
+accumulator value has contributions from all of the entries in the array of
+primes.
+
+Specifically, the accumulator is calculated using the following steps:
+
+::: todo
+To Do: Adding the algorithm for calculating the accumulator
+:::
+
+The initial [[ref: REV_REG_ENTRY]] object uses the following data model:
+
+```json
+{
+  "revocDefType": "CL_ACCUM",
+  "revocRegDefId": "Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140389:mctc:CL_ACCUM:1-1024",
+  "value": {
+    "accum": "21 10B...33D"
+  }
+}
+```
+
+The items in the data model are:
+
+* `revocDefTyep`: the input parameter `type`
+* `revocRegDefId`:
+* `accum`: the calculated cryptographic accumulator reflecting the initial state
+  of the [[ref: REV_REG]]
+
+To see what [[ref: REV_REG_ENTRY]] transactions look like on a [[ref: VDR]], this is [a
+link](https://indyscan.io/tx/SOVRIN_MAINNET/domain/55326) to an initial [[ref:
+REV_REG_ENTRY]] where the credentials are initially all revoked, while this is
+[a link](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140392) to an initial
+[[ref: REV_REG_ENTRY]] where all of the credentials are unrevoked.
+
+##### Publishing the Initial Initial Revocation Registry Entry Object
 
 #### Holder Create and Store Link Secret
 
