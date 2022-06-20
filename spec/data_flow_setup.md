@@ -344,7 +344,6 @@ a [[ref: CRED_DEF]] with or without the ability to revoke credentials.
 
 #### Issuer Create and Publish Revocation Registry Object
 
-
 #### Holder Create and Store Link Secret
 
 To prepare to use AnonCreds credentials, the [[ref: Holder]] must create a
@@ -377,7 +376,10 @@ issued to the same [[ref: Holder]] without requiring the [[ref: Holder]] to
 disclose the unique identifier ([[ref: link_secret]]) that binds these
 credentials together.
 
-A [[ref: Holder]] may choose to generate multiple link secrets, using different
-ones when being issued credentials. When doing so, a presentation of multiple
-credentials may result in the proofs of the binding of the different credentials
-to the [[ref: Holder]] use different [[ref: link_secret]]s.
+There is nothing to stop a [[ref: Holder]] from generating multiple [[ref:
+link_secret]]s and contributing them to different credential issuance processes.
+However, doing so prevents the [[ref: Holder]] from producing a presentation
+combining credentials issued to distinct [[ref: link_secret]]s that can be
+proven to have been issued to the same entity. It is up to the [[ref: Verifier]]
+to require and enforce the binding between multiple credentials used in a
+presentation.
