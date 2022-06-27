@@ -11,6 +11,9 @@ AnonCreds Specification
 
 - [Stephen Curran](https://github.com/swcurran)
 - [Matt Raffel](https://github.com/matt-raffel-kiva)
+- Hakan Yaldiz
+- Sam Curran
+- Victor Martinez Jurado
 
 <!-- -->
 
@@ -18,5 +21,6 @@ AnonCreds Specification
 
 ~ [GitHub repo](https://github.com/AnonCreds-WG/anoncreds-spec)
 ~ [Commit history](https://github.com/AnonCreds-WG/anoncreds-spec/commits/main)
+~ [Discord](https://discord.gg/hYmBNhTFY9)
 
 ------------------------------------
