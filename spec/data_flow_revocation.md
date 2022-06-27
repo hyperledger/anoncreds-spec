@@ -6,11 +6,11 @@ credentials. This mechanism includes:
 - An [[ref: issuer]] setting up to issue revocable credentials.
 - An [[ref: issuer]] issuing revocable credentials.
 - An [[ref: issuer]] revoking issued credentials.
-- A [[ref: verifier]] requesting a presentation to include a proof of non-revocation
+- A [[ref: verifier]] requesting a presentation to include a non-revocation proof
   for one or more revocable credentials.
-- A [[ref: holder]] generating based on the request of the verifier a proof of
-  non-revocation for attributes derived from revocable credentials.
-- A [[ref: verifier]] verifying a proof of non-revocation included in a
+- A [[ref: holder]] generating based on the request of the verifier a
+  non-revocation proof for attributes derived from revocable credentials.
+- A [[ref: verifier]] verifying a non-revocation proof included in a
   presentation from a [[ref: holder]].
 
 A fundamental goal of AnonCreds is to not provide a correlatable identifier for
@@ -144,10 +144,10 @@ from the [[ref: VDR]] and discover the index of their credential in the list.
 #### AnonCreds Presentation with Revocation
 
 Creating an AnonCreds presentation is a two-step process, beginning with a
-request from the [[ref: verifier]] asking the [[ref: holder]] to include a proof of
-non-revocation (PoN-R) in the presentation, and then the [[ref: holder]] creating
-the PoN-R and including it in the presentation sent to the [[ref: verifier]]. Both steps
-are covered here.
+request from the [[ref: verifier]] asking the [[ref: holder]] to include a
+non-revocation proof (NRP) in the presentation, and then the [[ref: holder]]
+creating the NRP and including it in the presentation sent to the [[ref:
+verifier]]. Both steps are covered here.
 
 **NOTE**: Often in discussions about verifiable presentations, the term "[[ref: prover]]"
 is used to indicate the participant generating the request presentation.
@@ -167,8 +167,8 @@ section of this document. Notably the `non_revoked` data item is added:
 
 ```json
 "non_revoked" : {
-    "from" : <epoch date>
-    "to" : <epoch date>
+    "from" : <Unix Epoch time>
+    "to" : <Unix Epoch time>
 }
 ```
 
@@ -177,7 +177,7 @@ applies to all attributes and predicates, or with any or all of the attributes/p
 applying only to those specific attributes and/or predicates.
 
 The use of "interval" is intended to have the semantic of saying that the [[ref:
-verifier]] will accept a PoN-R from any point in the `from` to `to` interval.
+verifier]] will accept a NRP from any point in the `from` to `to` interval.
 The intention is that by being as flexible as the business rules allow means
 that the [[ref: holder]] and/or the [[ref: verifier]] may have cached [[ref:
 VDR]] data such that they don't have to go to the [[ref: VDR]] to get additional
@@ -188,34 +188,33 @@ The AnonCreds community recommends always using matching `to` and `from` values
 Practices](https://github.com/hyperledger/aries-rfcs/tree/main/concepts/0441-present-proof-best-practices#semantics-of-non-revocation-interval-endpoints)).
 
 While one would expect the `from` value to be the current time ("Prove the
-credential is not revoked right now"), its use allows the [[ref: verifier]] to ask
-for a PoN-R sometime in the past. This addresses use cases such as "Prove that
-your car insurance policy was not revoked on June 12, 2021 when the accident
-occurred."
+credential is not revoked right now"), its inclusion allows the [[ref:
+verifier]] to ask for a NRP sometime in the past. This addresses use cases such
+as "Prove that your car insurance policy was not revoked on June 12, 2021 when
+the accident occurred."
 
-##### [[ref: holder]] Generation of Proofs of Non-Revocation
+##### [[ref: holder]] Generation of Non-Revocation Proofs
 
-A [[ref: holder]] preparing an AnonCreds presentation must determine what, if any, proofs
-of non-revovcation (PoN-Rs) must be added to the presentation based on a
+A [[ref: holder]] preparing an AnonCreds presentation must determine what, if
+any, non-revocation proofs (NRPs) must be added to the presentation based on a
 combination of what is in the proof request, and what verifiable credentials are
 to be used in the presentation. As noted in the [previous
-section](#verifier-revocation-interval-request), the presentation request may have the
-`non-revoked` item at the outer-most level, applying to all
-source credentials, or at the `requested_attribute` and/or
-`requested_predicate` level, applying only to specific source credentials. For each,
-the [[ref: holder]] must also determine if the verifiable credential selected for
-attributes/predicates where a PoN-R is requested is a revocable credential.
-Obviously, a PoN-R cannot be produced for a verifiable credential issued without
-a [[ref: RevReg]].
+section](#verifier-revocation-interval-request), the presentation request may
+have the `non-revoked` item at the outer-most level, applying to all source
+credentials, or at the `requested_attribute` and/or `requested_predicate` level,
+applying only to specific source credentials. For each, the [[ref: holder]] must
+also determine if the verifiable credential selected for attributes/predicates
+where a NRP is requested is a revocable credential. Obviously, a NRP cannot be
+produced for a verifiable credential issued without a [[ref: RevReg]].
 
-Once the [[ref: holder]] has determined the required PoN-Rs needed for the presentation,
-they must generate a PoN-R for each applicable source verifiable credential and
-add the PoN-Rs to the presentation. For each, the [[ref: holder]] must collect the
+Once the [[ref: holder]] has determined the required NRPs needed for the presentation,
+they must generate a NRP for each applicable source verifiable credential and
+add the NRPs to the presentation. For each, the [[ref: holder]] must collect the
 applicable [[ref: RevReg]] data published by the [[ref: issuer]] and then generate the proof.
 
 ###### Collecting [[ref: RevRegEntry]] Data
 
-In order to produce a PoN-R, the [[ref: holder]] must collect the following information from wherever the [[ref: issuer]]
+In order to produce a NRP, the [[ref: holder]] must collect the following information from wherever the [[ref: issuer]]
 has published the information. Note that the [[ref: holder]] may have some or all of this information cached
 from data previously collected.
 
@@ -232,7 +231,7 @@ from data previously collected.
   credential being used in the presentation. This information is given to the
   [[ref: holder]] by the [[ref: issuer]] when the verifiable credential is issued.
 - The accumulator published by the [[ref: issuer]] for the [[ref: RevRegEntry]] that the [[ref: holder]]
-  will use in generating the PoN-R. In the Hyperledger Indy implementation of
+  will use in generating the NRP. In the Hyperledger Indy implementation of
   AnonCreds, the entries are published on the ledger, and collected via a
   special request to the ledger (detailed below).
 - The revocation status changes of all of the credential indices up to the
@@ -241,7 +240,7 @@ from data previously collected.
   (as described [here](#anoncreds-credential-revocation-and-publication)) from
   all of the [[ref: RevRegEntry]] publication requests made by the [[ref: issuer]] up to and
   including the request that includes the accumulator being used by the [[ref: holder]]
-  in generating the PoN-R.
+  in generating the NRP.
 
 The collection of the last two items is difficult without extra support of the
 entity holding the published [[ref: RevReg]] (e.g. the [[ref: VDR]]/ledger).
@@ -249,7 +248,7 @@ Since each [[ref: RevRegEntry]] holds only the list of `active` and `revoked`
 credential revocation status changes since the previous [[ref: RevRegEntry]]
 (the "deltas"), a [[ref: holder]] must retrieve those lists from every [[ref:
 RevRegEntry]] from [[ref: RevReg]] creation to the [[ref: RevRegEntry]] holding
-the accumulator the [[ref: holder]] will use for generating the PoN-R. The
+the accumulator the [[ref: holder]] will use for generating the NRP. The
 [[ref: issuer]] could have made many calls to publish [[ref: RevRegEntry]]
 transactions, and the [[ref: holder]] would have to make a request for each one,
 which is not practical (and perhaps not even possible). In the Hyperledger Indy
@@ -263,7 +262,7 @@ has called the routine previously with an earlier `to` value and cached the
 results, the [[ref: holder]] MAY use the time of the cached result as the
 `from`, so that only the credentials with revocation status changes since that
 time are returned. The [[ref: holder]] then adds the returned lists to the
-cached lists. If the [[ref: verifier]] has requested a "back in time" PoN-R, the
+cached lists. If the [[ref: verifier]] has requested a "back in time" NRP, the
 [[ref: holder]] may use a `to` date to match the date of interest to the [[ref:
 verifier]]. When executed, the transaction returns:
 
@@ -276,13 +275,13 @@ verifier]]. When executed, the transaction returns:
 Once collected, the [[ref: holder]] processes the `issued` and `revoked` lists
 to determine the credential status (revoked or not) of every credential in the
 [[ref: RevReg]]. As well, the [[ref: holder]] can at the point see if the
-credential for which the PoN-R is being generated has been revoked, and decide
+credential for which the NRP is being generated has been revoked, and decide
 to continue with the process (producing an unverifiable "proof") or to stop the
 process, perhaps with a notification to the [[ref: verifier]].
 
-###### Generating the Proof of Non-Revocation
+###### Generating the Non-Revocation Proof
 
-Given the data collected by the [[ref: holder]] to produce the PoN-R, the
+Given the data collected by the [[ref: holder]] to produce the NRP, the
 following calculations are performed.
 
 A `witness` is calculated in the same way as the accumulator (as described
@@ -292,13 +291,13 @@ except the revocation status of the credential being proven as not revoked is
 other unrevoked credentials **are** included.
 
 Once the witness, the accumulator and the value of the tails file entry for the
-credential of interest is known, the PoN-R can be generated as follows:
+credential of interest is known, the NRP can be generated as follows:
 
 :::todo
-To Do: Outline the PoN-R proof calculation.
+To Do: Outline the NRP proof calculation.
 :::
 
-Each PoN-R is added alongside the credential to which the PoN-R is applied, to the
+Each NRP is added alongside the credential to which the NRP is applied, to the
 presentation generated by the [[ref: holder]] using this data
 model:
 
@@ -335,7 +334,7 @@ model:
 The values in the data model are:
 
 :::todo
-To Do: Enumerate each of the items in each PoN-R section of the presentation.
+To Do: Enumerate each of the items in each NRP section of the presentation.
 :::
 
 - `x_list`" is ...
@@ -363,9 +362,9 @@ To Do: Enumerate each of the items in each PoN-R section of the presentation.
   - `u`" is ...
 
 As well, in the presentation data model, added to the `identifiers` item, is the
-timestamp (Unix epoch format) of the [[ref: RevRegEntry]] used to construct the PoN-R
+timestamp (Unix epoch format) of the [[ref: RevRegEntry]] used to construct the NRP
 (see example below). The [[ref: verifier]] needs the `rev_reg_id` and `timestamp` to get
-the correct accumulator to use in verifying the PoN-R.
+the correct accumulator to use in verifying the NRP.
 
 ```json
 "identifiers": [
@@ -378,7 +377,7 @@ the correct accumulator to use in verifying the PoN-R.
 ]
 ```
 
-As always, the [[ref: holder]]'s presentation, with the embedded PoN-R(s), is set to the
+As always, the [[ref: holder]]'s presentation, with the embedded NRP(s), is set to the
 [[ref: verifier]] to be cryptographically verified.
 
 #### AnonCreds Verification with Revocation
@@ -387,7 +386,7 @@ A [[ref: verifier]] receives the presentation from the [[ref: holder]] and
 processes the non-revocation-related parts of the presentation as described
 [here](data_flow_presentation_verify.md#verify-presentation) in this
 specification. In addition to what is outlined there, if there are any included
-Proofs of Non-Revocation (PoN-Rs), the [[ref: verifier]] does the following for
+Non-Revocation Proofs (NRPs), the [[ref: verifier]] does the following for
 each.
 
 The [[ref: verifier]] begins by extracting from the section of the presentation
@@ -403,28 +402,28 @@ verification process, the [[ref: verifier]] does not learn the index of the
 [[ref: holder]]'s credential in the [[ref: RevReg]].
 
 Once the [[ref: verifier]] gets the data in the `non_revoc_proof` data item from
-the presentation for the PoN-R being processed, plus the accumulator from
+the presentation for the NRP being processed, plus the accumulator from
 appropriate [[ref: RevRegEntry]], the following steps are carried out to verify
-the PoN-R.
+the NRP.
 
 :::todo
-To Do: Outline the PoN-R verification calculation.
+To Do: Outline the NRP verification calculation.
 :::
 
 :::todo
-To Do: Is there a separate process to bind the PoN-R to the credential?
+To Do: Is there a separate process to bind the NRP to the credential?
 :::
 
 The verification code MUST surface to the [[ref: verifier]] if any part of the
 presentation, including any PoNR(s), fail cryptographic verification. The
 verification code MAY surface additional detail about what part of the
-presentation failed, such as which PoN-R failed verification (if any).
+presentation failed, such as which NRP failed verification (if any).
 
 The [[ref: verifier]] SHOULD evaluate the presentation to make sure that the
-[[ref: holder]] provided all requested PoN-Rs. Notably, if any expected PoNRs
+[[ref: holder]] provided all requested NRPs. Notably, if any expected PoNRs
 are not received in the presentation, the [[ref: verifier]] SHOULD check to see
 if the given credential type is revocable. If not, it is acceptable that no
-PoN-R was received. However, if the credential used in the generation of the
+NRP was received. However, if the credential used in the generation of the
 proof is revocable, and the [[ref: holder]] did not provide the P0N-R, the
 verification code SHOULD surface to the [[ref: verifier]] that the presentation
 failed cryptographic verification.
