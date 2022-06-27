@@ -597,3 +597,41 @@ REV_REG_ENTRY](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140392) that is
 published on the Sovrin MainNet ledger.
 
 #### Holder Create and Store Link Secret
+
+To prepare to use AnonCreds credentials, the [[ref: Holder]] must create a
+[[ref: link secret]], a unique identifier that allows credentials issued to a
+[[ref: Holder]] to be bound to that [[ref: Holder]] and presented without
+revealing a unique identifier, thus avoiding correlation of credentials by
+[[ref: Verifier]]s. The [[ref: link_secret]] is kept private by the [[ref:
+Holder]]. The [[ref: link secret]] is used during the credential issuance
+process to bind the credential to the [[ref: holder]] and in the generation of a
+presentation. For the latter, it allows the [[ref: holder]] to create a zero
+knowledge proof that they were issued the credential by demonstrating knowledge
+of the value of the [[ref: link_secret]] without sharing it. The details of how
+the [[ref: link_secret]] is used to do this is provided in the issuance,
+presentation generation and verification sections of this specification.
+
+The [[ref: link secret]] is a sufficiently random unique identifier. For
+example, in the Hyperledger Indy implementation, the [[ref: link secret]] is
+produced by a call to the Rust
+[uuid](https://docs.rs/uuid/0.5.1/uuid/index.html) Crate's `new_v4()` method to
+achieve sufficient randomness.
+
+Once generated, the [[ref: link_secret]] is stored locally by the [[ref:
+Holder]] for use in subsequent issuance and presentation interactions. If lost,
+the [[ref: Holder]] will not be able to generate a proof that the credential was
+issued to them. The [[ref: holder]] generates only a single [[ref:
+link_secret]], using it for all credentials the [[ref: holder]] is issued. This
+allows for [[ref: verifier]]s to verify that all of the credentials used in
+generating a presentation with attributes from multiple credentials were all
+issued to the same [[ref: Holder]] without requiring the [[ref: Holder]] to
+disclose the unique identifier ([[ref: link_secret]]) that binds these
+credentials together.
+
+There is nothing to stop a [[ref: Holder]] from generating multiple [[ref:
+link_secret]]s and contributing them to different credential issuance processes.
+However, doing so prevents the [[ref: Holder]] from producing a presentation
+combining credentials issued to distinct [[ref: link_secret]]s that can be
+proven to have been issued to the same entity. It is up to the [[ref: Verifier]]
+to require and enforce the binding between multiple credentials used in a
+presentation.
