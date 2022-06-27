@@ -6,8 +6,23 @@
 [[def: claim]]
 ~ A claim is a part of digital identity related to a [[ref: subject]]. A claim can be attested by the identity subject itself, or it can be asserted by another entity. 
 
+[[def: Correctness Proof]]
+~ TODO
+
 [[def: credential]]
 ~ A credential is a set of [[ref: claim]]s about an identity [[ref: subject]]. A verifiable credential is a tamper-proof credential whose authorship is cryptographically verifiable. An anonymous credential, also known as AnonCreds, is a verifiable credential that has privacy-preserving properties to enable data minimization and correlation resistance. 
+
+[[def: Credential Offer]]
+~ TODO
+
+[[def: Credential Request]]
+~ TODO
+
+[[def: DID]]
+~ TODO
+
+[[def: nonce]]
+~ TODO
 
 [[def: issuer]]
 ~ An issuer is one of the three entities that interact with each other within the domain of digital identities. It can assert [[ref: claim]]s about a [[ref: subject]] in the form of a tamper-proof credential whose origins are cryptographically verifiable. 
@@ -71,6 +86,9 @@ credential validation and can be [read](https://hyperledger-indy.readthedocs.io/
 
 ~ Further details about Hyperledger Indy's revocation process can be found [here](https://hyperledger-indy.readthedocs.io/projects/hipe/en/latest/text/0011-cred-revocation/README.html).
 
+
+[[def: Verifiable Data Registry]]
+~ TODO
 
 ::: todo
 Finalize glossary entries
