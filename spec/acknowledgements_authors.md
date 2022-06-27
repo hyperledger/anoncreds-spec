@@ -9,6 +9,7 @@ contributed ideas, feedback, and wording that influenced this specification:
 
 * Artur Philipp - IDUnion
 * Hakan Yildiz - Technische Universität Berlin
+* Matt Raffel - Kiva Microfiance
 
 ## Authors' Addresses
 
