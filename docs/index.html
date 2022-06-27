@@ -741,6 +741,36 @@ ledger. For example, see <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNE
 REV_REG_ENTRY</a> that is
 published on the Sovrin MainNet ledger.</p>
 <h4 id="holder-create-and-store-link-secret"><a class="toc-anchor" href="#holder-create-and-store-link-secret" >§</a> Holder Create and Store Link Secret</h4>
+<p>To prepare to use AnonCreds credentials, the <a class="term-reference" href="#term:holder">Holder</a> must create a
+<a class="term-reference" href="#term:link-secret">link secret</a>, a unique identifier that allows credentials issued to a
+<a class="term-reference" href="#term:holder">Holder</a> to be bound to that <a class="term-reference" href="#term:holder">Holder</a> and presented without
+revealing a unique identifier, thus avoiding correlation of credentials by
+<a class="term-reference" href="#term:verifier">Verifier</a>s. The <a class="term-reference" href="#term:link_secret">link_secret</a> is kept private by the <a class="term-reference" href="#term:holder">Holder</a>. The <a class="term-reference" href="#term:link-secret">link secret</a> is used during the credential issuance
+process to bind the credential to the <a class="term-reference" href="#term:holder">holder</a> and in the generation of a
+presentation. For the latter, it allows the <a class="term-reference" href="#term:holder">holder</a> to create a zero
+knowledge proof that they were issued the credential by demonstrating knowledge
+of the value of the <a class="term-reference" href="#term:link_secret">link_secret</a> without sharing it. The details of how
+the <a class="term-reference" href="#term:link_secret">link_secret</a> is used to do this is provided in the issuance,
+presentation generation and verification sections of this specification.</p>
+<p>The <a class="term-reference" href="#term:link-secret">link secret</a> is a sufficiently random unique identifier. For
+example, in the Hyperledger Indy implementation, the <a class="term-reference" href="#term:link-secret">link secret</a> is
+produced by a call to the Rust
+<a path-0="docs.rs"path-1="uuid"path-2="0.5.1"path-3="uuid"path-4="index.html"href="https://docs.rs/uuid/0.5.1/uuid/index.html" >uuid</a> Crate’s <code>new_v4()</code> method to
+achieve sufficient randomness.</p>
+<p>Once generated, the <a class="term-reference" href="#term:link_secret">link_secret</a> is stored locally by the <a class="term-reference" href="#term:holder">Holder</a> for use in subsequent issuance and presentation interactions. If lost,
+the <a class="term-reference" href="#term:holder">Holder</a> will not be able to generate a proof that the credential was
+issued to them. The <a class="term-reference" href="#term:holder">holder</a> generates only a single <a class="term-reference" href="#term:link_secret">link_secret</a>, using it for all credentials the <a class="term-reference" href="#term:holder">holder</a> is issued. This
+allows for <a class="term-reference" href="#term:verifier">verifier</a>s to verify that all of the credentials used in
+generating a presentation with attributes from multiple credentials were all
+issued to the same <a class="term-reference" href="#term:holder">Holder</a> without requiring the <a class="term-reference" href="#term:holder">Holder</a> to
+disclose the unique identifier (<a class="term-reference" href="#term:link_secret">link_secret</a>) that binds these
+credentials together.</p>
+<p>There is nothing to stop a <a class="term-reference" href="#term:holder">Holder</a> from generating multiple <a class="term-reference" href="#term:link_secret">link_secret</a>s and contributing them to different credential issuance processes.
+However, doing so prevents the <a class="term-reference" href="#term:holder">Holder</a> from producing a presentation
+combining credentials issued to distinct <a class="term-reference" href="#term:link_secret">link_secret</a>s that can be
+proven to have been issued to the same entity. It is up to the <a class="term-reference" href="#term:verifier">Verifier</a>
+to require and enforce the binding between multiple credentials used in a
+presentation.</p>
 <h3 id="anoncreds-issuance-data-flow"><a class="toc-anchor" href="#anoncreds-issuance-data-flow" >§</a> AnonCreds Issuance Data Flow</h3>
 <div class="mermaid">
 sequenceDiagram
