@@ -4,9 +4,69 @@
 
 _TODO: general terms here_
 
+ - We use `PRNG(size)` to reference an invocation of a cryptographically secure pseudo-random number generator requiring the generation of a random integer in the range `[0, size-1]`. Alternatively we use `PRNG(min, max)` to refer to the generation of a random integer in the range `[min, max]`.
+
 ### Protocols
 
 Most protocols described here are zero-knowledge proofs for different statements. They follow the patterns of three-move rounds protocols with a commit, a challenge and a response phase which we shall describe as three separate algorithms. The challenge phase is unique, whereas the commit and response phases have a specific instance for each of the statements being proved.
+
+#### Issuer Setup
+
+The issuer setup consists of a set of algorithms to generate the Issuer Public Key. The set of algorithms are:
+
+ - `CredentialKeyGen` is used by the Issuer to generate the credential public/private keypair.
+ - `RevocationKeyGen` is used by the Issuer to generate the revocation public/private keypair.
+
+The reference implementation of `CredentialKeyGen` is [here](https://github.com/hyperledger/ursa/blob/ece6ce32a59df4e1f99fa38243c1236423066bc2/libursa/src/cl/issuer.rs#L774-L832).
+
+```
+( PK, SK ) = CredentialKeyGen( L )
+
+Inputs:
+
+ - L, the total number of attributes signed by this issuer
+
+Parameters:
+
+ -
+
+Definitions:
+
+ - l_n, the bitlength of the RSA modulus n of the issuer public key
+
+Outputs:
+
+ - PK, the credential public key of the issuer
+ - SK, the credential secret key of the issuer
+
+Procedure:
+
+ 1. p = SafePrime(l_n/2)                     # Generate a safe prime
+
+ 2. q = SafePrime(l_n/2)                     # Generate a safe prime
+
+ 3. n = p * q                                # The RSA modulus
+
+ 4. p' = (p-1)/2                             # The Sophie Germain prime of p
+
+ 5. q' = (q-1)/2                             # The Sophie Germain prime of q
+
+ 6. S = PRNG(l_n)^2 (mod n)                  # A quadratic residue mod n, it generates the subgroup mod n of size p' * q'
+
+ 7. Z = S^{PRNG(2, p'*q' - 1)} (mod n)       # The term Z of the CL public key
+
+ 8. R = ()                                   # Initialise the set of terms R_i of the CL public key
+
+ 9. foreach j in (1, ..., L):
+
+10. R = R + {S^{PRNG(2, p'*q' - 1)} (mod n)} # Generate R_j
+
+11. PK = ( n, S, Z, R )
+
+12. SK = ( p, q )
+
+13. return ( PK, SK )
+```
 
 #### Proving knowledge of a signature with selective disclosure of messages (`ProveCL`)
 
@@ -16,7 +76,7 @@ _TODO: considerations about the algorithm and its security_
 
 _TODO: clarify exact format and encoding of inputs and outputs_
 
-`ProveCLCommit` finds has its reference implementation [here](https://github.com/hyperledger/ursa/blob/ece6ce32a59df4e1f99fa38243c1236423066bc2/libursa/src/cl/prover.rs#L1313-L1394).
+The reference implementation of `ProveCLCommit` is [here](https://github.com/hyperledger/ursa/blob/ece6ce32a59df4e1f99fa38243c1236423066bc2/libursa/src/cl/prover.rs#L1313-L1394).
 
 ```
 ( A', v', e', Z~, e~, v~ ) = ProveCLCommit( PK, signature, (m_1,..., m_L), RevealedIndexes, R )
@@ -86,7 +146,7 @@ Procedure:
 15. return ( A', v', e', Z~, e~, v~ )
 ```
 
-`ProveCLResponse` finds has its reference implementation [here](https://github.com/hyperledger/ursa/blob/ece6ce32a59df4e1f99fa38243c1236423066bc2/libursa/src/cl/prover.rs#L1533-L1633).
+The reference implementation of `ProveCLResponse` is [here](https://github.com/hyperledger/ursa/blob/ece6ce32a59df4e1f99fa38243c1236423066bc2/libursa/src/cl/prover.rs#L1533-L1633).
 
 
 ```
