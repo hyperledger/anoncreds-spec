@@ -18,7 +18,7 @@ _TODO: clarify exact format and encoding of inputs and outputs_
 
 `ProveCLCommit` finds has its reference implementation [here](https://github.com/hyperledger/ursa/blob/ece6ce32a59df4e1f99fa38243c1236423066bc2/libursa/src/cl/prover.rs#L1313-L1394).
 
-```tex
+```
 
 ( A', v', e', Z~, e~, v~ ) = ProveCLCommit( PK, signature, (m_1,..., m_L), RevealedIndexes, R )
 
@@ -89,7 +89,7 @@ Procedure:
 
 `ProveCLResponse` finds has its reference implementation [here](https://github.com/hyperledger/ursa/blob/ece6ce32a59df4e1f99fa38243c1236423066bc2/libursa/src/cl/prover.rs#L1533-L1633).
 
-```tex
+```
 pi = ProveCLResponse( (m_1,..., m_L), RevealedIndexes, R, c, ( A', v', e', Z~, e~, v~ ) )
 
 Inputs:
