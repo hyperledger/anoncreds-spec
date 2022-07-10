@@ -19,7 +19,32 @@
 ~ TODO
 
 [[def: DID]]
-~ TODO
+
+~ A Decentralized Identifier (DID), defined by the [W3C DID Core
+Specification](https://w3c.github.io/did-core/), is a type of identifier that
+enables verifiable, decentralized digital identity. A DID refers to any subject
+(e.g., a person, organization, thing, data model, abstract entity, etc.) as
+determined by the controller of the DID.
+
+~ In AnonCreds, DIDs are not used directly in the processing of credentials, but
+rather are used to identify the entity publishing the objects used in the
+processing of credentials -- the [[def: SCEHMA]], [[def: CRED_DEF]], [[def:
+REV_REG_DEF]] and [[def: REV_REG_ENTRY]] objects. That is, there is an enforced
+relationship between the DID of the entity publishing the AnonCred objects, and
+the objects themselves. For example, in the Hyperledger Indy implementation of
+AnonCreds, for a credential issuer to publish a [[def: CRED_DEF]] on an instance
+of Indy it must have a DID on that instance, and it must use that DID to sign
+the transaction to write the [[def: CRED_DEF]].
+
+~ The DID of the publisher of an AnonCreds object MUST be identifiable from the
+published object and enforcement of the relationship between the DID and the
+object must be enforced. For example, in the Hyperledger Indy implementation of
+AnonCreds, the DID of the object publisher is part of the identifier of the
+object -- given the identifier for the AnonCreds object (e.g. one found in
+proofing a verifiable credential), the DID of the publisher can be found.
+Further, the Hyperledger Indy ledger enforces, and makes available for
+verification, the requirement that the writing of the AnonCreds object must be
+signed by the DID that is writing the object.
 
 [[def: nonce]]
 ~ TODO
