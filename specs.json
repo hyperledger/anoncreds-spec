@@ -29,7 +29,7 @@
         "informative_references.md",
         "acknowledgements_authors.md"
       ],
-      "logo": "https://raw.githubusercontent.com/anoncreds-spec/anoncreds-spec/main/spec/images/logo/anoncreds_logo_horizontal.svg",
+      "logo": "https://raw.githubusercontent.com/AnonCreds-WG/anoncreds-spec/main/spec/images/logo/anoncreds_logo_horizontal.svg",
       "logo_link": "https://github.com/AnonCreds-WG/anoncreds-spec",
       "source": {
         "host": "github",
