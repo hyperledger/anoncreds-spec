@@ -1,5 +1,7 @@
 # The AnonCreds Specification
 
+![AnonCreds Logo](/spec/images/logo/anoncreds_logo_horizontal.svg)
+
 This repository contains the source documents for the AnonCreds open
 specification. This open specification is based on the open source
 verifiable credential implementation of AnonCreds that has been in use since 2017 as part of
@@ -9,7 +11,7 @@ standard, and the AnonCreds Working Group (AnonCreds-WG) has been established to
 specification and place it on a standards track.
 
 - This work is being conducted under the [Community Specification License v1.0](1._Community_Specification_License-v1.md)
-- The draft specification can be found here: [https://anoncreds-wg.github.io/anoncreds-spec/](https://anoncreds-wg.github.io/anoncreds-spec/))
+- The draft specification can be found here: [https://anoncreds-wg.github.io/anoncreds-spec/](https://anoncreds-wg.github.io/anoncreds-spec/)
 - The source specification documents can be found here: [Specification Source](/spec)
 
 This repository contains guidelines for [contributing](#contributions) to the specification and submitting [edits via GitHub pull requests](/EditingTheSpec.md).
@@ -33,7 +35,8 @@ particular, and verifiable data in general. These features include:
 - Fully defined applications of cryptographic primitives.
 - The use of Zero Knowledge Proofs (ZKPs) in the verifiable presentation process to enhance the privacy protections available to the holder in presenting data to verifiers, including:
   - Blinding issuer signatures to prevent correlation based on those signatures.
-  - The use of unrevealed identifiers for holder binding to prevent correlation based on such identifiers.
+  - Holder binding based on the use of unrevealed identifiers to prevent correlation based a holder identifier.
+  - Selective disclosure in the generation of presentations to minimize data sharing to that required for the business need.
   - The use of predicate proofs to reduce the sharing of PII and potentially correlating data, especially dates (birth, credential issuance/expiry, etc.).
   - A revocation scheme that proves a presentation is based on credentials that have not been revoked by the issuers without revealing correlatable revocation identifiers.
 
