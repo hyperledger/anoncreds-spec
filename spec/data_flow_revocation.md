@@ -38,7 +38,7 @@ flow](data_flow_issuance.md#issue-credential) section of this specification.
 If the [[ref: issuer]] has created the [[ref: RevReg]] from which they are
 issuing credentials to have an `ISSUANCE_TYPE` of `ISSUE_ON_DEMAND`, the
 [[ref:issuer]] must publish a [[ref: RevRegEntry]] (as described in the next
-section) as each credential issued. Based on the experience of the AnonCreds
+section) as each credential is issued. Based on the experience of the AnonCreds
 community in the use of revocable credentials, it is highly recommended the
 `ISSUE_ON_DEMAND` approach **NOT** be used unless absolutely required by your
 use case. The reason for this recommendation is that `ISSUE_ON_DEMAND` requires
@@ -172,9 +172,10 @@ section of this document. Notably the `non_revoked` data item is added:
 }
 ```
 
-The item may at the outer level of the presentation request, such that it
-applies to all attributes and predicates, or with any or all of the attributes/predicates,
-applying only to those specific attributes and/or predicates.
+The `non-revoked` item be may at the outer level of the presentation request
+such that it applies to all attributes and predicates, or at the
+attribute/predicate level, applying only to specific attributes and/or
+predicates.
 
 The use of "interval" is intended to have the semantic of saying that the [[ref:
 verifier]] will accept a NRP from any point in the `from` to `to` interval.
@@ -377,7 +378,7 @@ the correct accumulator to use in verifying the NRP.
 ]
 ```
 
-As always, the [[ref: holder]]'s presentation, with the embedded NRP(s), is set to the
+As always, the [[ref: holder]]'s presentation, with the embedded NRP(s), is sent to the
 [[ref: verifier]] to be cryptographically verified.
 
 #### AnonCreds Verification with Revocation
@@ -415,7 +416,7 @@ To Do: Is there a separate process to bind the NRP to the credential?
 :::
 
 The verification code MUST surface to the [[ref: verifier]] if any part of the
-presentation, including any PoNR(s), fail cryptographic verification. The
+presentation, including any NRP(s), fail cryptographic verification. The
 verification code MAY surface additional detail about what part of the
 presentation failed, such as which NRP failed verification (if any).
 
@@ -424,6 +425,6 @@ The [[ref: verifier]] SHOULD evaluate the presentation to make sure that the
 are not received in the presentation, the [[ref: verifier]] SHOULD check to see
 if the given credential type is revocable. If not, it is acceptable that no
 NRP was received. However, if the credential used in the generation of the
-proof is revocable, and the [[ref: holder]] did not provide the P0N-R, the
+proof is revocable, and the [[ref: holder]] did not provide the NRP, the
 verification code SHOULD surface to the [[ref: verifier]] that the presentation
 failed cryptographic verification.
