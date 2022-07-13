@@ -462,7 +462,7 @@ Given the data collected by the [[ref: holder]] to produce the NRP, the
 following calculations are performed.
 
 A `witness` is calculated in the same way as the accumulator (as described
-[here](data_flow_setup.md#publishing-the-initial-initial-revocation-registry-entry-object)),
+[here](#publishing-the-initial-initial-revocation-registry-entry-object)),
 except the revocation status of the credential being proven as not revoked is
 **not** included in the calculation. All of the tails file entries from the
 other unrevoked credentials **are** included.

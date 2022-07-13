@@ -34,7 +34,7 @@ presents a decimal number (use `indy_generate_nonce` function to generate a corr
 * `requested_predicates` specify the set of requested predicates
   * `predicate_referent` is a proof-request local identifier for the requested predicate.
   * `predicate_info` describes a requested attribute predicate, see , see [predicate_info](#predicate_info)
-* `non_revoked` specifies an optional non-revocation interval `non_revoc_interval`, see [non_revoc_interval](#non_revoc_interval). 
+* `non_revoked` specifies an optional non-revocation interval `non_revoc_interval`, see [Request Non-Revocation Proofs](#request-non-revocation-proofs) section.
   If specified, the Holder must proof non-revocation for date in this interval for each attribute. The interval
   applies to every attribute and predicate but can be overridden on attribute level.
 * `ver` is an optional string, specifies the proof request version. 
@@ -57,7 +57,7 @@ presents a decimal number (use `indy_generate_nonce` function to generate a corr
     * use either `name` or `names`, not both and not none of them.
     * use `names` to specify several attributes that have to match a single credential.
 * `restrictions`  is an (optional) Json - Wql query filter for credentials searching, see [wql_query](#wql_query)
-* `non_revoked` specifies an optional non-revocation interval `non_revoc_interval`, see [non_revoc_interval](#non_revoc_interval). 
+* `non_revoked` specifies an optional non-revocation interval `non_revoc_interval`, see [Request Non-Revocation Proofs](#request-non-revocation-proofs) section. 
   If specified, the Holder must proof non-revocation for date in this interval for this attribute, this interval overrides the
   proof level interval.
 
@@ -76,7 +76,7 @@ presents a decimal number (use `indy_generate_nonce` function to generate a corr
 * `p_type` is a string, the type of the predicate, with possible types  [">=", ">", "<=", "<"]
 * `p_value` is an integer value, the value of the predicate
 * `restrictions`  is an (optional) Json - Wql query filter for credentials searching, see [wql_query](#wql_query)
-* `non_revoked` specifies an optional non-revocation interval `non_revoc_interval`, see [non_revoc_interval](#non_revoc_interval).
+* `non_revoked` specifies an optional non-revocation interval `non_revoc_interval`, see [Request Non-Revocation Proofs](#request-non-revocation-proofs) section.
   If specified, the Holder must proof non-revocation for date in this interval for this predicate, this interval overrides the
   proof level interval.
 
