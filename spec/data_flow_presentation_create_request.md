@@ -80,8 +80,11 @@ presents a decimal number (use `indy_generate_nonce` function to generate a corr
   If specified, the Holder must proof non-revocation for date in this interval for this predicate, this interval overrides the
   proof level interval.
 
-<a id="non_revoc_interval"></a> `non_revoc_interval` 
-defines a non-revocation interval for a requested attribute / predicate with the following timestamps:
+##### Request Non-Revocation Proofs
+
+The presentation request JSON item `non_revoc_interval` allows the [[ref:
+verifier]] to define an acceptable non-revocation interval for a requested
+attribute(s) / predicate(s) with the following timestamps:
 
 ```json
 {
@@ -89,12 +92,42 @@ defines a non-revocation interval for a requested attribute / predicate with the
     "to": Optional<int>, 
 }
 ```
-* `from` is a unsigned long long value, the timestamp of interval beginning, presented as total number of seconds from Unix Epoch. 
-* `to` is a unsigned long long value, the timestamp of interval end, presented as total number of seconds from Unix Epoch. 
 
+* `from` is a unsigned long long value, the timestamp of interval beginning,
+  presented as total number of seconds from Unix Epoch. 
+* `to` is a unsigned long long value, the timestamp of interval end, presented
+  as total number of seconds from Unix Epoch.
 
-<a id="wql_query"></a> `wql query` is a Wallet Query Language (WQL) query filter 
-for credentials searching based on tags and will be specified under `restrictions` for each attribute/predicate.
+As noted in the examples above, the `non-revoked` item be may at the outer level
+of the presentation request such that it applies to all attributes and
+predicates, or at the attribute/predicate level, applying only to specific
+attributes and/or predicates.
+
+The use of a "non-revoke interval" is intended to have the semantic meaning that
+the [[ref: verifier]] will accept a non-revocation Proof (NRP) from any point in
+the `from` to `to` interval. The intention is that by being as flexible as the
+business rules allow, the [[ref: holder]] and/or [[ref: verifier]] may have
+cached [[ref: VDR]] revocation data such that they don't have to go to the
+[[ref: VDR]] to get additional [[ref: RevRegEntry]] data. In practice, the use
+of an interval here is not well understood and tends to cause confusion amongst
+presentation request developers. The AnonCreds community recommends always using
+matching `to` and `from` values (see [Aries RFC 0441 Present Proof Best
+Practices](https://github.com/hyperledger/aries-rfcs/tree/main/concepts/0441-present-proof-best-practices#semantics-of-non-revocation-interval-endpoints)).
+
+While one would expect the `to` value to be the current time ("Prove the
+credential is not revoked right now"), its inclusion allows the [[ref:
+verifier]] to ask for a NRP sometime in the past. This addresses use cases such
+as "Prove that your car insurance policy was not revoked on June 12, 2021 when
+the accident occurred."
+
+##### WQL Query
+
+The `restrictions` on each attribute/predicate defines a query filter in [[ref:
+Wallet Query Language]] (WQL) that is used to search the [[ref: holder]] wallet
+(storage) for candidate credentials that meet the restrictions. WQL is not
+required in an AnonCreds implementation, but the function it performs is
+required. That is, the [[ref: holder]] must scan the credentials it holds to
+find the ones that satisfy the requirements defined in the presentation request.
 
 The WQL specification can be found in
 [indy-sdk/docs/design/011-wallet-query-language/README.md](https://github.com/hyperledger/indy-sdk/blob/master/docs/design/011-wallet-query-language/README.md)
@@ -201,5 +234,6 @@ The list of allowed keys that can be combined into complex queries includes:
     }
 }
 ```
+
 In step 2 of the [AnonCreds Presentation Data Flow](#anoncreds-presentation-data-flow), 
 the Verifier sends the presentation request to the Holder.
