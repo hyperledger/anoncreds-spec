@@ -21,7 +21,7 @@ in generating a presentation is not revoked without providing a correlatable
 identifier for that credential or the holder itself. As such, the AnonCreds
 revocation mechanism uses a Zero Knowledge Proof (ZKP) that allows the [[ref:
 holder]] to prove a credential they hold is not revoked without revealing an
-identifier for their credential.
+identifier for their credential or the holder.
 
 #### AnonCreds Issuer Setup With Revocation
 
