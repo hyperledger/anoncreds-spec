@@ -367,7 +367,9 @@ the following input parameters.
   the [[ref: REV_REG]]
 * `issuanceType`: an enumerated value that defines the initial state of
   credentials in the [[ref: REV_REG]]: revoked ("ISSUANCE_ON_DEMAND") or
-  non-revoked ("ISSUANCE_BY_DEFAULT").
+  non-revoked ("ISSUANCE_BY_DEFAULT"). See the [warning and recommendation
+  against the use of
+  `ISSUANCE_ON_DEMAND`](#recommend-not-using-issuanceondemand).
 * `maxCredNum`: The capacity of the [[ref: REV_REG]], a count of the number of
   credentials that can be issued using the [[ref: REV_REG]].
 * `tailsLocation`: A URL indicating where the [[ref: TAILS_FILE]] for the [[ref
@@ -377,6 +379,38 @@ the following input parameters.
 Three outputs are generated from the process to generate the [[ref; REV_REG]]:
 the [[ref: REV_REG]] object itself, the [[ref: TAILS_FILE]] content, and the
 [[ref: PRIVATE_REV_REG]] object.
+
+###### Recommend Not Using ISSUANCE_ON_DEMAND
+
+::: warning
+
+Based on the experience of the AnonCreds community in the use of revocable
+credentials, it is highly recommended the `ISSUANCE_ON_DEMAND` approach **NOT** be
+used unless absolutely required by your use case.
+
+The reason this approach is not recommended is that if the [[ref: issuer]]
+creates the [[ref: REV_REG]] with the `issuanceType` item set to
+`ISSUANCE_ON_DEMAND`, the [[ref:issuer]] must publish a [[ref: RevRegEntry]] (as
+described in the [revocation
+section](#anoncreds-credential-activationrevocation-and-publication)) as each
+credential is issued resulting in many [[ref: RevRegEntry]] transactions being
+performed, one per credential issued. Of course, with either `issueanceType`, there must
+still be one transaction for each batch of (1 or more) credentials revoked.
+
+Further, if a credential contains some kind of "Issue Date" attribute in the
+credential and it is shared with verifiers, those verifiers can use that value
+to find the [[ref: RevRegEntry]] transaction that activated the credential at
+the same time to learn the index of the holder's credential within the [[ref:
+RevReg]], giving the verifiers both a correlatable identifier (RevRegId+index)
+for the holder's credential and a way to monitor if that credential is ever
+revoked in the future.
+
+For these reasons we anticipate the deprecation or removal of the
+`ISSUANCE_ON_DEMAND` approach in the next version of AnonCreds specification.
+Feedback from the community on this would be appreciated. We are particularly
+interested in understanding what use cases there are for `ISSUANCE_ON_DEMAND`.
+
+:::
 
 ###### REV_REG Object Generation
 
@@ -527,7 +561,9 @@ REV_REG_ENTRY]], including:
 
 * `issuanceType`: an enumerated value that defines the initial state of
   credentials in the [[ref: REV_REG]]: revoked ("ISSUANCE_ON_DEMAND") or
-  non-revoked ("ISSUANCE_BY_DEFAULT").
+  non-revoked ("ISSUANCE_BY_DEFAULT"). See the [warning and recommendation
+  against the use of
+  `ISSUANCE_ON_DEMAND`](#recommend-not-using-issuanceondemand).
 * `maxCredNum`: The capacity of the [[ref: REV_REG]], a count of the number of
   credentials that can be issued using the [[ref: REV_REG]].
 * `tailsArray`: The contents of the [[ref: TAILS_FILE]], the array of primes,
@@ -551,9 +587,9 @@ share the same identifier.
 
 In simple terms, the cryptographic accumulator at any given point in time is the
 (modulo) product of the primes for each non-revoked credential in the [[ref:
-REV_REG]]. Initially, based on the value of `ISSUANCE_TYPE`, all of the
+REV_REG]]. Initially, based on the value of `issuanceType`, all of the
 credentials are either revoked, or unrevoked. If all of the credentials are
-revoked, the accumulator value is effectively `0`, if all are unrevoked, the
+initially revoked, the accumulator value is `0`, if all are unrevoked, the
 accumulator value has contributions from all of the entries in the array of
 primes.
 

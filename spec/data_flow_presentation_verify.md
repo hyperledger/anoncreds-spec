@@ -59,7 +59,7 @@ pub extern fn indy_verifier_verify_proof(command_handle: CommandHandle,
 
 If the presentation includes one or more Non-Revocation Proofs (NRPs) the
 [[ref: verifier]] must also extract from the verifiable presentation the NRPs
-and process each proofs. If any of the NRPs cannot be verified because one
+and process each proof. If any of the NRPs cannot be verified because one
 or more of the attributes/predicates came from a revoked credential, the
 overall status of the presentation is rejected -- not verifiable. The following
 outlines the process for verifying an NRP.
@@ -95,7 +95,7 @@ verification code MAY surface additional detail about what part of the
 presentation failed, such as which NRP failed verification (if any).
 
 The [[ref: verifier]] SHOULD evaluate the presentation to make sure that the
-[[ref: holder]] provided all requested NRPs. Notably, if any expected PoNRs
+[[ref: holder]] provided all requested NRPs. Notably, if any expected NRPs
 are not received in the presentation, the [[ref: verifier]] SHOULD check to see
 if the given credential type is revocable. If not, it is acceptable that no
 NRP was received. However, if the credential used in the generation of the

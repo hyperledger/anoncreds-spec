@@ -16,14 +16,18 @@ all of the attributes/predicates that are derived from revocable verifiable cred
 the [[ref: holder]] have an accompanying non-revocation proof (NRP). The generation of an NRP
 is described [in this section](#generate-non-revocation-proofs) of the specification.
 
-**NOTE**: Often in discussions about verifiable presentations, the term "[[ref: prover]]"
-is used to indicate the participant generating the request presentation.
-Throughout the Hyperledger Indy AnonCreds implementation the term `[[ref: prover]]` is
-used in the names of methods performed out by that participant. However, because
+::: note
+
+Often in discussions about verifiable presentations, the term "[[ref: prover]]"
+is used to indicate the participant generating the presentation.
+Throughout the Hyperledger Indy AnonCreds implementation the term `prover` is
+used in the names of methods performed by that participant. However, because
 in AnonCreds the [[ref: holder]] and the [[ref: prover]] are always the same entity, we'll use
 [[ref: holder]] to refer to the participant generating the requested presentation to
-emphasize that the same entity is both issued credentials and generating the
+emphasize that the same entity is both issued credentials and generating
 presentations from those credentials.
+
+:::
 
 ##### Generate AnonCreds Presentation
 
@@ -384,12 +388,13 @@ also determine if the verifiable credential selected for attributes/predicates
 where a NRP is requested is a revocable credential. Obviously, a NRP cannot be
 produced for a verifiable credential issued without a [[ref: RevReg]].
 
-Once the [[ref: holder]] has determined the required NRPs needed for the presentation,
-they must generate a NRP for each applicable source verifiable credential and
-add the NRPs to the presentation. For each, the [[ref: holder]] must collect the
-applicable [[ref: RevReg]] data published by the [[ref: issuer]] and then generate the proof.
+Once the [[ref: holder]] has determined the required NRPs needed for the
+presentation, they must generate a NRP for each applicable source verifiable
+credential and add the NRPs to the presentation. For each, the [[ref: holder]]
+must collect the necessary data from the [[ref: RevRegEntry]]s
+published by the [[ref: issuer]] and then generate the NRP.
 
-##### Collecting RevRegEntry Data
+##### Collecting Data for Generating the Non-Revocation Proof
 
 In order to produce a NRP, the [[ref: holder]] must collect the following information from wherever the [[ref: issuer]]
 has published the information. Note that the [[ref: holder]] may have some or all of this information cached
@@ -399,17 +404,19 @@ from data previously collected.
   credentials in the registry is `active` or `revoked`. This information is part
   of the [[ref: RevReg]], and so likely cached by the [[ref: holder]] when they were first issued
   the credential.
-- The tails file for [[ref: RevReg]], the location (a URL) of which is stored in the
-  issued credential's [[ref: RevReg]]. The [[ref: holder]] likely (though not necessarily) would
-  have collected the tails file at the time of issuance. Recall (from this
-  section of the specification) that the tails file for a [[ref: RevReg]] is generated at
-  creation time and does not change.
+- The tails file for [[ref: RevReg]], the location (a URL) of which is stored in
+  the issued credential's [[ref: RevReg]]. The [[ref: holder]] likely (though
+  not necessarily) would have collected the tails file at the time of issuance.
+  Recall (from [this section of the
+  specification](data_flow_setup.md#tails-file-and-tails-file-generation)) that
+  the tails file for a [[ref: RevReg]] is generated at creation time and never
+  changes.
 - The index of the credential within the [[ref: RevReg]] for the [[ref: holder]]'s specific
   credential being used in the presentation. This information is given to the
   [[ref: holder]] by the [[ref: issuer]] when the verifiable credential is issued.
 - The accumulator published by the [[ref: issuer]] for the [[ref: RevRegEntry]] that the [[ref: holder]]
   will use in generating the NRP. In the Hyperledger Indy implementation of
-  AnonCreds, the entries are published on the ledger, and collected via a
+  AnonCreds, the entries are published as [[ref: RevRegEntry]]s on the ledger, and collected via a
   special request to the ledger (detailed below).
 - The revocation status changes of all of the credential indices up to the
   publication of the accumulator that the [[ref: holder]] will use in generating the
@@ -463,7 +470,7 @@ following calculations are performed.
 
 A `witness` is calculated in the same way as the accumulator (as described
 [here](#publishing-the-initial-initial-revocation-registry-entry-object)),
-except the revocation status of the credential being proven as not revoked is
+except the tails file factor of the credential being proven as not revoked is
 **not** included in the calculation. All of the tails file entries from the
 other unrevoked credentials **are** included.
 
