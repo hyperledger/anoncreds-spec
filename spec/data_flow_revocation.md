@@ -110,6 +110,8 @@ any time is the same: determine the (modulo) product of the primes for each
 non-revoked credential in the [[ref: REV_REG]], as described
 [here](#creating-the-initial-revocation-registry-entry-object).
 
+::: note
+
 The [[ref: issuer]] MUST track of the revocation status of all of the
 credentials within a [[ref: RevReg]] so that it can both calculate the correct
 accumulator and send to the [[ref: VDR]] accurate lists (`issued` and `revoked`)
@@ -130,11 +132,13 @@ a [[ref: RevRegEntry]] transaction that accounts for both the last published
 [[ref: RevRegEntry]] published in the [[ref: VDR]] and the desired revocation
 status of all of the credentials in the [[ref: RevReg]].
 
-Note that the [[ref: holder]] is not involved in the credential revocation
-process. There is no technical requirement for an [[ref: issuer]] to notify the
-[[ref: holder]] that a credential they were issued has been revoked. That said,
-it is a courtesy that may improve the user experience of the [[ref: holder]].
-[Aries RFC 0183 Revocation
+:::
+
+The [[ref: holder]] is not involved in the process of revoking a credential.
+There is no technical requirement for an [[ref: issuer]] to notify the [[ref:
+holder]] that a credential they were issued has been revoked. That said, it is a
+courtesy that may improve the user experience of the [[ref: holder]]. [Aries RFC
+0183 Revocation
 Notification](https://github.com/hyperledger/aries-rfcs/tree/main/features/0183-revocation-notification)
 is an example of how that can be done. Even if not notified by the [[ref:
 issuer]] of the revocation of a credential, the [[ref: holder]] can detect their
