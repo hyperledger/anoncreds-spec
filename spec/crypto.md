@@ -19,7 +19,8 @@ The issuer setup consists of a set of algorithms to generate the Issuer Public K
 
 The reference implementation of `CredentialKeyGen` is [here](https://github.com/hyperledger/ursa/blob/ece6ce32a59df4e1f99fa38243c1236423066bc2/libursa/src/cl/issuer.rs#L774-L832).
 
-```
+```bash
+
 ( PK, SK ) = CredentialKeyGen( L )
 
 Inputs:
@@ -66,6 +67,7 @@ Procedure:
 12. SK = ( p, q )
 
 13. return ( PK, SK )
+
 ```
 
 #### Proving knowledge of a signature with selective disclosure of messages (`ProveCL`)
@@ -78,7 +80,8 @@ _TODO: clarify exact format and encoding of inputs and outputs_
 
 The reference implementation of `ProveCLCommit` is [here](https://github.com/hyperledger/ursa/blob/ece6ce32a59df4e1f99fa38243c1236423066bc2/libursa/src/cl/prover.rs#L1313-L1394).
 
-```
+```bash
+
 ( A', v', e', Z~, e~, v~ ) = ProveCLCommit( PK, signature, (m_1,..., m_L), RevealedIndexes, R )
 
 Inputs:
@@ -144,12 +147,14 @@ Procedure:
 14.     Z~ = Z~ * R_j^{m~_j} mod n           # add component for each undisclosed message
 
 15. return ( A', v', e', Z~, e~, v~ )
+
 ```
 
 The reference implementation of `ProveCLResponse` is [here](https://github.com/hyperledger/ursa/blob/ece6ce32a59df4e1f99fa38243c1236423066bc2/libursa/src/cl/prover.rs#L1533-L1633).
 
 
-```
+```bash
+
 pi = ProveCLResponse( (m_1,..., m_L), RevealedIndexes, R, c, ( A', v', e', Z~, e~, v~ ) )
 
 Inputs:
@@ -197,4 +202,5 @@ Procedure:
  7. pi = (A', Z~, e^, v^, (m^_1,..., m^_L) ) # the terms that constitute the proof that will be verified
 
  8. return pi
+
 ```
