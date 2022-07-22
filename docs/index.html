@@ -1697,7 +1697,8 @@ signature is valid, otherwise rejects the verifiable presentation.</p>
 <li><code>RevocationKeyGen</code> is used by the Issuer to generate the revocation public/private keypair.</li>
 </ul>
 <p>The reference implementation of <code>CredentialKeyGen</code> is <a path-0="github.com"path-1="hyperledger"path-2="ursa"path-3="blob"path-4="ece6ce32a59df4e1f99fa38243c1236423066bc2"path-5="libursa"path-6="src"path-7="cl"path-8="issuer.rs#L774-L832"href="https://github.com/hyperledger/ursa/blob/ece6ce32a59df4e1f99fa38243c1236423066bc2/libursa/src/cl/issuer.rs#L774-L832" >here</a>.</p>
-<pre><code>( PK, SK ) = CredentialKeyGen( L )
+<pre class="language-bash"><code class="language-bash">
+<span class="token punctuation">(</span> PK, SK <span class="token punctuation">)</span> <span class="token operator">=</span> CredentialKeyGen<span class="token punctuation">(</span> L <span class="token punctuation">)</span>
 
 Inputs:
 
@@ -1718,38 +1719,40 @@ Outputs:
 
 Procedure:
 
- 1. p = SafePrime(l_n/2)                     # Generate a safe prime
+ <span class="token number">1</span>. p <span class="token operator">=</span> SafePrime<span class="token punctuation">(</span>l_n/2<span class="token punctuation">)</span>                     <span class="token comment"># Generate a safe prime</span>
 
- 2. q = SafePrime(l_n/2)                     # Generate a safe prime
+ <span class="token number">2</span>. q <span class="token operator">=</span> SafePrime<span class="token punctuation">(</span>l_n/2<span class="token punctuation">)</span>                     <span class="token comment"># Generate a safe prime</span>
 
- 3. n = p * q                                # The RSA modulus
+ <span class="token number">3</span>. n <span class="token operator">=</span> p * q                                <span class="token comment"># The RSA modulus</span>
 
- 4. p' = (p-1)/2                             # The Sophie Germain prime of p
+ <span class="token number">4</span>. p<span class="token string">' = (p-1)/2                             # The Sophie Germain prime of p
 
- 5. q' = (q-1)/2                             # The Sophie Germain prime of q
+ 5. q'</span> <span class="token operator">=</span> <span class="token punctuation">(</span>q-1<span class="token punctuation">)</span>/2                             <span class="token comment"># The Sophie Germain prime of q</span>
 
- 6. S = PRNG(l_n)^2 (mod n)                  # A quadratic residue mod n, it generates the subgroup mod n of size p' * q'
+ <span class="token number">6</span>. S <span class="token operator">=</span> PRNG<span class="token punctuation">(</span>l_n<span class="token punctuation">)</span>^2 <span class="token punctuation">(</span>mod n<span class="token punctuation">)</span>                  <span class="token comment"># A quadratic residue mod n, it generates the subgroup mod n of size p' * q'</span>
 
- 7. Z = S^{PRNG(2, p'*q' - 1)} (mod n)       # The term Z of the CL public key
+ <span class="token number">7</span>. Z <span class="token operator">=</span> S^<span class="token punctuation">{</span>PRNG<span class="token punctuation">(</span><span class="token number">2</span>, p<span class="token string">'*q'</span> - <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">}</span> <span class="token punctuation">(</span>mod n<span class="token punctuation">)</span>       <span class="token comment"># The term Z of the CL public key</span>
 
- 8. R = ()                                   # Initialise the set of terms R_i of the CL public key
+ <span class="token number">8</span>. R <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span>                                   <span class="token comment"># Initialise the set of terms R_i of the CL public key</span>
 
- 9. foreach j in (1, ..., L):
+ <span class="token number">9</span>. foreach j <span class="token keyword">in</span> <span class="token punctuation">(</span><span class="token number">1</span>, <span class="token punctuation">..</span>., L<span class="token punctuation">)</span>:
 
-10. R = R + {S^{PRNG(2, p'*q' - 1)} (mod n)} # Generate R_j
+<span class="token number">10</span>. R <span class="token operator">=</span> R + <span class="token punctuation">{</span>S^<span class="token punctuation">{</span>PRNG<span class="token punctuation">(</span><span class="token number">2</span>, p<span class="token string">'*q'</span> - <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">}</span> <span class="token punctuation">(</span>mod n<span class="token punctuation">)</span><span class="token punctuation">}</span> <span class="token comment"># Generate R_j</span>
 
-11. PK = ( n, S, Z, R )
+<span class="token number">11</span>. PK <span class="token operator">=</span> <span class="token punctuation">(</span> n, S, Z, R <span class="token punctuation">)</span>
 
-12. SK = ( p, q )
+<span class="token number">12</span>. SK <span class="token operator">=</span> <span class="token punctuation">(</span> p, q <span class="token punctuation">)</span>
 
-13. return ( PK, SK )
+<span class="token number">13</span>. <span class="token builtin class-name">return</span> <span class="token punctuation">(</span> PK, SK <span class="token punctuation">)</span>
+
 </code></pre>
 <h4 id="proving-knowledge-of-a-signature-with-selective-disclosure-of-messages-provecl"><a class="toc-anchor" href="#proving-knowledge-of-a-signature-with-selective-disclosure-of-messages-provecl" >§</a> Proving knowledge of a signature with selective disclosure of messages (<code>ProveCL</code>)</h4>
 <p><code>ProveCLCommit</code> and <code>ProveCLResponse</code> are used by a Holder who possesses one or more signatures from one or more Issuers and uses them to derive a proof of knowledge for them. The algorithms are invoked once per signature.</p>
 <p><em>TODO: considerations about the algorithm and its security</em></p>
 <p><em>TODO: clarify exact format and encoding of inputs and outputs</em></p>
 <p>The reference implementation of <code>ProveCLCommit</code> is <a path-0="github.com"path-1="hyperledger"path-2="ursa"path-3="blob"path-4="ece6ce32a59df4e1f99fa38243c1236423066bc2"path-5="libursa"path-6="src"path-7="cl"path-8="prover.rs#L1313-L1394"href="https://github.com/hyperledger/ursa/blob/ece6ce32a59df4e1f99fa38243c1236423066bc2/libursa/src/cl/prover.rs#L1313-L1394" >here</a>.</p>
-<pre><code>( A', v', e', Z~, e~, v~ ) = ProveCLCommit( PK, signature, (m_1,..., m_L), RevealedIndexes, R )
+<pre class="language-bash"><code class="language-bash">
+<span class="token punctuation">(</span> A<span class="token string">', v'</span>, e<span class="token string">', Z~, e~, v~ ) = ProveCLCommit( PK, signature, (m_1,..., m_L), RevealedIndexes, R )
 
 Inputs:
 
@@ -1769,16 +1772,16 @@ Definitions:
  - l_m, the bitlength of messages
  - l_e, the bitlength of the prime e
  - l_v, the bitlength of the randomization factor v
- - l'_e, the size of the interval in which e is chosen
+ - l'</span>_e, the size of the interval <span class="token keyword">in</span> <span class="token function">which</span> e is chosen
  - l_0, security parameter that governs the statistical zero-knowledge property
- - l_H, the bitsize of values hashed by the hash function H used for the Fiat-Shamir heuristic
+ - l_H, the bitsize of values hashed by the <span class="token builtin class-name">hash</span> <span class="token keyword">function</span> H used <span class="token keyword">for</span> the Fiat-Shamir heuristic
  - L, the number of messages signed by the issuer
 
 Outputs:
 
- - A', term of the rerandomised signature
- - v', term of the rerandomised signature
- - e', term of the rerandomised signature
+ - A<span class="token string">', term of the rerandomised signature
+ - v'</span>, term of the rerandomised signature
+ - e<span class="token string">', term of the rerandomised signature
  - Z~. t-value for the signature
  - e~, randomness used to generate t-value
  - v~, randomness used to generate t-value
@@ -1797,36 +1800,38 @@ Procedure:
 
  6. r = PRNG(l_n + l_0)                      # choose random to blind the signature
 
- 7. A' = A * S^r mod n                       # compute the randomised signature
+ 7. A'</span> <span class="token operator">=</span> A * S^r mod n                       <span class="token comment"># compute the randomised signature</span>
 
- 8. v' = v - e * r                           # recompute v given the randomisation
+ <span class="token number">8</span>. <span class="token function">v</span><span class="token string">' = v - e * r                           # recompute v given the randomisation
 
- 9. e' = e - 2^{l_e - 1}                     # prepare value to prove that e is positive
+ 9. e'</span> <span class="token operator">=</span> e - <span class="token number">2</span>^<span class="token punctuation">{</span>l_e - <span class="token number">1</span><span class="token punctuation">}</span>                     <span class="token comment"># prepare value to prove that e is positive</span>
 
-10. e~ = PRNG(l'_e + l_0 + l_H)              # random for t-value of the signature
+<span class="token number">10</span>. e~ <span class="token operator">=</span> PRNG<span class="token punctuation">(</span>l<span class="token string">'_e + l_0 + l_H)              # random for t-value of the signature
 
 11. v~ = PRNG(l_v + l_0 + l_H)               # random for t-value of the signature
 
-12. Z~ = A'^{e~} * S^{v~} mod n              # compute t-value for the signature
+12. Z~ = A'</span>^<span class="token punctuation">{</span>e~<span class="token punctuation">}</span> * S^<span class="token punctuation">{</span>v~<span class="token punctuation">}</span> mod n              <span class="token comment"># compute t-value for the signature</span>
 
-13. foreach j in (j1, j2,..., jU):
+<span class="token number">13</span>. foreach j <span class="token keyword">in</span> <span class="token punctuation">(</span>j1, j2,<span class="token punctuation">..</span>., jU<span class="token punctuation">)</span>:
 
-14.     Z~ = Z~ * R_j^{m~_j} mod n           # add component for each undisclosed message
+<span class="token number">14</span>.     Z~ <span class="token operator">=</span> Z~ * R_j^<span class="token punctuation">{</span>m~_j<span class="token punctuation">}</span> mod n           <span class="token comment"># add component for each undisclosed message</span>
 
-15. return ( A', v', e', Z~, e~, v~ )
+<span class="token number">15</span>. <span class="token builtin class-name">return</span> <span class="token punctuation">(</span> A<span class="token string">', v'</span>, e', Z~, e~, v~ <span class="token punctuation">)</span>
+
 </code></pre>
 <p>The reference implementation of <code>ProveCLResponse</code> is <a path-0="github.com"path-1="hyperledger"path-2="ursa"path-3="blob"path-4="ece6ce32a59df4e1f99fa38243c1236423066bc2"path-5="libursa"path-6="src"path-7="cl"path-8="prover.rs#L1533-L1633"href="https://github.com/hyperledger/ursa/blob/ece6ce32a59df4e1f99fa38243c1236423066bc2/libursa/src/cl/prover.rs#L1533-L1633" >here</a>.</p>
-<pre><code>pi = ProveCLResponse( (m_1,..., m_L), RevealedIndexes, R, c, ( A', v', e', Z~, e~, v~ ) )
+<pre class="language-bash"><code class="language-bash">
+pi <span class="token operator">=</span> ProveCLResponse<span class="token punctuation">(</span> <span class="token punctuation">(</span>m_1,<span class="token punctuation">..</span>., m_L<span class="token punctuation">)</span>, RevealedIndexes, R, c, <span class="token punctuation">(</span> A<span class="token string">', v'</span>, e<span class="token string">', Z~, e~, v~ ) )
 
 Inputs:
 
  - (m_1,..., m_L) (OPTIONAL), the set of signed messages
  - R (OPTIONAL), the set of random factors to blind unrevealed messages; each random has length l_m + l_0 + l_H
  - c, an octet string representing the Fiat-Shamir challenge value
- - A', term of the rerandomised signature
- - v', term of the rerandomised signature
- - e', term of the rerandomised signature
- - Z~. t-value for the signature
+ - A'</span>, term of the rerandomised signature
+ - <span class="token function">v</span><span class="token string">', term of the rerandomised signature
+ - e'</span>, term of the rerandomised signature
+ - Z~. t-value <span class="token keyword">for</span> the signature
  - e~, randomness used to generate t-value
  - v~, randomness used to generate t-value
 
@@ -1840,7 +1845,7 @@ Definitions:
 
 Outputs:
 
- - A', term of the rerandomised signature
+ - A<span class="token string">', term of the rerandomised signature
  - Z~. t-value for the signature
  - e^, s-value for the signature
  - v^, s-value for the signature
@@ -1852,17 +1857,18 @@ Procedure:
 
  2. (m~_1, m~_2,..., m~_U) = R               # the random factors blinding each hidden message
 
- 3. v^ = v~ + c * v'                         # the response for the term v'
+ 3. v^ = v~ + c * v'</span>                         <span class="token comment"># the response for the term v'</span>
 
- 4. e^ = e~ + c * e'                         # the response for the term e'
+ <span class="token number">4</span>. e^ <span class="token operator">=</span> e~ + c * e<span class="token string">'                         # the response for the term e'</span>
 
- 5. foreach j in (j1, j2,..., jU):
+ <span class="token number">5</span>. foreach j <span class="token keyword">in</span> <span class="token punctuation">(</span>j1, j2,<span class="token punctuation">..</span>., jU<span class="token punctuation">)</span>:
 
- 6.     m^_j = m~_j + c * m_j                # the response for the undisclosed messages
+ <span class="token number">6</span>.     m^_j <span class="token operator">=</span> m~_j + c * m_j                <span class="token comment"># the response for the undisclosed messages</span>
 
- 7. pi = (A', Z~, e^, v^, (m^_1,..., m^_L) ) # the terms that constitute the proof that will be verified
+ <span class="token number">7</span>. pi <span class="token operator">=</span> <span class="token punctuation">(</span>A', Z~, e^, v^, <span class="token punctuation">(</span>m^_1,<span class="token punctuation">..</span>., m^_L<span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token comment"># the terms that constitute the proof that will be verified</span>
 
- 8. return pi
+ <span class="token number">8</span>. <span class="token builtin class-name">return</span> pi
+
 </code></pre>
 <h2 id="anoncreds-conventions"><a class="toc-anchor" href="#anoncreds-conventions" >§</a> AnonCreds Conventions</h2>
 <div id="todo-20" class="notice todo"><a class="notice-link" href="#todo-20">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
