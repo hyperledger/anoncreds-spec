@@ -245,10 +245,17 @@ credential validation and can be <a path-0="hyperledger-indy.readthedocs.io"path
 <dd>
 <p>Further details about Hyperledger Indy’s revocation process can be found <a path-0="hyperledger-indy.readthedocs.io"path-1="projects"path-2="hipe"path-3="en"path-4="latest"path-5="text"path-6="0011-cred-revocation"path-7="README.html"href="https://hyperledger-indy.readthedocs.io/projects/hipe/en/latest/text/0011-cred-revocation/README.html" >here</a>.</p>
 </dd>
+</dl>
+<p><span id="term:witness-delta">Witness Delta</span></p>
+<p>The witness delta is an update by the issuer of the list of revoked
+credentials at the time an updated accumulator is published in a <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a>. The delta tells <a class="term-reference" href="#term:holders">holders</a> generating a Non-Revocation
+Proof (NRP) how to adjust their witness (referencing other indexes in the public
+tails file) to bring it back into harmony with the current value of the
+accumulator, such that the updated witness times the private factor once again
+equals the accumulator value.</p>
+<dl>
 <dt><span id="term:verifiable-data-registry">Verifiable Data Registry</span></dt>
-<dd>
-<p>TODO</p>
-</dd>
+<dd>TODO</dd>
 </dl>
 <div id="todo-2" class="notice todo"><a class="notice-link" href="#todo-2">TODO</a><p>Finalize glossary entries</p>
 <p><strong>Question</strong>: Should the items that are AnonCreds data models be included in this?</p>
@@ -580,7 +587,9 @@ is to be associated</li>
 the <a class="term-reference" href="#term:rev_reg">REV_REG</a></li>
 <li><code>issuanceType</code>: an enumerated value that defines the initial state of
 credentials in the <a class="term-reference" href="#term:rev_reg">REV_REG</a>: revoked (“ISSUANCE_ON_DEMAND”) or
-non-revoked (“ISSUANCE_BY_DEFAULT”).</li>
+non-revoked (“ISSUANCE_BY_DEFAULT”). See the <a href="#recommend-not-using-issuanceondemand" >warning and recommendation
+against the use of
+<code>ISSUANCE_ON_DEMAND</code></a>.</li>
 <li><code>maxCredNum</code>: The capacity of the <a class="term-reference" href="#term:rev_reg">REV_REG</a>, a count of the number of
 credentials that can be issued using the <a class="term-reference" href="#term:rev_reg">REV_REG</a>.</li>
 <li><code>tailsLocation</code>: A URL indicating where the <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> for the <a class="term-reference" href="#term:rev_reg">REV_REG</a> will be available to all <a class="term-reference" href="#term:holders">holders</a> of credential issued using
@@ -589,6 +598,29 @@ this revocation registry.</li>
 <p>Three outputs are generated from the process to generate the <a class="term-reference" href="#term:rev_reg">REV_REG</a>:
 the <a class="term-reference" href="#term:rev_reg">REV_REG</a> object itself, the <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> content, and the
 <a class="term-reference" href="#term:private_rev_reg">PRIVATE_REV_REG</a> object.</p>
+<h6 id="recommend-not-using-issuance_on_demand"><a class="toc-anchor" href="#recommend-not-using-issuance_on_demand" >§</a> Recommend Not Using ISSUANCE_ON_DEMAND</h6>
+<div id="warning-1" class="notice warning"><a class="notice-link" href="#warning-1">WARNING</a><p>Based on the experience of the AnonCreds community in the use of revocable
+credentials, it is highly recommended the <code>ISSUANCE_ON_DEMAND</code> approach <strong>NOT</strong> be
+used unless absolutely required by your use case.</p>
+<p>The reason this approach is not recommended is that if the <a class="term-reference" href="#term:issuer">issuer</a>
+creates the <a class="term-reference" href="#term:rev_reg">REV_REG</a> with the <code>issuanceType</code> item set to
+<code>ISSUANCE_ON_DEMAND</code>, the <a class="term-reference" href="#term:issuer">issuer</a> must publish a <a class="term-reference" href="#term:revregentry">RevRegEntry</a> (as
+described in the <a href="#anoncreds-credential-activationrevocation-and-publication" >revocation
+section</a>) as each
+credential is issued resulting in many <a class="term-reference" href="#term:revregentry">RevRegEntry</a> transactions being
+performed, one per credential issued. Of course, with either <code>issueanceType</code>, there must
+still be one transaction for each batch of (1 or more) credentials revoked.</p>
+<p>Further, if a credential contains some kind of “Issue Date” attribute in the
+credential and it is shared with verifiers, those verifiers can use that value
+to find the <a class="term-reference" href="#term:revregentry">RevRegEntry</a> transaction that activated the credential at
+the same time to learn the index of the holder’s credential within the <a class="term-reference" href="#term:revreg">RevReg</a>, giving the verifiers both a correlatable identifier (RevRegId+index)
+for the holder’s credential and a way to monitor if that credential is ever
+revoked in the future.</p>
+<p>For these reasons we anticipate the deprecation or removal of the
+<code>ISSUANCE_ON_DEMAND</code> approach in the next version of AnonCreds specification.
+Feedback from the community on this would be appreciated. We are particularly
+interested in understanding what use cases there are for <code>ISSUANCE_ON_DEMAND</code>.</p>
+</div>
 <h6 id="rev_reg-object-generation"><a class="toc-anchor" href="#rev_reg-object-generation" >§</a> REV_REG Object Generation</h6>
 <p>The <a class="term-reference" href="#term:rev_reg">REV_REG</a> object has the following data model. This example is from
 <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="140386"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/140386" >this transaction</a> on the
@@ -710,7 +742,9 @@ calculate the cryptographic accumulator value for the initial <a class="term-ref
 <ul>
 <li><code>issuanceType</code>: an enumerated value that defines the initial state of
 credentials in the <a class="term-reference" href="#term:rev_reg">REV_REG</a>: revoked (“ISSUANCE_ON_DEMAND”) or
-non-revoked (“ISSUANCE_BY_DEFAULT”).</li>
+non-revoked (“ISSUANCE_BY_DEFAULT”). See the <a href="#recommend-not-using-issuanceondemand" >warning and recommendation
+against the use of
+<code>ISSUANCE_ON_DEMAND</code></a>.</li>
 <li><code>maxCredNum</code>: The capacity of the <a class="term-reference" href="#term:rev_reg">REV_REG</a>, a count of the number of
 credentials that can be issued using the <a class="term-reference" href="#term:rev_reg">REV_REG</a>.</li>
 <li><code>tailsArray</code>: The contents of the <a class="term-reference" href="#term:tails_file">TAILS_FILE</a>, the array of primes,
@@ -730,9 +764,9 @@ prefixed with the <code>REV_REG_ENTRY</code> object type (<code>5</code>) and a 
 <p>All of the <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> transactions for a given <a class="term-reference" href="#term:rev_reg">REV_REG</a>
 share the same identifier.</p>
 <p>In simple terms, the cryptographic accumulator at any given point in time is the
-(modulo) product of the primes for each non-revoked credential in the <a class="term-reference" href="#term:rev_reg">REV_REG</a>. Initially, based on the value of <code>ISSUANCE_TYPE</code>, all of the
+(modulo) product of the primes for each non-revoked credential in the <a class="term-reference" href="#term:rev_reg">REV_REG</a>. Initially, based on the value of <code>issuanceType</code>, all of the
 credentials are either revoked, or unrevoked. If all of the credentials are
-revoked, the accumulator value is effectively <code>0</code>, if all are unrevoked, the
+initially revoked, the accumulator value is <code>0</code>, if all are unrevoked, the
 accumulator value has contributions from all of the entries in the array of
 primes.</p>
 <p>Specifically, the accumulator is calculated using the following steps:</p>
@@ -1055,7 +1089,7 @@ presents a decimal number (use <code>indy_generate_nonce</code> function to gene
 <li><code>predicate_info</code> describes a requested attribute predicate, see , see <a href="#predicate_info" >predicate_info</a></li>
 </ul>
 </li>
-<li><code>non_revoked</code> specifies an optional non-revocation interval <code>non_revoc_interval</code>, see <a href="#non_revoc_interval" >non_revoc_interval</a>.
+<li><code>non_revoked</code> specifies an optional non-revocation interval <code>non_revoc_interval</code>, see <a href="#request-non-revocation-proofs" >Request Non-Revocation Proofs</a> section.
 If specified, the Holder must proof non-revocation for date in this interval for each attribute. The interval
 applies to every attribute and predicate but can be overridden on attribute level.</li>
 <li><code>ver</code> is an optional string, specifies the proof request version.
@@ -1086,7 +1120,7 @@ applies to every attribute and predicate but can be overridden on attribute leve
 </ul>
 </li>
 <li><code>restrictions</code>  is an (optional) Json - Wql query filter for credentials searching, see <a href="#wql_query" >wql_query</a></li>
-<li><code>non_revoked</code> specifies an optional non-revocation interval <code>non_revoc_interval</code>, see <a href="#non_revoc_interval" >non_revoc_interval</a>.
+<li><code>non_revoked</code> specifies an optional non-revocation interval <code>non_revoc_interval</code>, see <a href="#request-non-revocation-proofs" >Request Non-Revocation Proofs</a> section.
 If specified, the Holder must proof non-revocation for date in this interval for this attribute, this interval overrides the
 proof level interval.</li>
 </ul>
@@ -1104,23 +1138,48 @@ proof level interval.</li>
 <li><code>p_type</code> is a string, the type of the predicate, with possible types  [“&gt;=”, “&gt;”, “&lt;=”, “&lt;”]</li>
 <li><code>p_value</code> is an integer value, the value of the predicate</li>
 <li><code>restrictions</code>  is an (optional) Json - Wql query filter for credentials searching, see <a href="#wql_query" >wql_query</a></li>
-<li><code>non_revoked</code> specifies an optional non-revocation interval <code>non_revoc_interval</code>, see <a href="#non_revoc_interval" >non_revoc_interval</a>.
+<li><code>non_revoked</code> specifies an optional non-revocation interval <code>non_revoc_interval</code>, see <a href="#request-non-revocation-proofs" >Request Non-Revocation Proofs</a> section.
 If specified, the Holder must proof non-revocation for date in this interval for this predicate, this interval overrides the
 proof level interval.</li>
 </ul>
-<p><a id="non_revoc_interval"></a> <code>non_revoc_interval</code>
-defines a non-revocation interval for a requested attribute / predicate with the following timestamps:</p>
+<h5 id="request-non-revocation-proofs"><a class="toc-anchor" href="#request-non-revocation-proofs" >§</a> Request Non-Revocation Proofs</h5>
+<p>The presentation request JSON item <code>non_revoc_interval</code> allows the <a class="term-reference" href="#term:verifier">verifier</a> to define an acceptable non-revocation interval for a requested
+attribute(s) / predicate(s) with the following timestamps:</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
     <span class="token property">"from"</span><span class="token operator">:</span> Optional&lt;int><span class="token punctuation">,</span> 
     <span class="token property">"to"</span><span class="token operator">:</span> Optional&lt;int><span class="token punctuation">,</span> 
 <span class="token punctuation">}</span>
 </code></pre>
 <ul>
-<li><code>from</code> is a unsigned long long value, the timestamp of interval beginning, presented as total number of seconds from Unix Epoch.</li>
-<li><code>to</code> is a unsigned long long value, the timestamp of interval end, presented as total number of seconds from Unix Epoch.</li>
+<li><code>from</code> is a unsigned long long value, the timestamp of interval beginning,
+presented as total number of seconds from Unix Epoch.</li>
+<li><code>to</code> is a unsigned long long value, the timestamp of interval end, presented
+as total number of seconds from Unix Epoch.</li>
 </ul>
-<p><a id="wql_query"></a> <code>wql query</code> is a Wallet Query Language (WQL) query filter
-for credentials searching based on tags and will be specified under <code>restrictions</code> for each attribute/predicate.</p>
+<p>As noted in the examples above, the <code>non-revoked</code> item be may at the outer level
+of the presentation request such that it applies to all attributes and
+predicates, or at the attribute/predicate level, applying only to specific
+attributes and/or predicates.</p>
+<p>The use of a “non-revoke interval” is intended to have the semantic meaning that
+the <a class="term-reference" href="#term:verifier">verifier</a> will accept a non-revocation Proof (NRP) from any point in
+the <code>from</code> to <code>to</code> interval. The intention is that by being as flexible as the
+business rules allow, the <a class="term-reference" href="#term:holder">holder</a> and/or <a class="term-reference" href="#term:verifier">verifier</a> may have
+cached <a class="term-reference" href="#term:vdr">VDR</a> revocation data such that they don’t have to go to the
+<a class="term-reference" href="#term:vdr">VDR</a> to get additional <a class="term-reference" href="#term:revregentry">RevRegEntry</a> data. In practice, the use
+of an interval here is not well understood and tends to cause confusion amongst
+presentation request developers. The AnonCreds community recommends always using
+matching <code>to</code> and <code>from</code> values (see <a path-0="github.com"path-1="hyperledger"path-2="aries-rfcs"path-3="tree"path-4="main"path-5="concepts"path-6="0441-present-proof-best-practices#semantics-of-non-revocation-interval-endpoints"href="https://github.com/hyperledger/aries-rfcs/tree/main/concepts/0441-present-proof-best-practices#semantics-of-non-revocation-interval-endpoints" >Aries RFC 0441 Present Proof Best
+Practices</a>).</p>
+<p>While one would expect the <code>to</code> value to be the current time (“Prove the
+credential is not revoked right now”), its inclusion allows the <a class="term-reference" href="#term:verifier">verifier</a> to ask for a NRP sometime in the past. This addresses use cases such
+as “Prove that your car insurance policy was not revoked on June 12, 2021 when
+the accident occurred.”</p>
+<h5 id="wql-query"><a class="toc-anchor" href="#wql-query" >§</a> WQL Query</h5>
+<p>The <code>restrictions</code> on each attribute/predicate defines a query filter in <a class="term-reference" href="#term:wallet-query-language">Wallet Query Language</a> (WQL) that is used to search the <a class="term-reference" href="#term:holder">holder</a> wallet
+(storage) for candidate credentials that meet the restrictions. WQL is not
+required in an AnonCreds implementation, but the function it performs is
+required. That is, the <a class="term-reference" href="#term:holder">holder</a> must scan the credentials it holds to
+find the ones that satisfy the requirements defined in the presentation request.</p>
 <p>The WQL specification can be found in
 <a path-0="github.com"path-1="hyperledger"path-2="indy-sdk"path-3="blob"path-4="master"path-5="docs"path-6="design"path-7="011-wallet-query-language"path-8="README.md"href="https://github.com/hyperledger/indy-sdk/blob/master/docs/design/011-wallet-query-language/README.md" >indy-sdk/docs/design/011-wallet-query-language/README.md</a></p>
 <p>Wallets can be searched and filtered using a simple, JSON-based query language.
@@ -1225,14 +1284,29 @@ telling the wallet to store its value unencrypted, which makes the <code>$gt</co
 <p>In step 2 of the <a href="#anoncreds-presentation-data-flow" >AnonCreds Presentation Data Flow</a>,
 the Verifier sends the presentation request to the Holder.</p>
 <h4 id="generate-presentation"><a class="toc-anchor" href="#generate-presentation" >§</a> Generate Presentation</h4>
-<p>In step 3, 4, and 5 of the <a href="#anoncreds-presentation-data-flow" >AnonCreds Presentation Data Flow</a>,
-the Holder collects the required information and creates the verifiable presentation according to the
-<a href="#example-of-a-complete-presentation-request" >presentation request</a> received from the Verifier.</p>
-<p>Either a corresponding credential with optionally revealed attributes or a self-attested attribute must
-be provided for each requested attribute.
-A presentation request may request multiple credentials from different schemas and multiple issuers,
-which should reside in the Holder’s wallet.</p>
-<h5 id="protocol-description"><a class="toc-anchor" href="#protocol-description" >§</a> Protocol description</h5>
+<p>In step 3, 4, and 5 of the <a href="#anoncreds-presentation-data-flow" >AnonCreds Presentation Data
+Flow</a>, the Holder collects the required
+information and creates the verifiable presentation according to the
+<a href="#example-of-a-complete-presentation-request" >presentation request</a> received
+from the Verifier.</p>
+<p>Either a corresponding credential with optionally revealed attributes or a
+self-attested attribute must be provided for each requested attribute. A
+presentation request may request multiple credentials from different schemas and
+multiple issuers, which should reside in the Holder’s wallet.</p>
+<p>The <a class="term-reference" href="#term:verifier">verifier</a> may specify in the presentation request that some or
+all of the attributes/predicates that are derived from revocable verifiable credentials held by
+the <a class="term-reference" href="#term:holder">holder</a> have an accompanying non-revocation proof (NRP). The generation of an NRP
+is described <a href="#generate-non-revocation-proofs" >in this section</a> of the specification.</p>
+<div id="note-1" class="notice note"><a class="notice-link" href="#note-1">NOTE</a><p>Often in discussions about verifiable presentations, the term “<a class="term-reference" href="#term:prover">prover</a>”
+is used to indicate the participant generating the presentation.
+Throughout the Hyperledger Indy AnonCreds implementation the term <code>prover</code> is
+used in the names of methods performed by that participant. However, because
+in AnonCreds the <a class="term-reference" href="#term:holder">holder</a> and the <a class="term-reference" href="#term:prover">prover</a> are always the same entity, we’ll use
+<a class="term-reference" href="#term:holder">holder</a> to refer to the participant generating the requested presentation to
+emphasize that the same entity is both issued credentials and generating
+presentations from those credentials.</p>
+</div>
+<h5 id="generate-anoncreds-presentation"><a class="toc-anchor" href="#generate-anoncreds-presentation" >§</a> Generate AnonCreds Presentation</h5>
 <p>Before the Holder can generate the proof, he needs to collect all required credentials from the Holder wallet
 based on the provided presentation request. Instead of immediately returning fetched credentials, a three-step
 procedure is used, first creating a <code>search_handle</code>, then fetching credentials in batches, and finally
@@ -1561,7 +1635,7 @@ self-attested attribute value is provided.</li>
 <span class="token punctuation">}</span>
 
 </code></pre>
-<h5 id="example-of-a-proof"><a class="toc-anchor" href="#example-of-a-proof" >§</a> Example of a proof:</h5>
+<h6 id="example-of-a-proof"><a class="toc-anchor" href="#example-of-a-proof" >§</a> Example of a proof:</h6>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
     <span class="token property">"requested_proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
         <span class="token property">"revealed_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
@@ -1610,14 +1684,205 @@ self-attested attribute value is provided.</li>
     <span class="token punctuation">]</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<p>In step 6 of the <a href="#anoncreds-presentation-data-flow" >AnonCreds Presentation Data Flow</a>,
-the Holder sends the verifiable presentation to the Verifier.</p>
+<h5 id="generate-non-revocation-proofs"><a class="toc-anchor" href="#generate-non-revocation-proofs" >§</a> Generate Non-Revocation Proofs</h5>
+<p>A <a class="term-reference" href="#term:holder">holder</a> preparing an AnonCreds presentation must determine what, if
+any, non-revocation proofs (NRPs) must be added to the presentation based on a
+combination of what is in the proof request, and what verifiable credentials are
+to be used in the presentation. As noted in the <a href="#verifier-revocation-interval-request" >previous
+section</a>, the presentation request may
+have the <code>non-revoked</code> item at the outer-most level, applying to all source
+credentials, or at the <code>requested_attribute</code> and/or <code>requested_predicate</code> level,
+applying only to specific source credentials. For each, the <a class="term-reference" href="#term:holder">holder</a> must
+also determine if the verifiable credential selected for attributes/predicates
+where a NRP is requested is a revocable credential. Obviously, a NRP cannot be
+produced for a verifiable credential issued without a <a class="term-reference" href="#term:revreg">RevReg</a>.</p>
+<p>Once the <a class="term-reference" href="#term:holder">holder</a> has determined the required NRPs needed for the
+presentation, they must generate a NRP for each applicable source verifiable
+credential and add the NRPs to the presentation. For each, the <a class="term-reference" href="#term:holder">holder</a>
+must collect the necessary data from the <a class="term-reference" href="#term:revregentry">RevRegEntry</a>s
+published by the <a class="term-reference" href="#term:issuer">issuer</a> and then generate the NRP.</p>
+<h5 id="collecting-data-for-generating-the-non-revocation-proof"><a class="toc-anchor" href="#collecting-data-for-generating-the-non-revocation-proof" >§</a> Collecting Data for Generating the Non-Revocation Proof</h5>
+<p>In order to produce a NRP, the <a class="term-reference" href="#term:holder">holder</a> must collect the following information from wherever the <a class="term-reference" href="#term:issuer">issuer</a>
+has published the information. Note that the <a class="term-reference" href="#term:holder">holder</a> may have some or all of this information cached
+from data previously collected.</p>
+<ul>
+<li>The type of <code>issuance_type</code> of the <a class="term-reference" href="#term:revreg">RevReg</a> – whether the initial state of the
+credentials in the registry is <code>active</code> or <code>revoked</code>. This information is part
+of the <a class="term-reference" href="#term:revreg">RevReg</a>, and so likely cached by the <a class="term-reference" href="#term:holder">holder</a> when they were first issued
+the credential.</li>
+<li>The tails file for <a class="term-reference" href="#term:revreg">RevReg</a>, the location (a URL) of which is stored in
+the issued credential’s <a class="term-reference" href="#term:revreg">RevReg</a>. The <a class="term-reference" href="#term:holder">holder</a> likely (though
+not necessarily) would have collected the tails file at the time of issuance.
+Recall (from <a href="data_flow_setup.md#tails-file-and-tails-file-generation" >this section of the
+specification</a>) that
+the tails file for a <a class="term-reference" href="#term:revreg">RevReg</a> is generated at creation time and never
+changes.</li>
+<li>The index of the credential within the <a class="term-reference" href="#term:revreg">RevReg</a> for the <a class="term-reference" href="#term:holder">holder</a>'s specific
+credential being used in the presentation. This information is given to the
+<a class="term-reference" href="#term:holder">holder</a> by the <a class="term-reference" href="#term:issuer">issuer</a> when the verifiable credential is issued.</li>
+<li>The accumulator published by the <a class="term-reference" href="#term:issuer">issuer</a> for the <a class="term-reference" href="#term:revregentry">RevRegEntry</a> that the <a class="term-reference" href="#term:holder">holder</a>
+will use in generating the NRP. In the Hyperledger Indy implementation of
+AnonCreds, the entries are published as <a class="term-reference" href="#term:revregentry">RevRegEntry</a>s on the ledger, and collected via a
+special request to the ledger (detailed below).</li>
+<li>The revocation status changes of all of the credential indices up to the
+publication of the accumulator that the <a class="term-reference" href="#term:holder">holder</a> will use in generating the
+proof. Required is the collection of all of the <code>issued</code> and <code>revoked</code> lists
+(as described <a href="#anoncreds-credential-revocation-and-publication" >here</a>) from
+all of the <a class="term-reference" href="#term:revregentry">RevRegEntry</a> publication requests made by the <a class="term-reference" href="#term:issuer">issuer</a> up to and
+including the request that includes the accumulator being used by the <a class="term-reference" href="#term:holder">holder</a>
+in generating the NRP.</li>
+</ul>
+<p>The collection of the last two items is difficult without extra support of the
+entity holding the published <a class="term-reference" href="#term:revreg">RevReg</a> (e.g. the <a class="term-reference" href="#term:vdr">VDR</a>/ledger).
+Since each <a class="term-reference" href="#term:revregentry">RevRegEntry</a> holds only the list of <code>active</code> and <code>revoked</code>
+credential revocation status changes since the previous <a class="term-reference" href="#term:revregentry">RevRegEntry</a>
+(the “deltas”), a <a class="term-reference" href="#term:holder">holder</a> must retrieve those lists from every <a class="term-reference" href="#term:revregentry">RevRegEntry</a> from <a class="term-reference" href="#term:revreg">RevReg</a> creation to the <a class="term-reference" href="#term:revregentry">RevRegEntry</a> holding
+the accumulator the <a class="term-reference" href="#term:holder">holder</a> will use for generating the NRP. The
+<a class="term-reference" href="#term:issuer">issuer</a> could have made many calls to publish <a class="term-reference" href="#term:revregentry">RevRegEntry</a>
+transactions, and the <a class="term-reference" href="#term:holder">holder</a> would have to make a request for each one,
+which is not practical (and perhaps not even possible). In the Hyperledger Indy
+implementation, a special call
+(<a path-0="github.com"path-1="hyperledger"path-2="indy-node"path-3="blob"path-4="master"path-5="docs"path-6="source"path-7="requests.md#get_revoc_reg_delta"href="https://github.com/hyperledger/indy-node/blob/master/docs/source/requests.md#get_revoc_reg_delta" ><code>get_revoc_reg_delta</code></a>)
+is used to collect the necessary data from all the <a class="term-reference" href="#term:revregentry">RevRegEntry</a>
+transactions for a specified interval in a single request. In the most used
+version of the call, the interval in the request is <code>from</code> 0 (meaning from when
+the <a class="term-reference" href="#term:revreg">RevReg</a> was created) <code>to</code> the current time. If the <a class="term-reference" href="#term:holder">holder</a>
+has called the routine previously with an earlier <code>to</code> value and cached the
+results, the <a class="term-reference" href="#term:holder">holder</a> MAY use the time of the cached result as the
+<code>from</code>, so that only the credentials with revocation status changes since that
+time are returned. The <a class="term-reference" href="#term:holder">holder</a> then adds the returned lists to the
+cached lists. If the <a class="term-reference" href="#term:verifier">verifier</a> has requested a “back in time” NRP, the
+<a class="term-reference" href="#term:holder">holder</a> may use a <code>to</code> date to match the date of interest to the <a class="term-reference" href="#term:verifier">verifier</a>. When executed, the transaction returns:</p>
+<ul>
+<li>The full list of all <code>issued</code> and <code>revoked</code> entries in all of the <a class="term-reference" href="#term:revregentry">RevRegEntry</a>
+transactions within the requested interval.</li>
+<li>The accumulator for the last <a class="term-reference" href="#term:revregentry">RevRegEntry</a> within the requested interval.</li>
+<li>The timestamp (in the Unix epoch format) of the last <a class="term-reference" href="#term:revregentry">RevRegEntry</a> in the
+interval.</li>
+</ul>
+<p>Once collected, the <a class="term-reference" href="#term:holder">holder</a> processes the <code>issued</code> and <code>revoked</code> lists
+to determine the credential status (revoked or not) of every credential in the
+<a class="term-reference" href="#term:revreg">RevReg</a>. As well, the <a class="term-reference" href="#term:holder">holder</a> can at the point see if the
+credential for which the NRP is being generated has been revoked, and decide
+to continue with the process (producing an unverifiable “proof”) or to stop the
+process, perhaps with a notification to the <a class="term-reference" href="#term:verifier">verifier</a>.</p>
+<h6 id="non-revocation-proof-generation-steps"><a class="toc-anchor" href="#non-revocation-proof-generation-steps" >§</a> Non-Revocation Proof Generation Steps</h6>
+<p>Given the data collected by the <a class="term-reference" href="#term:holder">holder</a> to produce the NRP, the
+following calculations are performed.</p>
+<p>A <code>witness</code> is calculated in the same way as the accumulator (as described
+<a href="#publishing-the-initial-initial-revocation-registry-entry-object" >here</a>),
+except the tails file factor of the credential being proven as not revoked is
+<strong>not</strong> included in the calculation. All of the tails file entries from the
+other unrevoked credentials <strong>are</strong> included.</p>
+<p>Once the witness (<code>u</code>), the accumulator from the ledger (<code>e</code>) and the value of
+the tails file entry for the credential of interest (<code>b</code>) are known, the NRP can
+be generated as follows:</p>
+<div id="todo-19" class="notice todo"><a class="notice-link" href="#todo-19">TODO</a><p>To Do: Add more detail about the calculation of <code>C</code><sub><code>u</code></sub> and
+<code>C</code><sub><code>b</code></sub> in the following.</p>
+</div>
+<ul>
+<li>The <a class="term-reference" href="#term:holder">holder</a> calculates <code>u*b = e</code>, where e is the accumulator.</li>
+<li>The <a class="term-reference" href="#term:holder">holder</a> derives two values (in cryptograhic terms -
+<a path-0="en.wikipedia.org"path-1="wiki"path-2="Commitment_scheme"href="https://en.wikipedia.org/wiki/Commitment_scheme" >commitments</a>)
+<code>C</code><sub><code>u</code></sub> and <code>C</code><sub><code>b</code></sub> based on <code>u</code> and <code>b</code>.</li>
+<li>The <a class="term-reference" href="#term:holder">holder</a> then calculates <code>T</code> from <code>C</code><sub><code>u</code></sub> and
+<code>C</code><sub><code>b</code></sub> and sends all three to the <a class="term-reference" href="#term:verifier">verifier</a>.</li>
+<li>The <a class="term-reference" href="#term:verifier">verifier</a> uses <code>e</code> (the accumulator from the ledger),
+<code>C</code><sub><code>u</code></sub> and <code>C</code><sub><code>b</code></sub> to calculate its own <code>T'</code> and confirms
+that <code>T</code> and <code>T'</code> are the same.</li>
+</ul>
+<p>This is the zero knowledge non-revocation proof.</p>
+<p>Each NRP is added alongside the credential to which the NRP is applied, to the
+presentation generated by the <a class="term-reference" href="#term:holder">holder</a> using this data
+model:</p>
+<pre class="language-json"><code class="language-json"><span class="token property">"non_revoc_proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"x_list"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"rho"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"r"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"r_prime"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"r_prime_prime"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"r_prime_prime_prime"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"o"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"o_prime"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"m"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"m_prime"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"t"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"t_prime"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"m2"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"s"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"c"</span><span class="token operator">:</span> <span class="token string">"..."</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"c_list"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"e"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"d"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"a"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"g"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"w"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"s"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+        <span class="token property">"u"</span><span class="token operator">:</span> <span class="token string">"..."</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>The values in the data model are:</p>
+<div id="todo-20" class="notice todo"><a class="notice-link" href="#todo-20">TODO</a><p>To Do: Enumerate each of the items in each NRP section of the presentation.</p>
+</div>
+<ul>
+<li><code>x_list</code>&quot; is …
+<ul>
+<li><code>rho</code>&quot; is …</li>
+<li><code>r</code>&quot; is …</li>
+<li><code>r_prime</code>&quot; is …</li>
+<li><code>r_prime_prime</code>&quot; is …</li>
+<li><code>r_prime_prime_prime</code>&quot; is …</li>
+<li><code>o</code>&quot; is …</li>
+<li><code>o_prime</code>&quot; is …</li>
+<li><code>m</code>&quot; is …</li>
+<li><code>m_prime</code>&quot; is …</li>
+<li><code>t</code>&quot; is …</li>
+<li><code>t_prime</code>&quot; is …</li>
+<li><code>m2</code>&quot; is …</li>
+<li><code>s</code>&quot; is …</li>
+<li><code>c</code>&quot; is …</li>
+</ul>
+</li>
+<li><code>c_list</code>&quot; is …
+<ul>
+<li><code>e</code>&quot; is …</li>
+<li><code>d</code>&quot; is …</li>
+<li><code>a</code>&quot; is …</li>
+<li><code>g</code>&quot; is …</li>
+<li><code>w</code>&quot; is …</li>
+<li><code>s</code>&quot; is …</li>
+<li><code>u</code>&quot; is …</li>
+</ul>
+</li>
+</ul>
+<p>As well, in the presentation data model, added to the <code>identifiers</code> item, is the
+timestamp (Unix epoch format) of the <a class="term-reference" href="#term:revregentry">RevRegEntry</a> used to construct the NRP
+(see example below). The <a class="term-reference" href="#term:verifier">verifier</a> needs the <code>rev_reg_id</code> and <code>timestamp</code> to get
+the correct accumulator to use in verifying the NRP.</p>
+<pre class="language-json"><code class="language-json"><span class="token property">"identifiers"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+        <span class="token property">"schema_id"</span><span class="token operator">:</span> <span class="token string">"7BPMqYgYLQni258J8JPS8K:2:degree schema:46.58.87"</span><span class="token punctuation">,</span>
+        <span class="token property">"cred_def_id"</span><span class="token operator">:</span> <span class="token string">"7BPMqYgYLQni258J8JPS8K:3:CL:70:faber.agent.degree_schema"</span><span class="token punctuation">,</span>
+        <span class="token property">"rev_reg_id"</span><span class="token operator">:</span> <span class="token string">"7BPMqYgYLQni258J8JPS8K:4:7BPMqYgYLQni258J8JPS8K:3:CL:70:faber.agent.degree_schema:CL_ACCUM:61d5a381-30be-4120-9307-b150b49c203c"</span><span class="token punctuation">,</span>
+        <span class="token property">"timestamp"</span><span class="token operator">:</span> <span class="token number">1656269796</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre>
+<p>In step 6 of the <a href="#anoncreds-presentation-data-flow" >AnonCreds Presentation Data
+Flow</a>, the <a class="term-reference" href="#term:holder">holder</a> sends the verifiable
+presentation, including any embedded NRPs, to the <a class="term-reference" href="#term:verifier">verifier</a>.</p>
 <p><a path-0="docs"path-1="dev"path-2="anoncred.pdf"href="indy-anoncreds/docs/dev/anoncred.pdf" >Link: indy-anoncreds/docs/dev/anoncred.pdf</a></p>
 <h4 id="verify-presentation"><a class="toc-anchor" href="#verify-presentation" >§</a> Verify Presentation</h4>
-<p>In step 7, 8, and 9 of the
-<a href="#anoncreds-presentation-data-flow" >AnonCreds Presentation Data Flow</a>,
-the Verifier collects the required information and verifies the verifiable presentation and accepts it if the
+<p>In step 7, 8, and 9 of the <a href="#anoncreds-presentation-data-flow" >AnonCreds Presentation Data
+Flow</a>, the Verifier collects the required
+information and verifies the verifiable presentation and accepts it if the
 signature is valid, otherwise rejects the verifiable presentation.</p>
+<p>This section covers the overall verification process of the attributes,
+predicates and link secret. Following that is a section that specifies the
+process for <a href="#verify-non-revocation-proof" >verifying the non-revocation proofs</a>
+(if any) in the presentation.</p>
 <pre class="language-rust"><code class="language-rust"><span class="token keyword">pub</span> <span class="token keyword">extern</span> <span class="token keyword">fn</span> <span class="token function-definition function">indy_verifier_verify_proof</span><span class="token punctuation">(</span>command_handle<span class="token punctuation">:</span> <span class="token class-name">CommandHandle</span><span class="token punctuation">,</span>
                                          proof_request_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
                                          proof_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
@@ -1676,12 +1941,180 @@ signature is valid, otherwise rejects the verifiable presentation.</p>
 </ul>
 </li>
 </ul>
-<h3 id="anoncreds-revocation-data-flow"><a class="toc-anchor" href="#anoncreds-revocation-data-flow" >§</a> AnonCreds Revocation Data Flow</h3>
-<div id="todo-19" class="notice todo"><a class="notice-link" href="#todo-19">TODO</a><p>Sumamrize the impacts of revocation on the various other flows</p>
+<h5 id="verify-non-revocation-proof"><a class="toc-anchor" href="#verify-non-revocation-proof" >§</a> Verify Non-Revocation Proof</h5>
+<p>If the presentation includes one or more Non-Revocation Proofs (NRPs) the
+<a class="term-reference" href="#term:verifier">verifier</a> must also extract from the verifiable presentation the NRPs
+and process each proof. If any of the NRPs cannot be verified because one
+or more of the attributes/predicates came from a revoked credential, the
+overall status of the presentation is rejected – not verifiable. The following
+outlines the process for verifying an NRP.</p>
+<p>The <a class="term-reference" href="#term:verifier">verifier</a> begins by extracting from the section of the presentation
+for a given revocable credential the <code>non_revoc_proof</code> and <code>identifiers</code> data
+items. The <a class="term-reference" href="#term:verifier">verifier</a> must retrieve (possibly from its cache, otherwise
+from the <a class="term-reference" href="#term:vdr">VDR</a>) the published <a class="term-reference" href="#term:revregentry">RevRegEntry</a> given the <code>rev_reg_id</code>
+and <code>timestamp</code> values from the <code>identifiers</code> data item. The <a class="term-reference" href="#term:verifier">verifier</a>
+extracts the <code>accumulator</code> item from the <a class="term-reference" href="#term:revregentry">RevRegEntry</a> retrieved. Note
+that the <a class="term-reference" href="#term:verifier">verifier</a> does not need to collect the revocation status of all
+of the credentials in the registry, nor the contents of the tails file for the
+<a class="term-reference" href="#term:revreg">RevReg</a>. Only the issuer and <a class="term-reference" href="#term:holder">holder</a> needs that data. During the
+verification process, the <a class="term-reference" href="#term:verifier">verifier</a> does not learn the index of the
+<a class="term-reference" href="#term:holder">holder</a>'s credential in the <a class="term-reference" href="#term:revreg">RevReg</a>.</p>
+<p>Once the <a class="term-reference" href="#term:verifier">verifier</a> gets the data in the <code>non_revoc_proof</code> data item from
+the presentation for the NRP being processed, plus the accumulator from
+appropriate <a class="term-reference" href="#term:revregentry">RevRegEntry</a>, the following steps are carried out to verify
+the NRP.</p>
+<div id="todo-21" class="notice todo"><a class="notice-link" href="#todo-21">TODO</a><p>To Do: Outline the NRP verification calculation.</p>
 </div>
+<div id="todo-22" class="notice todo"><a class="notice-link" href="#todo-22">TODO</a><p>To Do: Is there a separate process to bind the NRP to the credential?</p>
+</div>
+<p>The verification code MUST surface to the <a class="term-reference" href="#term:verifier">verifier</a> if any part of the
+presentation, including any NRP(s), fail cryptographic verification. The
+verification code MAY surface additional detail about what part of the
+presentation failed, such as which NRP failed verification (if any).</p>
+<p>The <a class="term-reference" href="#term:verifier">verifier</a> SHOULD evaluate the presentation to make sure that the
+<a class="term-reference" href="#term:holder">holder</a> provided all requested NRPs. Notably, if any expected NRPs
+are not received in the presentation, the <a class="term-reference" href="#term:verifier">verifier</a> SHOULD check to see
+if the given credential type is revocable. If not, it is acceptable that no
+NRP was received. However, if the credential used in the generation of the
+proof is revocable, and the <a class="term-reference" href="#term:holder">holder</a> did not provide the NRP, the
+verification code SHOULD surface to the <a class="term-reference" href="#term:verifier">verifier</a> that the presentation
+failed cryptographic verification.</p>
+<h3 id="anoncreds-revocation-data-flow"><a class="toc-anchor" href="#anoncreds-revocation-data-flow" >§</a> AnonCreds Revocation Data Flow</h3>
+<p>AnonCreds includes a mechanism that supports the revocation of verifiable
+credentials. This mechanism includes:</p>
+<ul>
+<li>An <a class="term-reference" href="#term:issuer">issuer</a> setting up to issue revocable credentials.</li>
+<li>An <a class="term-reference" href="#term:issuer">issuer</a> issuing revocable credentials.</li>
+<li>An <a class="term-reference" href="#term:issuer">issuer</a> activating or revoking issued credentials.</li>
+<li>A <a class="term-reference" href="#term:verifier">verifier</a> requesting a presentation to include a non-revocation proof
+for one or more revocable credentials.</li>
+<li>A <a class="term-reference" href="#term:holder">holder</a> generating based on the presentation request of the verifier a
+non-revocation proof for attributes derived from revocable credentials.</li>
+<li>A <a class="term-reference" href="#term:verifier">verifier</a> verifying a non-revocation proof included in a
+presentation from a <a class="term-reference" href="#term:holder">holder</a>.</li>
+</ul>
+<p>A fundamental goal of AnonCreds is to not provide a correlatable identifier for
+either a <a class="term-reference" href="#term:holder">holder</a> or a credential as part of generation and verification
+of an AnonCreds presentation. Applying that goal to revocation means that the
+revocation mechanism must support the <a class="term-reference" href="#term:holder">holder</a> proving a credential used
+in generating a presentation is not revoked without providing a correlatable
+identifier for that credential or the holder itself. As such, the AnonCreds
+revocation mechanism uses a Zero Knowledge Proof (ZKP) that allows the <a class="term-reference" href="#term:holder">holder</a> to prove a credential they hold is not revoked without revealing an
+identifier for their credential or the holder.</p>
 <h4 id="anoncreds-issuer-setup-with-revocation"><a class="toc-anchor" href="#anoncreds-issuer-setup-with-revocation" >§</a> AnonCreds Issuer Setup With Revocation</h4>
+<p>The details of <a class="term-reference" href="#term:issuer">issuer</a> setting up revokable credential types are covered
+in the <a href="#issuer-create-and-publish-revocation-registry-objects" >issuer setup</a>
+section of this specification. Note the <a href="#recommend-not-using-issuanceondemand" >warning and recommendation against the
+use of <code>ISSUANCE_ON_DEMAND</code></a> in that part
+of the specification.</p>
 <h4 id="anoncreds-issuance-with-revocation"><a class="toc-anchor" href="#anoncreds-issuance-with-revocation" >§</a> AnonCreds Issuance with Revocation</h4>
-<h4 id="anoncreds-presentation-with-revocation"><a class="toc-anchor" href="#anoncreds-presentation-with-revocation" >§</a> AnonCreds Presentation with Revocation</h4>
+<p>The details of an <a class="term-reference" href="#term:issuer">issuer</a> issuing a revokable credential to a <a class="term-reference" href="#term:holder">holder</a> are covered in the <a href="issue-credential" >issuance data
+flow</a> section of this specification.</p>
+<h4 id="anoncreds-credential-activationrevocation-and-publication"><a class="toc-anchor" href="#anoncreds-credential-activationrevocation-and-publication" >§</a> AnonCreds Credential Activation/Revocation and Publication</h4>
+<p>When an <a class="term-reference" href="#term:issuer">issuer</a> decides to revoke a previously issued credential (or
+activate a previously inactive/revoked credential), they do so by publishing
+another instance of the <a class="term-reference" href="#term:revregentry">RevRegEntry</a> object. Recall from the issuer
+setup section, the specification about <a class="term-reference" href="#term:revregentry">RevRegEntry</a>[creating and publishing the first <a class="term-reference" href="#term:revregentry">RevRegEntry</a>](data_flow_setup.md#creating-the-initial-revocation-registry-entry-object)
+for a <a class="term-reference" href="#term:revreg">RevReg</a>. In that process, the accumulator for the initial state of
+the <a class="term-reference" href="#term:revreg">RevReg</a> is published. When subsequent <a class="term-reference" href="#term:revregentry">RevRegEntry</a>
+transactions are published to the ledger, each includes an updated value of the
+accumulator. The update of the accumulator is necessary with each revocation or
+(re)activation of a credential or set of credentials since the last published
+<a class="term-reference" href="#term:revregentry">RevRegEntry</a>. This is because only the factors (all factors are listed
+in the respective tails file) of credentials which are active (meaning not being
+revoked) contribute to the accumulator. Therefore in addition to the updated
+accumulator value, every <a class="term-reference" href="#term:revregentry">RevRegEntry</a> contains lists of indices of
+credential factors which have been either revoked or (re)activated within the
+<a class="term-reference" href="#term:revregentry">RevRegEntry</a>. This list of factor indices is a so called <a class="term-reference" href="#term:witness">Witness</a> and enables the <a class="term-reference" href="#term:holder">Holder</a> to successfully generate a proof of non
+revocation.</p>
+<p>An example of the
+data in the <a class="term-reference" href="#term:revregentry">RevRegEntry</a> is shown in the following example of a <a class="term-reference" href="#term:revregentry">RevRegEntry</a>, pulled from <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="140326"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/140326" >this transaction on the Sovrin
+MainNet</a>.</p>
+<pre class="language-json"><code class="language-json"><span class="token property">"data"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"revocDefType"</span><span class="token operator">:</span> <span class="token string">"CL_ACCUM"</span><span class="token punctuation">,</span>
+    <span class="token property">"revocRegDefId"</span><span class="token operator">:</span> <span class="token string">"4xE68b6S5VRFrKMMG1U95M:4:4xE68b6S5VRFrKMMG1U95M:3:CL:59232:default:CL_ACCUM:4ae1cc6c-f6bd-486c-8057-88f2ce74e960"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"accum"</span><span class="token operator">:</span> <span class="token string">"21 116...567"</span><span class="token punctuation">,</span>
+        <span class="token property">"prevAccum"</span><span class="token operator">:</span> <span class="token string">"21 128...C3B"</span><span class="token punctuation">,</span>
+        <span class="token property">"issued"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token property">"revoked"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+            <span class="token number">172</span>
+        <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span>
+</code></pre>
+<p>In the above:</p>
+<ul>
+<li><code>revocDefType</code>: is defined by the comparable entry in the <a class="term-reference" href="#term:revreg">RevReg</a>, and for this
+version of AnonCreds is hard-coded to <code>CL_ACCUM</code>.</li>
+<li><code>revocRegDefId</code>: is the Id of the <a class="term-reference" href="#term:revreg">RevReg</a> to which this entry is
+being added.</li>
+<li><code>accum</code>: is the new value of the accumulator based on the state of the
+credentials in the <a class="term-reference" href="#term:revreg">RevReg</a>, including those listed in this transaction. The
+value is calculated by the Issuer based on the credential state changes, and
+submitted as part of the transaction, and verified by the ledger before being
+published.</li>
+<li><code>prevAccum</code>: is the previous value of the accumulator. The value is supplied
+by the Issuer in the transaction request, and verified by the ledger before
+being published.</li>
+<li><code>issued</code>: an array (possibly empty or not supplied) of the indices within the
+<a class="term-reference" href="#term:revreg">RevReg</a> of the credentials whose state has changed to <code>active</code> (also known as
+<code>not revoked</code>) since the last <a class="term-reference" href="#term:revregentry">RevRegEntry</a> was published to the ledger.</li>
+<li><code>revoked</code>: an array (possibly empty or not supplied) of the indices within the
+<a class="term-reference" href="#term:revreg">RevReg</a> of the credentials whose state has changed to <code>revoked</code> (also known as
+<code>not active</code>) since the last <a class="term-reference" href="#term:revregentry">RevRegEntry</a> was published to the ledger.</li>
+</ul>
+<p>In the example transaction above no credentials are <code>issued</code> (meaning changed
+from status <code>revoked</code> to <code>issued</code>) and only one, the credential with index
+<code>172</code>, is changed to <code>revoked</code>. Both lists can have an arbitrary number of
+entries, up to the total number of credentials in the <a class="term-reference" href="#term:revreg">RevReg</a>.</p>
+<p>The algorithm to calculate the value of a <a class="term-reference" href="#term:revregentry">RevRegEntry</a> accumulator at
+any time is the same: determine the (modulo) product of the primes for each
+non-revoked credential in the <a class="term-reference" href="#term:rev_reg">REV_REG</a>, as described
+<a href="#creating-the-initial-revocation-registry-entry-object" >here</a>.</p>
+<div id="note-2" class="notice note"><a class="notice-link" href="#note-2">NOTE</a><p>The <a class="term-reference" href="#term:issuer">issuer</a> MUST track of the revocation status of all of the
+credentials within a <a class="term-reference" href="#term:revreg">RevReg</a> so that it can both calculate the correct
+accumulator and send to the <a class="term-reference" href="#term:vdr">VDR</a> accurate lists (<code>issued</code> and <code>revoked</code>)
+of the indices of the credentials whose status has changed since the last <a class="term-reference" href="#term:revregentry">RevRegEntry</a> was published. If the list and accumulator published to <a class="term-reference" href="#term:vdr">VDR</a> get out of
+sync  a <a class="term-reference" href="#term:holder">holder</a> will not be able to generate a valid NRP.</p>
+<p>A <a class="term-reference" href="#term:vdr">VDR</a> publishing a <a class="term-reference" href="#term:revreg">RevReg</a> MAY perform its own calculation of
+the accumulator based on the list updates received in a <a class="term-reference" href="#term:revregentry">RevRegEntry</a>
+transaction to ensure that the calculation of the accumulator after all of the
+revocation status updates to the credentials within the <a class="term-reference" href="#term:revreg">RevReg</a> have
+been applied, rejecting the transaction if the calculated accumulator does not
+match that from the <a class="term-reference" href="#term:issuer">issuer</a>.</p>
+<p>If an <a class="term-reference" href="#term:issuer">issuer</a>'s local revocation information gets out of sync with what
+is in the VDR, the <a class="term-reference" href="#term:issuer">issuer</a> MUST rationalize the differences and produce
+a <a class="term-reference" href="#term:revregentry">RevRegEntry</a> transaction that accounts for both the last published
+<a class="term-reference" href="#term:revregentry">RevRegEntry</a> published in the <a class="term-reference" href="#term:vdr">VDR</a> and the desired revocation
+status of all of the credentials in the <a class="term-reference" href="#term:revreg">RevReg</a>.</p>
+</div>
+<p>The <a class="term-reference" href="#term:holder">holder</a> is not involved in the process of revoking a credential.
+There is no technical requirement for an <a class="term-reference" href="#term:issuer">issuer</a> to notify the <a class="term-reference" href="#term:holder">holder</a> that a credential they were issued has been revoked. That said, it is a
+courtesy that may improve the user experience of the <a class="term-reference" href="#term:holder">holder</a>. <a path-0="github.com"path-1="hyperledger"path-2="aries-rfcs"path-3="tree"path-4="main"path-5="features"path-6="0183-revocation-notification"href="https://github.com/hyperledger/aries-rfcs/tree/main/features/0183-revocation-notification" >Aries RFC
+0183 Revocation
+Notification</a>
+is an example of how that can be done. Even if not notified by the <a class="term-reference" href="#term:issuer">issuer</a> of the revocation of a credential, the <a class="term-reference" href="#term:holder">holder</a> can detect their
+credential has been revoked when they retrieve the list of revoked credentials
+from the <a class="term-reference" href="#term:vdr">VDR</a> and discover the index of their credential in the list.</p>
+<h4 id="anoncreds-presentation-request-with-revocation"><a class="toc-anchor" href="#anoncreds-presentation-request-with-revocation" >§</a> AnonCreds Presentation Request with Revocation</h4>
+<p>Carrying out an AnonCreds presentation with revocation is a two-step process, beginning with a
+request from the <a class="term-reference" href="#term:verifier">verifier</a> asking the <a class="term-reference" href="#term:holder">holder</a> to include a
+non-revocation proof (NRP) in the presentation, and then the <a class="term-reference" href="#term:holder">holder</a>
+creating the NRP and including it in the presentation sent to the <a class="term-reference" href="#term:verifier">verifier</a>.</p>
+<p>The verifier requesting a non-revocation proof, and the <a class="term-reference" href="#term:holder">holder</a>
+generating the non-revocation proof are covered in the sections of this
+specification about <a href="#request-non-revocation-proofs" >requesting</a> and
+<a href="#generate-non-revocation-proofs" >generating</a> presentations, respectively.</p>
+<h4 id="anoncreds-verification-with-revocation"><a class="toc-anchor" href="#anoncreds-verification-with-revocation" >§</a> AnonCreds Verification with Revocation</h4>
+<p>A <a class="term-reference" href="#term:verifier">verifier</a> receives the presentation from the <a class="term-reference" href="#term:holder">holder</a> and
+processes the <a href="#verify-presentation" >non-revocation-related parts of the presentation</a> and
+the <a href="#verify-non-revocation-proof" >revocation-related parts of the presentation</a>
+(if any) in the presentation. The resulting status of the presentation combines the
+verification outcomes from processing all proofs within the presentation. If
+verification of one or more of the embedded proofs is unsuccessful, the
+presentation is rejected as unverifiable.</p>
 <h2 id="cryptographic-protocols"><a class="toc-anchor" href="#cryptographic-protocols" >§</a> Cryptographic protocols</h2>
 <h3 id="terminology-2"><a class="toc-anchor" href="#terminology-2" >§</a> Terminology</h3>
 <p><em>TODO: general terms here</em></p>
@@ -1871,22 +2304,22 @@ Procedure:
 
 </code></pre>
 <h2 id="anoncreds-conventions"><a class="toc-anchor" href="#anoncreds-conventions" >§</a> AnonCreds Conventions</h2>
-<div id="todo-20" class="notice todo"><a class="notice-link" href="#todo-20">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
+<div id="todo-23" class="notice todo"><a class="notice-link" href="#todo-23">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
 </div>
 <h2 id="iana-considerations"><a class="toc-anchor" href="#iana-considerations" >§</a> IANA Considerations</h2>
 <p>This document has no IANA actions.</p>
 <h2 id="security-considerations"><a class="toc-anchor" href="#security-considerations" >§</a> Security Considerations</h2>
-<div id="todo-21" class="notice todo"><a class="notice-link" href="#todo-21">TODO</a><p>Add security considerations.</p>
+<div id="todo-24" class="notice todo"><a class="notice-link" href="#todo-24">TODO</a><p>Add security considerations.</p>
 </div>
 <h2 id="privacy-considerations"><a class="toc-anchor" href="#privacy-considerations" >§</a> Privacy Considerations</h2>
-<div id="todo-22" class="notice todo"><a class="notice-link" href="#todo-22">TODO</a><p>Add privacy considerations.</p>
+<div id="todo-25" class="notice todo"><a class="notice-link" href="#todo-25">TODO</a><p>Add privacy considerations.</p>
 </div>
 <h2 id="references"><a class="toc-anchor" href="#references" >§</a> References</h2>
 <h3 id="normative-references"><a class="toc-anchor" href="#normative-references" >§</a> Normative References</h3>
-<div id="todo-23" class="notice todo"><a class="notice-link" href="#todo-23">TODO</a><p>Add normative references</p>
+<div id="todo-26" class="notice todo"><a class="notice-link" href="#todo-26">TODO</a><p>Add normative references</p>
 </div>
 <h3 id="informative-references"><a class="toc-anchor" href="#informative-references" >§</a> Informative References</h3>
-<div id="todo-24" class="notice todo"><a class="notice-link" href="#todo-24">TODO</a><p>Add informative references</p>
+<div id="todo-27" class="notice todo"><a class="notice-link" href="#todo-27">TODO</a><p>Add informative references</p>
 </div>
 <h4 id="resources-on-cryptography"><a class="toc-anchor" href="#resources-on-cryptography" >§</a> Resources on cryptography</h4>
 <h5 id="sigma-protocols"><a class="toc-anchor" href="#sigma-protocols" >§</a> Sigma protocols</h5>
@@ -1909,7 +2342,7 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li>Matt Raffel - Kiva Microfiance</li>
 </ul>
 <h2 id="authors-addresses"><a class="toc-anchor" href="#authors-addresses" >§</a> Authors’ Addresses</h2>
-<div id="todo-25" class="notice todo"><a class="notice-link" href="#todo-25">TODO</a><p>Add authors’ addresses.</p>
+<div id="todo-28" class="notice todo"><a class="notice-link" href="#todo-28">TODO</a><p>Add authors’ addresses.</p>
 </div>
 
                     </article>    
@@ -1971,7 +2404,9 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <ul>
 <li><a href="#anoncreds-issuer-setup-with-revocation" >AnonCreds Issuer Setup With Revocation</a></li>
 <li><a href="#anoncreds-issuance-with-revocation" >AnonCreds Issuance with Revocation</a></li>
-<li><a href="#anoncreds-presentation-with-revocation" >AnonCreds Presentation with Revocation</a></li>
+<li><a href="#anoncreds-credential-activationrevocation-and-publication" >AnonCreds Credential Activation/Revocation and Publication</a></li>
+<li><a href="#anoncreds-presentation-request-with-revocation" >AnonCreds Presentation Request with Revocation</a></li>
+<li><a href="#anoncreds-verification-with-revocation" >AnonCreds Verification with Revocation</a></li>
 </ul>
 </li>
 </ul>
