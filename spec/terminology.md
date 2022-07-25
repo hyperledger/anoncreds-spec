@@ -86,6 +86,15 @@ credential validation and can be [read](https://hyperledger-indy.readthedocs.io/
 
 ~ Further details about Hyperledger Indy's revocation process can be found [here](https://hyperledger-indy.readthedocs.io/projects/hipe/en/latest/text/0011-cred-revocation/README.html).
 
+[[def: Witness Delta]]
+
+The witness delta is an update by the issuer of the list of revoked
+credentials at the time an updated accumulator is published in a [[ref:
+REV_REG_ENTRY]]. The delta tells [[ref: holders]] generating a Non-Revocation
+Proof (NRP) how to adjust their witness (referencing other indexes in the public
+tails file) to bring it back into harmony with the current value of the
+accumulator, such that the updated witness times the private factor once again
+equals the accumulator value.
 
 [[def: Verifiable Data Registry]]
 ~ TODO
