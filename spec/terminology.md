@@ -19,7 +19,16 @@
 ~ TODO
 
 [[def: DID]]
-~ TODO
+
+~ A Decentralized Identifier (DID), defined by the [W3C DID Core
+Specification](https://w3c.github.io/did-core/), is a type of identifier that
+enables verifiable, decentralized digital identity. A DID refers to any subject
+(e.g., a person, organization, thing, data model, abstract entity, etc.) as
+determined by the controller of the DID. DIDs are not used in AnonCreds itself
+but there must be an DID-based, enforced relationship between the [[ref: schema
+publishers]] and [[ref: issuers]] and the AnonCreds objects they publish. This
+is outlined in a note in [this section](anoncreds-setup-data-flow) of this
+specification.
 
 [[def: nonce]]
 ~ TODO
