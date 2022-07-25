@@ -28,10 +28,6 @@ Each of the aforementioned data flows involve different data objects and actors,
 
 The following sequence diagram summarizes the setup operations performed by a [[ref: SCHEMA Publisher]], the [[ref: Issuer]] (one required and one optional) in preparing to issue an AnonCred credential based on provided [[ref: SCHEMA]], and the one setup operation performed by each [[ref: Holder]]. On successfully completing the operations, the [[ref: Issuer]] is able to issue credentials based on the given [[ref: SCHEMA]] to the [[ref: Holder]]. The subsections below the diagram detail each of these operations.
 
-::: todo
-Question: Should there be an operation to cover creating the published DID for the SCHEMA Publisher and Issuer?
-:::
-
 ```mermaid
 sequenceDiagram
     autonumber
@@ -68,6 +64,42 @@ sequenceDiagram
       Note left of H: 💡The "Verifier" role is<br>omitted in this<br>diagram, since<br>it is not required<br>for the setup
     end
 ```
+
+::: note
+
+Those with a knowledge of DIDs might expect that in the flow above, the first
+step would be for the [[ref: issuer]] to publish a DID. However, in AnonCreds,
+DIDs are not used in the processing of credentials, and notably, the public keys
+used in AnonCreds signatures come not from DIDs, but rather from [[def:
+CRED_DEF]] objects. DIDs may be used to identify the entity publishing the
+objects that are then used in the processing of credentials -- the [[def:
+SCEHMA]], [[def: CRED_DEF]], [[def: REV_REG_DEF]] and [[def: REV_REG_ENTRY]]
+objects. There is an enforced relationship between an identifier (such as a DID)
+for the entity publishing the AnonCred objects, and the objects themselves. For
+example, in the Hyperledger Indy implementation of AnonCreds, for a credential
+issuer to publish a [[def: CRED_DEF]] on an instance of Indy it must have a DID
+on that instance, and it must use that DID to sign the transaction to write the
+[[def: CRED_DEF]].
+
+The DID of the publisher of an AnonCreds object MUST be identifiable from the
+published object and enforcement of the relationship between the DID and the
+object must be enforced. For example, in the Hyperledger Indy implementation of
+AnonCreds, the DID of the object publisher is part of the identifier of the
+object -- given the identifier for the AnonCreds object (e.g. one found in
+proving a verifiable credential), the DID of the publisher can be found.
+Further, the Hyperledger Indy ledger enforces, and makes available for
+verification, the requirement that the writing of the AnonCreds object must be
+signed by the DID that is writing the object.
+
+If a DID-based messaging protocol, such as
+[DIDComm](https://identity.foundation/didcomm-messaging/spec/) is used between
+the AnonCreds participants (the [[ref: issuer]], [[ref: holder]] and [[ref:
+verifier]]) the use of DIDs for messaging is independent of their use (or not)
+in the publishing AnonCreds objects. Such DIDs are used to facilitate secure
+messaging between the participants to enable the issuing of credentials and the
+presentation of proofs.
+
+:::
 
 #### SCHEMA Publisher: Publish SCHEMA Object
 
