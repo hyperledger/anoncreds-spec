@@ -1,5 +1,7 @@
 ## Introduction
 
+Similar to the [W3C Verifiable Credentials Data Model](https://www.w3.org/TR/vc-data-model/) or the “Trust Triangle” of the [Trust over IP Model](https://trustoverip.org/wp-content/toip-model/), the AnonCreds credential protocol follows the model of [[ref: Verifiable Credential] and [[ref: Verifiable Presentation]]. Verifiable Presentations used in the AnonCreds protocol are just-in-time synthetizations from one or several Verifiable Credentials that do not contain the original credential or signatures and can be presented to third parties for validation. 
+
 AnonCreds ZKP verifiable credentials provide capabilities that many see as important for digital identity use cases in particular, and verifiable data in general. These features include:
 
 - A full implementation of the Layer 3 verifiable credential “Trust Triangle” of the [Trust over IP Model](https://trustoverip.org/wp-content/toip-model/).

@@ -10,7 +10,17 @@
 ~ TODO
 
 [[def: credential]]
-~ A credential is a set of [[ref: claim]]s about an identity [[ref: subject]]. A verifiable credential is a tamper-proof credential whose authorship is cryptographically verifiable. An anonymous credential, also known as AnonCreds, is a verifiable credential that has privacy-preserving properties to enable data minimization and correlation resistance. 
+~ A credential is a set of [[ref: claim]]s about an identity [[ref: subject]]. A [[ref: Verifiable Credential]] is a tamper-proof credential whose authorship is cryptographically verifiable. An anonymous credential, also known as AnonCreds, is a verifiable credential that has privacy-preserving properties to enable data minimization and correlation resistance. 
+
+[[def: Verifiable Credential]]
+~ A verifiable credential is a temper-evident credential with cryptographically verifiable authorship. A verifiable credential is exchanged between a [[ref: issuer]] and a [[ref: holder]]. It consists of one or more [[ref: claims]] made by an [[ref: issuer]] about the [[ref: holder]] of a credential. One or several verifiable credentials can be used to construct a [[ref: Verifiable Presentation]] containing croptographically verifiable proofs of the [[ref: claims]]. In the case of the AnonCreds protocol, anonymous credentials known as AnonCreds are used that focus heavily on privacy features like [[ref: zero-knowledge proofs]].
+
+~ A verifiable Credential depends on a [[ref: CRED_DEF]], a [[ref: SCHEMA]] and optionally a [[ref: REV_REG_DEF]] and corresponding [[ref: REV_REG_ENTRY]] (for credentials that support revocation) to be present on a [[ref: Verifiable Data Registry]] that is accessible to all participants of the ecosystem.
+
+[[def: Verifiable Presentation]]
+~ A Verifiable Presentation is derived or synthetized from one or several [[ref: Verifiable Credential]] that is created just-in-time to be shared for a specific occasaion and verifier. Using the claims of one or several credentials, the presentation derives proofs that are tamper-evident and allow for verification that they were issued by the correct issuers. In the case of AnonCreds, the presentation relies on the generation of proofs based on [[ref: zero-knowledge proofs]]. A presentation will typically be created upon receiving a [[ref: nonce]] from the verifier to avoid possible replay-attacks.
+
+~ The form and creation of such a presentation is the biggest difference to a lot of currently-used credential schemes where signatures from the credential or the whole credential are directly revealed. 
 
 [[def: Credential Offer]]
 ~ TODO
@@ -31,7 +41,7 @@ is outlined in a note in [this section](anoncreds-setup-data-flow) of this
 specification.
 
 [[def: nonce]]
-~ TODO
+~ A random number used to prevent replay attacks. This binds a created [[ref: Verifiable Presentation]] to a specific [[ref: Credential Request]]. We are currenlty using a 80 bit number represented as a decimal string.
 
 [[def: issuer]]
 ~ An issuer is one of the three entities that interact with each other within the domain of digital identities. It can assert [[ref: claim]]s about a [[ref: subject]] in the form of a tamper-proof credential whose origins are cryptographically verifiable. 
