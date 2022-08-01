@@ -116,7 +116,7 @@ accumulator, such that the updated witness times the private factor once again
 equals the accumulator value.
 
 [[def: Verifiable Data Registry]]
-~ TODO
+~ In order for a [[ref: DID]] to be resolvable, it is typically stored on some underlying system like a database or a network of some kind. Any such system that supports the basic functionality necessary for a [[ref: DID]] is called a Verifiable Data Registry (or in short: VDR) and the specification on the system including the steps necessary for operations on a DID is typically called a [DID-Method](https://www.w3.org/TR/did-core/#dfn-did-methods). Such a VDR can be realized based on different technologies with one example being a distributed ledger as is used in [did:indy](https://hyperledger.github.io/indy-did-method/).
 
 ::: todo
 Finalize glossary entries
