@@ -1,30 +1,4 @@
-## AnonCreds Data Flows
-
-This section of the specification describes the major data flows within AnonCreds:
-
-* [AnonCreds Setup](#anoncreds-setup-data-flow), including operations by an Issuer (possibly also the Schema Publisher) and Holder
-* [AnonCreds Issuance](#anoncreds-issuance-data-flow), including operations by both the Issuer and Holder
-* [AnonCreds Presentation](#anoncreds-presentation-data-flow), including operations by both the Holder and the Verifier
-* [AnonCreds Revocation](#anoncreds-revocation-data-flow), including operations by the Verifier (and optionally by the holder)
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant L as Verifiable<br>Data Registry
-    participant SP as Schema Publisher
-    participant I as Issuer
-    participant H as Holder   
-    participant V as Verifier 
-
-    Note over L, V: AnonCreds Setup Data Flow
-    Note over L, V: AnonCreds Issuance Data Flow
-    Note over L, V: AnonCreds Presentation Data Flow
-    Note over L, V: AnonCreds Revocation Data Flow
-```
-
-Each of the aforementioned data flows involve different data objects and actors, which are described in detail in the following sections.
-
-### AnonCreds Setup Data Flow
+## AnonCreds Setup Data Flow
 
 The following sequence diagram summarizes the setup operations performed by a [[ref: SCHEMA Publisher]], the [[ref: Issuer]] (one required and one optional) in preparing to issue an AnonCred credential based on provided [[ref: SCHEMA]], and the one setup operation performed by each [[ref: Holder]]. On successfully completing the operations, the [[ref: Issuer]] is able to issue credentials based on the given [[ref: SCHEMA]] to the [[ref: Holder]]. The subsections below the diagram detail each of these operations.
 
@@ -101,7 +75,7 @@ presentation of proofs.
 
 :::
 
-#### SCHEMA Publisher: Publish SCHEMA Object
+### SCHEMA Publisher: Publish SCHEMA Object
 
 Each type of AnonCred credential is based on a [[ref: SCHEMA]] published to a Verifiable
 Data Registry (VDR), an instance of Hyperledger Indy in this version of
@@ -158,7 +132,7 @@ additional identifier for the published [[ref: SCHEMA]], the `TXN_ID`, is availa
 those reading from the ledger. As defined in the next subsection, the `TXN_ID`
 is used as part of the [[ref: CRED_DEF]] identifier created in the next setup process.
 
-#### Issuer Create and Publish CRED_DEF Object
+### Issuer Create and Publish CRED_DEF Object
 
 Each Issuer of a credential type (e.g. one based on a specific [[ref: SCHEMA]]) needs to
 create a [[ref: CRED_DEF]] for that credential type. The flow of operations to create and
@@ -184,7 +158,7 @@ option of revoking credentials. In the succeeding
 additions to the generation process and data structures when
 credential revocation is enabled for a given [[ref: CRED_DEF]].
 
-##### Retrieving the SCHEMA Object
+#### Retrieving the SCHEMA Object
 
 Prior to creating a [[ref: CRED_DEF]], the Issuer must get an instance of the
 [[ref: SCHEMA]] upon which the [[ref: CRED_DEF]] will be created, including the
@@ -195,7 +169,7 @@ from the VDR (Hyperledger Indy instance) on which the [[ref: SCHEMA]] is
 published. Hyperledger Indy requires that the [[ref: SCHEMA]] and [[ref: CRED_DEF]]
 must be on the same ledger instance.
 
-##### Generating a CRED_DEF Without Revocation Support
+#### Generating a CRED_DEF Without Revocation Support
 
 The [[ref: CRED_DEF]] is a JSON structure that is generated using cryptographic primitives
 (described below) given the following inputs.
@@ -262,6 +236,7 @@ MainNet):
   "tag": "latest"
 }
 ```
+
 A [[ref: CRED_DEF]] is a data structure that stores a cryptographic public key that can be used to verify CL-RSA signatures over a block of `L` messages `m1,m2,...,mL`. The [[ref: CRED_DEF]] contains a public key fragment for each message being signed by signatures generated with the respective private key. The length of the block of messages, `L`, being signed is defined by referencing a specific Schema with a certain number of attributes, `A = a1,a2,..` and setting `L` to `A+1`. The additional message being signed as part of a credential is for a `master_secret` attribute which is included in all credentials. This value is blindly contributed to the credential during issuance and used to bind the issued credential to the entity it was issued to. 
 
 All integers within the above [[ref: CRED_DEF]] example json are shown with ellipses (e.g. `123...789`). They are 2048-bit integers represented as `617` decimal digits. These integers belong to an RSA-2048 group characterised by the `n` defined in the [[ref: CRED_DEF]]. 
@@ -288,7 +263,7 @@ as follows: `<issuer DID>:<object type>:<signature_type>:<SCHEMA TXN_ID>:tag>`. 
 * `SCHEMA TXN_ID`: The `ref` item from the [[ref: CRED_DEF]]
 * `tag`: The `tag` item from the [[ref: CRED_DEF]].
 
-##### Generating a CRED_DEF With Revocation Support
+#### Generating a CRED_DEF With Revocation Support
 
 The issuer enables the ability to revoke credentials produced from a [[ref: CRED_DEF]] by
 passing to the [[ref: CRED_DEF]] generation process the flag `support_revocation` as
@@ -367,7 +342,7 @@ previous section of this document.
 * `u` is the ...
 * `y` is the ...
 
-##### Publishing the CRED_DEF on a Verifiable Data Registry
+#### Publishing the CRED_DEF on a Verifiable Data Registry
 
 Once constructed, the [[ref: CRED_DEF]] is published by the Issuer in a [[ref:
 Verifiable Data Registry]], currently a Hyperledger Indy ledger. For example,
@@ -375,7 +350,7 @@ see [this CRED_DEF](https://indyscan.io/tx/SOVRIN_MAINNET/domain/73905) that is
 published in the Sovrin MainNet ledger. The full contents of the [[ref:
 CRED_DEF]] is placed in the ledger including the revocation section, if present.
 
-#### Issuer Create and Publish Revocation Registry Objects
+### Issuer Create and Publish Revocation Registry Objects
 
 Once the [[ref: issuer]] has created a [[ref: CRED_DEF]] with revocation
 enabled, the [[ref: issuer]] must also create and publish a [[ref: REV_REG]] and
@@ -386,7 +361,7 @@ of the [[ref: REV_REG]] and [[ref: REV_REG_ENTRY]] objects. The creation and
 publishing of the [[ref: REV_REG]] includes creating and publishing the
 [[ref: TAILS_FILE]] for the [[ref: REG_REV]].
 
-##### Creating the Revocation Registry Object
+#### Creating the Revocation Registry Object
 
 A secure process must be run to create the revocation registry object, taking
 the following input parameters.
@@ -412,7 +387,7 @@ Three outputs are generated from the process to generate the [[ref; REV_REG]]:
 the [[ref: REV_REG]] object itself, the [[ref: TAILS_FILE]] content, and the
 [[ref: PRIVATE_REV_REG]] object.
 
-###### Recommend Not Using ISSUANCE_ON_DEMAND
+##### Recommend Not Using ISSUANCE_ON_DEMAND
 
 ::: warning
 
@@ -444,7 +419,7 @@ interested in understanding what use cases there are for `ISSUANCE_ON_DEMAND`.
 
 :::
 
-###### REV_REG Object Generation
+##### REV_REG Object Generation
 
 The [[ref: REV_REG]] object has the following data model. This example is from
 [this transaction](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140386) on the
@@ -499,7 +474,7 @@ of revocations is described. The calculation of the tailsHash is described in
 the [next section](#tails-file-and-tails-file-generation) on [[ref: TAILS_FILE]]
 generation.
 
-###### Tails File and Tails File Generation
+##### Tails File and Tails File Generation
 
 The second of the outcomes from creating of a [[ref: REV_REG]] is a [[ref:
 TAILS_FILE]]. The contents of a [[ref: TAILS_FILE]] is an array of calculated
@@ -546,7 +521,7 @@ used is covered elsewhere in this specification:
   state updates, and
 * in the section about [[ref: holders]] creating a proof of non-revocation.
 
-###### PRIVATE_REV_REG Object Generation
+##### PRIVATE_REV_REG Object Generation
 
 In addition to generating the [[ref: REV_REG]] object, a [[ref:
 PRIVATE_REV_REG]] object is generated and securely stored by the [[ref:
@@ -557,7 +532,7 @@ PRIVATE_REV_REG]] is as follows:
 To Do: Fill in the details about the PRIVATE_REV_REG
 :::
 
-##### Publishing the Revocation Registry Object
+#### Publishing the Revocation Registry Object
 
 Once constructed, the [[ref: REV_REG]] is published by the [[ref: issuer]] in a
 [[ref: Verifiable Data Registry]], currently a Hyperledger Indy ledger. For
@@ -566,7 +541,7 @@ that is published on the Sovrin MainNet ledger. The binary [[ref: TAILS_FILE]]
 associated with the [[ref: REV_REG]] can be downloaded from the `tailsLocation`
 in the [[ref: REV_REG]] object.
 
-##### Creating the Initial Revocation Registry Entry Object
+#### Creating the Initial Revocation Registry Entry Object
 
 Published [[ref: REV_REG_ENTRY]] objects contain the state of the [[ref:
 REV_REG]] at a given point in time such that [[ref: holders]] can generate a
@@ -656,7 +631,7 @@ REV_REG_ENTRY]] where the credentials are initially all revoked, while this is
 [a link](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140392) to an initial
 [[ref: REV_REG_ENTRY]] where all of the credentials are unrevoked.
 
-##### Publishing the Initial Initial Revocation Registry Entry Object
+#### Publishing the Initial Initial Revocation Registry Entry Object
 
 Once constructed, the initial [[ref: REV_REG_ENTRY]] is published by the [[ref:
 issuer]] in a [[ref: Verifiable Data Registry]], currently a Hyperledger Indy
@@ -664,7 +639,7 @@ ledger. For example, see [this
 REV_REG_ENTRY](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140392) that is
 published on the Sovrin MainNet ledger.
 
-#### Holder Create and Store Link Secret
+### Holder Create and Store Link Secret
 
 To prepare to use AnonCreds credentials, the [[ref: Holder]] must create a
 [[ref: link secret]], a unique identifier that allows credentials issued to a

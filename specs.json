@@ -12,7 +12,6 @@
         "introduction.md",
         "requirements_notations_conventions.md",
         "terminology.md",
-        "data_model_descriptions.md",
         "data_flow_setup.md",
         "data_flow_issuance.md",
         "data_flow_presentation_overview.md",
