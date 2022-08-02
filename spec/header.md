@@ -1,7 +1,7 @@
 AnonCreds Specification
 ==================
 
-**Specification Status**: v0.1 Draft
+**Specification Status**: v1.0 Draft
 
 **Latest Draft:**
 
