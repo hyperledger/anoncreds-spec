@@ -12,7 +12,7 @@ Describe (key) Correctness Proof
 [[def: credential, credentials]]
 ~ A credential is a set of [[ref: claims]] about an identity [[ref: subject]]. A verifiable credential is a tamper-proof credential whose authorship is cryptographically verifiable. An anonymous credential, also known as AnonCreds, is a verifiable credential that has privacy-preserving properties to enable data minimization and correlation resistance. 
 
-[[def: CRED_DEF, CDRED_DEFs]]
+[[def: CRED_DEF, CRED_DEFs, CLAIM_DEF, CLAIM_DEFs, CRED_DEF_PRIVATE, CRED_DEF_PUBLIC]]
 ~ A CRED_DEF (short for "credential definition", also known as CLAIM_DEF) object contains data required for credential issuance as well as
 credential validation and can be [read](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-claim-def) by any Hyperledger Indy client. A CRED_DEF object references a [[ref: SCHEMA]], references a DID of the [[ref: issuer]] and can be [written](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#claim-def) by any [[ref: issuer]] who intends to issue credentials based on that specific [[ref: SCHEMA]] to the ledger and has the proper permissions in doing so. A [[ref: SCHEMA]] is in a 1:n relation with CRED_DEF, meaning there can be many CRED_DEFs related to a SCHEMA while a CRED_DEF can only derive from one [[ref: SCHEMA]]. A CRED_DEF must be accessible to all credential participants, issuers, holders, and verifiers. CRED_DEFs are public data structures that are stored in an indy ledger.
 
@@ -53,7 +53,7 @@ specification.
 ~ One of the most significant differences between the AnonCreds and W3C [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) is how a credential is bound to the [[ref: holder]]. With the Verifiable Credential, the holder binding happens without additional interactions between the [[ref: holder]] and [[ref: issuer]]. However, this approach comes with a lack of privacy for the [[ref: holder]].
 The correlatability of credentials due to the necessity of revealing a persistent identifier related to the [[ref: holder]] is one such privacy issue. 
 
-~ AnonCreds are bound to the [[ref: holder]] with a non-correlatable secret only known to the [[ref: holder]] itself called a link secret*. Instead of a persistent identifier, the link secret as a blind attribute is sent to the  [[ref: issuer]] during credential issuance. The issuer signs every calim (including the blinded link secret) individually, enabling [[ref: selective disclosure]] (see below). It means the [[ref: issuer ]] does not know the exact value of the link secret, and the [[ref: holder]] can prove the ownership of credentials to a [[ref: verifier]] without disclosing a persistent identifier.
+~ AnonCreds are bound to the [[ref: holder]] with a non-correlatable secret only known to the [[ref: holder]] itself called a link secret*. Instead of a persistent identifier, the link secret as a blind attribute is sent to the  [[ref: issuer]] during credential issuance. The issuer signs every claim (including the blinded link secret) individually, enabling [[ref: selective disclosure]] (see below). It means the [[ref: issuer ]] does not know the exact value of the link secret, and the [[ref: holder]] can prove the ownership of credentials to a [[ref: verifier]] without disclosing a persistent identifier.
 
 ~ *) The link secret is known as master secret in the Hyperledger Indy source code. However, the term "master secret" is outside the source code and older publications deprecated.
 
@@ -79,7 +79,7 @@ The correlatability of credentials due to the necessity of revealing a persisten
 ~ Further details about Hyperledger Indy's revocation process can be found [here](https://hyperledger-indy.readthedocs.io/projects/hipe/en/latest/text/0011-cred-revocation/README.html).
 
 [[def: SCHEMA]]
-~ A SCHEMA object is a template that defines a set of attribute (also known as names or [[ref: claims]]) which are going to be used by [[ref: issuers]] for issuance of [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) within a Hyperledger Indy network. SCHEMAs have a name, version and can be [written](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/transactions.html#schema) to the ledger by any entity with proper permissions. SCHEMAs can be [read](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-schema) from a Hyperledger Indy Node by any client.
+~ A SCHEMA object is a template that defines a set of attributes (also known as attribute names or [[ref: claims]]) which are going to be used by [[ref: issuers]] for issuance of [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) within a Hyperledger Indy network. SCHEMAs have a name, version and can be [written](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/transactions.html#schema) to the ledger by any entity with proper permissions. SCHEMAs can be [read](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-schema) from a Hyperledger Indy Node by any client.
 
 ~ In Hyperledger Indy, Credentials are based on a [[ref: CRED_DEF]]. Therefore [[ref: CRED_DEFs]] reference a Schema in order to define which attribute(names) will be used within the [[ref: CRED_DEF]].
 
