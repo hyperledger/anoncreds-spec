@@ -1,4 +1,4 @@
-#### Verify Presentation
+### Verify Presentation
 
 In step 7, 8, and 9 of the [AnonCreds Presentation Data
 Flow](#anoncreds-presentation-data-flow), the Verifier collects the required
@@ -55,7 +55,7 @@ pub extern fn indy_verifier_verify_proof(command_handle: CommandHandle,
 * `Returns`
     * `valid`: true - if signature is valid, false - otherwise
 
-##### Verify Non-Revocation Proof
+#### Verify Non-Revocation Proof
 
 If the presentation includes one or more Non-Revocation Proofs (NRPs) the
 [[ref: verifier]] must also extract from the verifiable presentation the NRPs

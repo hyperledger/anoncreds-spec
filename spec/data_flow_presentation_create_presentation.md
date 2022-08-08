@@ -1,4 +1,4 @@
-#### Generate Presentation
+### Generate Presentation
 
 In step 3, 4, and 5 of the [AnonCreds Presentation Data
 Flow](#anoncreds-presentation-data-flow), the Holder collects the required
@@ -29,7 +29,7 @@ presentations from those credentials.
 
 :::
 
-##### Generate AnonCreds Presentation
+#### Generate AnonCreds Presentation
 
 Before the Holder can generate the proof, he needs to collect all required credentials from the Holder wallet
 based on the provided presentation request. Instead of immediately returning fetched credentials, a three-step
@@ -322,7 +322,7 @@ The resulting presentation `proof_json` created by the Holder has the following 
 
 ```
 
-###### Example of a proof:
+##### Example of a proof:
 
 ```json
 {
@@ -374,7 +374,7 @@ The resulting presentation `proof_json` created by the Holder has the following 
 }
 ```
 
-##### Generate Non-Revocation Proofs
+#### Generate Non-Revocation Proofs
 
 A [[ref: holder]] preparing an AnonCreds presentation must determine what, if
 any, non-revocation proofs (NRPs) must be added to the presentation based on a
@@ -394,7 +394,7 @@ credential and add the NRPs to the presentation. For each, the [[ref: holder]]
 must collect the necessary data from the [[ref: RevRegEntry]]s
 published by the [[ref: issuer]] and then generate the NRP.
 
-##### Collecting Data for Generating the Non-Revocation Proof
+#### Collecting Data for Generating the Non-Revocation Proof
 
 In order to produce a NRP, the [[ref: holder]] must collect the following information from wherever the [[ref: issuer]]
 has published the information. Note that the [[ref: holder]] may have some or all of this information cached
@@ -463,7 +463,7 @@ credential for which the NRP is being generated has been revoked, and decide
 to continue with the process (producing an unverifiable "proof") or to stop the
 process, perhaps with a notification to the [[ref: verifier]].
 
-###### Non-Revocation Proof Generation Steps
+##### Non-Revocation Proof Generation Steps
 
 Given the data collected by the [[ref: holder]] to produce the NRP, the
 following calculations are performed.
