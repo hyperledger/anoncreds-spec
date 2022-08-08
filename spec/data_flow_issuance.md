@@ -1,4 +1,4 @@
-### AnonCreds Issuance Data Flow
+## AnonCreds Issuance Data Flow
 
 The issuance of an anonymous [[ref:credential]] requires several steps and involves the roles [[ref:issuer]], [[ref:holder]] as well as the [[ref: Verifiable Data Registry]] (see diagramm below).
 
@@ -37,8 +37,7 @@ Based on the [[ref:CRED_DEF]] received from the [[ref:Verfiable Data Registry]],
 
 The [[ref:issuer]] can decide whether to accept the received [[ref: Credential Request]] and issues the [[ref:credential]] (step 11) in the case of request acceptance. The [[ref:issuer]] sends the credential to the [[ref:holder]] (step 12), who then can store the received [[ref:credential]] in his wallet (step 13).
 
-
-#### Credential Offer
+### Credential Offer
 
 Before issuing a credential to the [[ref:holder]], the [[ref:issuer]] has to send a [[ref:Credential Offer]] to the potential [[ref:holder]] (step 1 and 2). A [[ref:Credential Offer]] contains information about the credential the [[ref:issuer]] intends to issue and send to the [[ref:holder]]. For creating a [[ref:Credential Offer]], the [[ref:issuer]] is required to fetch the [[ref:CRED_DEF]] as well as its correctness proof from the [[ref: Verifiable Data Registry]]. The [[ref:issuer]] also prepares a [[ref:nonce]] which will be embedded within the [[ref:Credential Offer]] in order to prevent replay attacks and authenticate between protocol steps.
 
@@ -66,7 +65,7 @@ In case the credential respectively its attributes is of interest for the [[ref:
  - Add info to key_correctness_proof
 :::
 
-#### Credential Request
+### Credential Request
 
 A [[ref:Credential Request]] is a formal request from a [[ref:holder]] to an [[ref:issuer]] to get a [[ref:credential]] based on a concrete [[ref:CRED_DEF]] issued by the [[ref:issuer]] to the [[ref:holder]]. 
 
@@ -102,8 +101,7 @@ is the ```prover_did``` the peer DID of the holder?
 
 The [[ref:issuer]] sends the [[ref:Credential Request]] to the [[ref:issuer]] (step 9), who then can reply to the [[ref:holder]] by sending an issued credential.
 
-
-#### Issue Credential
+### Issue Credential
 
 After the [[ref:issuer]] received the [[ref:Credential Request]] from the [[ref:holder]], the [[ref:issuer]] processes the [[ref:Credential Request]] and decides whether to issue the credential as requested in the [[ref:Credential Request]] to the [[ref:holder]]. 
 

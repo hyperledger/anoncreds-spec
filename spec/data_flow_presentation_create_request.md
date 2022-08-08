@@ -1,4 +1,4 @@
-#### Create Presentation Request
+### Create Presentation Request
 The Verifier starts the process in 
 step 1 of the [AnonCreds Presentation Data Flow](#anoncreds-presentation-data-flow)
 by creating and sending a presentation request to the Holder.
@@ -80,7 +80,7 @@ presents a decimal number (use `indy_generate_nonce` function to generate a corr
   If specified, the Holder must proof non-revocation for date in this interval for this predicate, this interval overrides the
   proof level interval.
 
-##### Request Non-Revocation Proofs
+#### Request Non-Revocation Proofs
 
 The presentation request JSON item `non_revoc_interval` allows the [[ref:
 verifier]] to define an acceptable non-revocation interval for a requested
@@ -120,7 +120,7 @@ verifier]] to ask for a NRP sometime in the past. This addresses use cases such
 as "Prove that your car insurance policy was not revoked on June 12, 2021 when
 the accident occurred."
 
-##### WQL Query
+#### WQL Query
 
 The `restrictions` on each attribute/predicate defines a query filter in [[ref:
 Wallet Query Language]] (WQL) that is used to search the [[ref: holder]] wallet
@@ -151,7 +151,7 @@ The list of allowed keys that can be combined into complex queries includes:
     "attr::<attribute name>::value": <attribute raw value>, - to filter based on value of a specific attribute
 ```
 
-##### WQL Query Examples
+#### WQL Query Examples
 
 1. Get all credentials where subject like `Acme%` and issue_date `>` specified data. 
   (Note: the name of the `issue_date` tag begins with a tilde, 
@@ -192,7 +192,7 @@ The list of allowed keys that can be combined into complex queries includes:
     ]
     ```
 
-##### Example of a complete presentation request
+#### Example of a complete presentation request
 ```json
 {   
     "nonce": "verifierNonce",

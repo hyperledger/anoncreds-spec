@@ -1,4 +1,4 @@
-### AnonCreds Revocation Data Flow
+## AnonCreds Revocation Data Flow
 
 AnonCreds includes a mechanism that supports the revocation of verifiable
 credentials. This mechanism includes:
@@ -23,7 +23,7 @@ revocation mechanism uses a Zero Knowledge Proof (ZKP) that allows the [[ref:
 holder]] to prove a credential they hold is not revoked without revealing an
 identifier for their credential or the holder.
 
-#### AnonCreds Issuer Setup With Revocation
+### AnonCreds Issuer Setup With Revocation
 
 The details of [[ref: issuer]] setting up revokable credential types are covered
 in the [issuer setup](#issuer-create-and-publish-revocation-registry-objects)
@@ -31,13 +31,13 @@ section of this specification. Note the [warning and recommendation against the
 use of `ISSUANCE_ON_DEMAND`](#recommend-not-using-issuanceondemand) in that part
   of the specification.
 
-#### AnonCreds Issuance with Revocation
+### AnonCreds Issuance with Revocation
 
 The details of an [[ref: issuer]] issuing a revokable credential to a [[ref:
 holder]] are covered in the [issuance data
 flow](issue-credential) section of this specification.
 
-#### AnonCreds Credential Activation/Revocation and Publication
+### AnonCreds Credential Activation/Revocation and Publication
 
 When an [[ref: issuer]] decides to revoke a previously issued credential (or
 activate a previously inactive/revoked credential), they do so by publishing
@@ -145,7 +145,7 @@ issuer]] of the revocation of a credential, the [[ref: holder]] can detect their
 credential has been revoked when they retrieve the list of revoked credentials
 from the [[ref: VDR]] and discover the index of their credential in the list.
 
-#### AnonCreds Presentation Request with Revocation
+### AnonCreds Presentation Request with Revocation
 
 Carrying out an AnonCreds presentation with revocation is a two-step process, beginning with a
 request from the [[ref: verifier]] asking the [[ref: holder]] to include a
@@ -158,7 +158,7 @@ generating the non-revocation proof are covered in the sections of this
 specification about [requesting](#request-non-revocation-proofs) and
 [generating](#generate-non-revocation-proofs) presentations, respectively.
 
-#### AnonCreds Verification with Revocation
+### AnonCreds Verification with Revocation
 
 A [[ref: verifier]] receives the presentation from the [[ref: holder]] and
 processes the [non-revocation-related parts of the presentation](#verify-presentation) and

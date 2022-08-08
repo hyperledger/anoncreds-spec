@@ -1,4 +1,4 @@
-### AnonCreds Presentation Data Flow
+## AnonCreds Presentation Data Flow
 
 ```mermaid
 sequenceDiagram
