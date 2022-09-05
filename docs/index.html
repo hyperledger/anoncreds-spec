@@ -290,8 +290,6 @@ sequenceDiagram
         
     Note over L, H: Issuer: Create, Store and Publish CredDef
    
-    I ->> L: Request Schema (schema_id)
-    L ->> I: Return Schema
     I ->> I: create_and_store_credential_def<br>(Schema, tag, support_revocation)
     Note right of I:   store public / <br> private keys and<br>correctness proof    
     I ->> L: Publish CredDef (CredDef)
@@ -348,10 +346,9 @@ credentials of that type by creating and publishing a <a class="term-reference" 
 publish a <a class="term-reference" href="#term:schema">SCHEMA</a>. The flow of operations to publish a <a class="term-reference" href="#term:schema">SCHEMA</a> is illustrated in
 the <code>SCHEMA Publisher: Publish SCHEMA</code> section of the <a href="#anoncreds-setup-data-flow" >AnonCreds Setup Data
 Flow</a> sequence diagram.</p>
-<p>The <a class="term-reference" href="#term:schema">SCHEMA</a> is a JSON structure that can be manually constructed, containing the
-list of attributes (claims) that will be included in each AnonCred credential of
-this type and the items that will make up the <code>schema_id</code> for the <a class="term-reference" href="#term:schema">SCHEMA</a>. The
-following is an example <a class="term-reference" href="#term:schema">SCHEMA</a>:</p>
+<p>The <a class="term-reference" href="#term:schema">SCHEMA</a> is a JSON structure that can be manually constructed,
+containing the list of attributes (claims) that will be included in each
+AnonCreds credential of this type. The following is an example <a class="term-reference" href="#term:schema">SCHEMA</a>:</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
     <span class="token property">"attr_names"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
         <span class="token string">"birthlocation"</span><span class="token punctuation">,</span>
@@ -368,29 +365,22 @@ following is an example <a class="term-reference" href="#term:schema">SCHEMA</a>
 <span class="token punctuation">}</span>
 </code></pre>
 <ul>
-<li><code>attr_names</code> is the array of attribute names (claim names) that will constitute the AnonCred credential of this type.</li>
-<li><code>name</code> is a string, the name of the schema, which will be a part of the published <code>schema_id</code>.</li>
-<li><code>version</code> is a string, the version of the schema in <a path-0="semver.org"path-1=""href="https://semver.org/" >semver</a> format. The three part, period (“.”)
-separated format MAY be enforced. The <code>version</code> will be part of the published <code>schema_id</code>.</li>
+<li><code>attr_names</code> is the array of attribute names (claim names) that will
+constitute the AnonCred credential of this type.</li>
+<li><code>name</code> is a string defined by the schema publisher, the name of the schema.</li>
+<li><code>version</code> is a string defined by the schema publisher that the version of the
+schema in <a path-0="semver.org"path-1=""href="https://semver.org/" >semver</a> format. The three part, period (“.”)
+separated format MAY be enforced.</li>
 </ul>
-<p>The <code>name</code> and <code>version</code> items are used to form a schema_id for the <a class="term-reference" href="#term:schema">SCHEMA</a>. The
-<code>schema_id</code> is namespaced by the Publisher of the <a class="term-reference" href="#term:schema">SCHEMA</a>, as follows: <code>&lt;publisher DID&gt;:&lt;object type&gt;:&lt;name&gt;:version&gt;</code>. The elements of the identifier, separated
-by <code>:</code>'s are:</p>
-<ul>
-<li><code>publisher DID</code>: The DID of the <a class="term-reference" href="#term:schema-publisher">SCHEMA Publisher</a>.</li>
-<li><code>object type</code>: The type of object. <code>2</code> is used for <a class="term-reference" href="#term:schema">SCHEMA</a>.</li>
-<li><code>name</code>: The <code>name</code> item from the <a class="term-reference" href="#term:schema">SCHEMA</a>.</li>
-<li><code>version</code>: The <code>version</code> item from the <a class="term-reference" href="#term:schema">SCHEMA</a>.</li>
-</ul>
-<p>Once constructed, the <a class="term-reference" href="#term:schema">SCHEMA</a> is published to a Verifiable Data Registry (VDR),
-currently a Hyperledger Indy ledger. For example, see <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="73904"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/73904" >this
+<p>Once constructed, the <a class="term-reference" href="#term:schema">SCHEMA</a> is published to a Verifiable Data Registry
+(VDR) using the Schema Publishers selected <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a>.
+The <code>schemaId</code> identifier for the <a class="term-reference" href="#term:schema">schema</a> is dependent on where the
+<a class="term-reference" href="#term:schema">schema</a> is published. For example, see <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="73904"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/73904" >this
 SCHEMA</a> that is published on
-the Sovrin MainNet ledger. Once published on a Hyperledger Indy ledger, an
-additional identifier for the published <a class="term-reference" href="#term:schema">SCHEMA</a>, the <code>TXN_ID</code>, is available to
-those reading from the ledger. As defined in the next subsection, the <code>TXN_ID</code>
-is used as part of the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> identifier created in the next setup process.</p>
+the Sovrin MainNet instance of Hyperledger Indy. The <code>schemaId</code> for that object
+is: <code>Y6LRXGU3ZCpm7yzjVRSaGu:2:BasicIdentity:1.0.0</code></p>
 <h3 id="issuer-create-and-publish-cred_def-object"><a class="toc-anchor" href="#issuer-create-and-publish-cred_def-object" >§</a> Issuer Create and Publish CRED_DEF Object</h3>
-<p>Each Issuer of a credential type (e.g. one based on a specific <a class="term-reference" href="#term:schema">SCHEMA</a>) needs to
+<p>Each Issuer of credentials of a given type (e.g. based on a specific <a class="term-reference" href="#term:schema">SCHEMA</a>) must
 create a <a class="term-reference" href="#term:cred_def">CRED_DEF</a> for that credential type. The flow of operations to create and
 publish a <a class="term-reference" href="#term:cred_def">CRED_DEF</a> is illustrated in the <code>Issuer: Create, Store and Publish CRED_DEF</code>
 section of the <a href="#anoncreds-setup-data-flow" >AnonCreds Setup Data Flow</a> sequence
@@ -414,13 +404,10 @@ additions to the generation process and data structures when
 credential revocation is enabled for a given <a class="term-reference" href="#term:cred_def">CRED_DEF</a>.</p>
 <h4 id="retrieving-the-schema-object"><a class="toc-anchor" href="#retrieving-the-schema-object" >§</a> Retrieving the SCHEMA Object</h4>
 <p>Prior to creating a <a class="term-reference" href="#term:cred_def">CRED_DEF</a>, the Issuer must get an instance of the
-<a class="term-reference" href="#term:schema">SCHEMA</a> upon which the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> will be created, including the
-identifier for the <a class="term-reference" href="#term:schema">SCHEMA</a> in the form of a Hyperledger Indy <code>TXN_ID</code>.
-If the Issuer is also the <a class="term-reference" href="#term:schema-publisher">SCHEMA Publisher</a>, they will already have the
-<a class="term-reference" href="#term:schema">SCHEMA</a> (with <code>TXN_ID</code>). If not, the Issuer must request that information
-from the VDR (Hyperledger Indy instance) on which the <a class="term-reference" href="#term:schema">SCHEMA</a> is
-published. Hyperledger Indy requires that the <a class="term-reference" href="#term:schema">SCHEMA</a> and <a class="term-reference" href="#term:cred_def">CRED_DEF</a>
-must be on the same ledger instance.</p>
+<a class="term-reference" href="#term:schema">SCHEMA</a> upon which the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> will be created. If the Issuer
+is also the <a class="term-reference" href="#term:schema-publisher">SCHEMA Publisher</a>, they will already have the <a class="term-reference" href="#term:schema">SCHEMA</a>. If not, the Issuer must request that information from the <a class="term-reference" href="#term:vdr">VDR</a>
+on which the <a class="term-reference" href="#term:schema">SCHEMA</a> is published. In some <a class="term-reference" href="#term:anoncreds-objects">AnonCreds Objects</a> there is a requirement that the <a class="term-reference" href="#term:schema">SCHEMA</a> and <a class="term-reference" href="#term:cred_def">CRED_DEF</a>
+must be on the same <a class="term-reference" href="#term:vdr">VDR</a>.</p>
 <h4 id="generating-a-cred_def-without-revocation-support"><a class="toc-anchor" href="#generating-a-cred_def-without-revocation-support" >§</a> Generating a CRED_DEF Without Revocation Support</h4>
 <p>The <a class="term-reference" href="#term:cred_def">CRED_DEF</a> is a JSON structure that is generated using cryptographic primitives
 (described below) given the following inputs.</p>
@@ -478,7 +465,16 @@ MainNet):</p>
   <span class="token property">"tag"</span><span class="token operator">:</span> <span class="token string">"latest"</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<p>A <a class="term-reference" href="#term:cred_def">CRED_DEF</a> is a data structure that stores a cryptographic public key that can be used to verify CL-RSA signatures over a block of <code>L</code> messages <code>m1,m2,...,mL</code>. The <a class="term-reference" href="#term:cred_def">CRED_DEF</a> contains a public key fragment for each message being signed by signatures generated with the respective private key. The length of the block of messages, <code>L</code>, being signed is defined by referencing a specific Schema with a certain number of attributes, <code>A = a1,a2,..</code> and setting <code>L</code> to <code>A+1</code>. The additional message being signed as part of a credential is for a <code>master_secret</code> attribute which is included in all credentials. This value is blindly contributed to the credential during issuance and used to bind the issued credential to the entity it was issued to.</p>
+<p>The <a class="term-reference" href="#term:cred_def">CRED_DEF</a> contains a cryptographic public key that can be used to
+verify CL-RSA signatures over a block of <code>L</code> messages <code>m1,m2,...,mL</code>. The <a class="term-reference" href="#term:cred_def">CRED_DEF</a> contains a public key fragment for each message being signed by
+signatures generated with the respective private key. The length of the block of
+messages, <code>L</code>, being signed is defined by referencing a specific Schema with a
+certain number of attributes, <code>A = a1,a2,..</code> and setting <code>L</code> to <code>A+1</code>. The
+additional message being signed as part of a credential is for a <code>master_secret</code>
+(called the <a class="term-reference" href="#term:link_secret">link_secret</a> everywhere except in the existing open source
+code and data models) attribute which is included in all credentials. This value
+is blindly contributed to the credential during issuance and used to bind the
+issued credential to the entity to which it was issued.</p>
 <p>All integers within the above <a class="term-reference" href="#term:cred_def">CRED_DEF</a> example json are shown with ellipses (e.g. <code>123...789</code>). They are 2048-bit integers represented as <code>617</code> decimal digits. These integers belong to an RSA-2048 group characterised by the <code>n</code> defined in the <a class="term-reference" href="#term:cred_def">CRED_DEF</a>.</p>
 <ul>
 <li><code>primary</code> is the data used for generating credentials.</li>
@@ -493,19 +489,14 @@ MainNet):</p>
 <li><code>rctxt</code> is equal to <code>s^(xrctxt)</code>, where <code>xrctxt</code> is a randomly selected integer between <code>2</code> and <code>p'q'-1</code>. (I believe this is used for the commitment scheme, allowing entities to blindly contribute values to credentials.)</li>
 <li><code>s</code> is a randomly selected quadratic residue of <code>n</code>. This makes up part of the CL-RSA public key, independent of the message blocks being signed.</li>
 <li><code>z</code> is equal to <code>s^(xz)</code>, where <code>xz</code> is a randomly selected integer between <code>2</code> and <code>p'q'-1</code>. This makes up part of the CL-RSA public key, independent of the message blocks being signed.</li>
-<li><code>ref</code> is the <code>TXN_ID</code> on the Hyperledger Indy ledger for the <a class="term-reference" href="#term:schema">SCHEMA</a> from which the list of attributes is pulled.</li>
+<li><code>ref</code> is the identifier of the schema. The format of the identifier is dependent on the <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a> used in publishing the <a class="term-reference" href="#term:schema">SCHEMA</a>.</li>
 <li><code>signature_type</code> is always <code>CL</code> in this version of AnonCreds.</li>
 <li><code>tag</code> is the <code>tag</code> value (a string) passed in by the <a class="term-reference" href="#term:issuer">Issuer</a> to an AnonCred’s <a class="term-reference" href="#term:cred_def">CRED_DEF</a> create and store implementation.</li>
 </ul>
-<p>The <a class="term-reference" href="#term:schema">SCHEMA</a> <code>TXN_ID</code> and <code>tag</code> items are used to form a <code>cred_def_id</code> for the <a class="term-reference" href="#term:cred_def">CRED_DEF</a>. The <code>CRED_DEF_id</code> is namespaced by the <a class="term-reference" href="#term:issuer">Issuer</a> of the <a class="term-reference" href="#term:cred_def">CRED_DEF</a>,
-as follows: <code>&lt;issuer DID&gt;:&lt;object type&gt;:&lt;signature_type&gt;:&lt;SCHEMA TXN_ID&gt;:tag&gt;</code>. The elements of the identifier, separated by <code>:</code>'s are:</p>
-<ul>
-<li><code>issuer DID</code>: The DID of the Issuer, the issuer of the <a class="term-reference" href="#term:cred_def">CRED_DEF</a>.</li>
-<li><code>object type</code>: The type of object. <code>3</code> is used for <a class="term-reference" href="#term:cred_def">CRED_DEF</a>s.</li>
-<li><code>signature_type</code>: The <code>signature_type</code> item from the <a class="term-reference" href="#term:cred_def">CRED_DEF</a>.</li>
-<li><code>SCHEMA TXN_ID</code>: The <code>ref</code> item from the <a class="term-reference" href="#term:cred_def">CRED_DEF</a></li>
-<li><code>tag</code>: The <code>tag</code> item from the <a class="term-reference" href="#term:cred_def">CRED_DEF</a>.</li>
-</ul>
+<div id="todo-4" class="notice todo"><a class="notice-link" href="#todo-4">TODO</a><p>Evaluate the impact in the existing implementations of making the <code>ref</code>
+an identifier vs. the current Hyperledger Indy Txn number – an integer.</p>
+</div>
+<p>The <code>credDefId</code> identifier for the <a class="term-reference" href="#term:cred_def">Cred_Def</a> is dependent on the <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a> used in publishing the <a class="term-reference" href="#term:schema">SCHEMA</a>.</p>
 <h4 id="generating-a-cred_def-with-revocation-support"><a class="toc-anchor" href="#generating-a-cred_def-with-revocation-support" >§</a> Generating a CRED_DEF With Revocation Support</h4>
 <p>The issuer enables the ability to revoke credentials produced from a <a class="term-reference" href="#term:cred_def">CRED_DEF</a> by
 passing to the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> generation process the flag <code>support_revocation</code> as
@@ -517,11 +508,11 @@ process.</p>
 <p>The following describes the process for generating the revocation portion of the
 <a class="term-reference" href="#term:cred_def">CRED_DEF</a> data when the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> is created with the <code>support_revocation</code> flag
 set to <code>true</code>. This process extends the process for generating a <a class="term-reference" href="#term:cred_def">CRED_DEF</a> in the
-<a href="#issuer-create-and-publish-CRED_DEF-object" >previous section</a> of this document.</p>
-<div id="todo-4" class="notice todo"><a class="notice-link" href="#todo-4">TODO</a><p>Describe the revocation data generation process for the CRED_DEF.
+<a href="#generating-a-creddef-without-revocation-support" >previous section</a> of this document.</p>
+<div id="todo-5" class="notice todo"><a class="notice-link" href="#todo-5">TODO</a><p>Describe the revocation data generation process for the CRED_DEF.
 Provide a reference to the published articles on revocation used here.</p>
 </div>
-<p>An <a class="term-reference" href="#term:private_cred_def">PRIVATE_CRED_DEF</a> with revocation enabled has the following format.  In this, the
+<p>A <a class="term-reference" href="#term:private_cred_def">PRIVATE_CRED_DEF</a> with revocation enabled has the following format.  In this, the
 details of the <code>primary</code> element are hidden, as they are the same as was covered
 above.</p>
 <pre class="language-json"><code class="language-json">
@@ -575,16 +566,18 @@ credentials issued using this <a class="term-reference" href="#term:cred_def">CR
 <li><code>y</code> is the …</li>
 </ul>
 <h4 id="publishing-the-cred_def-on-a-verifiable-data-registry"><a class="toc-anchor" href="#publishing-the-cred_def-on-a-verifiable-data-registry" >§</a> Publishing the CRED_DEF on a Verifiable Data Registry</h4>
-<p>Once constructed, the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> is published by the Issuer in a <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a>, currently a Hyperledger Indy ledger. For example,
-see <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="73905"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/73905" >this CRED_DEF</a> that is
-published in the Sovrin MainNet ledger. The full contents of the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> is placed in the ledger including the revocation section, if present.</p>
+<p>Once constructed, the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> is published by the Issuer to a <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> using the issuers preferred <a class="term-reference" href="#term:anoncreds-objects">AnonCreds Objects</a>. For example, see <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="73905"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/73905" >this
+CRED_DEF</a> that is published
+in the Sovrin MainNet instance of Hyperledger Indy. The full contents of the
+<a class="term-reference" href="#term:cred_def">CRED_DEF</a> is placed in the ledger, including the revocation section if
+present.</p>
 <h3 id="issuer-create-and-publish-revocation-registry-objects"><a class="toc-anchor" href="#issuer-create-and-publish-revocation-registry-objects" >§</a> Issuer Create and Publish Revocation Registry Objects</h3>
 <p>Once the <a class="term-reference" href="#term:issuer">issuer</a> has created a <a class="term-reference" href="#term:cred_def">CRED_DEF</a> with revocation
-enabled, the <a class="term-reference" href="#term:issuer">issuer</a> must also create and publish a <a class="term-reference" href="#term:rev_reg">REV_REG</a> and
+enabled, the <a class="term-reference" href="#term:issuer">issuer</a> must also create and publish a <a class="term-reference" href="#term:rev_reg_def">REV_REG_DEF</a> and
 create and publish the first <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> for the registry.</p>
 <p>In this section, we’ll cover the create and publish steps for each
-of the <a class="term-reference" href="#term:rev_reg">REV_REG</a> and <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> objects. The creation and
-publishing of the <a class="term-reference" href="#term:rev_reg">REV_REG</a> includes creating and publishing the
+of the <a class="term-reference" href="#term:rev_reg_def">REV_REG_DEF</a> and <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> objects. The creation and
+publishing of the <a class="term-reference" href="#term:rev_reg_def">REV_REG_DEF</a> includes creating and publishing the
 <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> for the <a class="term-reference" href="#term:reg_rev">REG_REV</a>.</p>
 <h4 id="creating-the-revocation-registry-object"><a class="toc-anchor" href="#creating-the-revocation-registry-object" >§</a> Creating the Revocation Registry Object</h4>
 <p>A secure process must be run to create the revocation registry object, taking
@@ -632,10 +625,10 @@ revoked in the future.</p>
 Feedback from the community on this would be appreciated. We are particularly
 interested in understanding what use cases there are for <code>ISSUANCE_ON_DEMAND</code>.</p>
 </div>
-<h5 id="rev_reg-object-generation"><a class="toc-anchor" href="#rev_reg-object-generation" >§</a> REV_REG Object Generation</h5>
-<p>The <a class="term-reference" href="#term:rev_reg">REV_REG</a> object has the following data model. This example is from
+<h5 id="rev_reg_def-object-generation"><a class="toc-anchor" href="#rev_reg_def-object-generation" >§</a> REV_REG_DEF Object Generation</h5>
+<p>The <a class="term-reference" href="#term:rev_reg_def">REV_REG_DEF</a> object has the following data model. This example is from
 <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="140386"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/140386" >this transaction</a> on the
-Hyperledger Indy Sovrin MainNet.</p>
+Sovrin MainNet and instance of Hyperledger Indy.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"credDefId"</span><span class="token operator">:</span> <span class="token string">"Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc"</span><span class="token punctuation">,</span>
   <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc:CL_ACCUM:1-1024"</span><span class="token punctuation">,</span>
@@ -655,19 +648,11 @@ Hyperledger Indy Sovrin MainNet.</p>
 <span class="token punctuation">}</span>
 </code></pre>
 <p>The items within the data model are as follows:</p>
+<div id="todo-6" class="notice todo"><a class="notice-link" href="#todo-6">TODO</a><p>Update this to be the inputs for generating a REV_REG vs. the already published object</p>
+</div>
 <ul>
 <li><code>credDefId</code>: the input parameter <code>cred_def_id</code></li>
-<li><code>id</code>: the identifier of the <a class="term-reference" href="#term:rev_reg">REV_REG</a>, a concatenation of the following
-items separated by &quot;:&quot;s. An example <a class="term-reference" href="#term:rev_reg">REV_REG</a> identifier is in the data
-model above.
-<ul>
-<li>Issuer’s DID – the DID of the Issuer</li>
-<li>Object Type – hardcoded to “<code>4</code>” for a <a class="term-reference" href="#term:rev_reg">REV_REG</a></li>
-<li>The <a class="term-reference" href="#term:cred_def">CRED_DEF</a> identifier, the input parameter <code>cred_def_id</code></li>
-<li>Revocation Type, the input parameter <code>type</code></li>
-<li>Tag, the input parameter <code>tag</code></li>
-</ul>
-</li>
+<li><code>id</code>: the identifier of the <a class="term-reference" href="#term:rev_reg">REV_REG</a>. The format of the identifier is dependent on the <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a> is to publish the object.</li>
 <li><code>revocDefType</code>, the input parameter <code>type</code></li>
 <li><code>tag</code>, the input parameter <code>tag</code></li>
 <li><code>issuanceType</code>, the input parameter <code>issuanceType</code></li>
@@ -696,19 +681,19 @@ revocations within the <a class="term-reference" href="#term:rev_reg">REV_REG</a
 not been revoked.</p>
 <p>The process of generating the primes that populate the <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> is as
 follows:</p>
-<div id="todo-5" class="notice todo"><a class="notice-link" href="#todo-5">TODO</a><p>To Do: Document the process for generating the primes.</p>
+<div id="todo-7" class="notice todo"><a class="notice-link" href="#todo-7">TODO</a><p>To Do: Document the process for generating the primes.</p>
 </div>
 <p>Once generated, the array of primes is static, regardless of credential issuance
 or revocation events. Once generated, the SHA256 (TO BE VERIFIED) hash of the
 array of primes is calculated and returned to be inserted into the <code>tailsHash</code>
-item of the <a class="term-reference" href="#term:rev_reg">REV_REG</a> object (as described in the <a href="#rev_reg-object-generation" >previous
+item of the <a class="term-reference" href="#term:rev_reg">REV_REG</a> object (as described in the <a href="#rev_reg_def-object-generation" >previous
 section</a>). Typically, the array is streamed into a
-file (hence, the term “Tails File”) and published to the location indicated by
+file (hence, the term “Tails File”) and published to a <span id="term:url">URL</span> indicated by
 the <code>tailsLocation</code> input parameter provided by the <a class="term-reference" href="#term:issuer">issuer</a>.</p>
 <p>The format of a <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> is as follows:</p>
-<div id="todo-6" class="notice todo"><a class="notice-link" href="#todo-6">TODO</a><p>To Do: Define the format of the Tails File</p>
+<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>To Do: Define the format of the Tails File</p>
 </div>
-<p>While not required, the Indy community has created a component, the “<a path-0="github.com"path-1="bcgov"path-2="indy-tails-server"href="https://github.com/bcgov/indy-tails-server" >Indy Tails
+<p>While not required, the Hyperledger Indy community has created a component, the “<a path-0="github.com"path-1="bcgov"path-2="indy-tails-server"href="https://github.com/bcgov/indy-tails-server" >Indy Tails
 Server</a>,” which is basically a web
 server for tails files. <a class="term-reference" href="#term:holders">Holders</a> get the <code>tailsLocation</code> during the
 issuance process, download the <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> (ideally) once and cache it
@@ -722,15 +707,14 @@ state updates, and</li>
 </ul>
 <h5 id="private_rev_reg-object-generation"><a class="toc-anchor" href="#private_rev_reg-object-generation" >§</a> PRIVATE_REV_REG Object Generation</h5>
 <p>In addition to generating the <a class="term-reference" href="#term:rev_reg">REV_REG</a> object, a <a class="term-reference" href="#term:private_rev_reg">PRIVATE_REV_REG</a> object is generated and securely stored by the <a class="term-reference" href="#term:issuer">issuer</a>. The data model and definition of the items in the <a class="term-reference" href="#term:private_rev_reg">PRIVATE_REV_REG</a> is as follows:</p>
-<div id="todo-7" class="notice todo"><a class="notice-link" href="#todo-7">TODO</a><p>To Do: Fill in the details about the PRIVATE_REV_REG</p>
+<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>To Do: Fill in the details about the PRIVATE_REV_REG</p>
 </div>
 <h4 id="publishing-the-revocation-registry-object"><a class="toc-anchor" href="#publishing-the-revocation-registry-object" >§</a> Publishing the Revocation Registry Object</h4>
 <p>Once constructed, the <a class="term-reference" href="#term:rev_reg">REV_REG</a> is published by the <a class="term-reference" href="#term:issuer">issuer</a> in a
-<a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a>, currently a Hyperledger Indy ledger. For
-example, see <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="140386"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/140386" >this REV_REG</a>
-that is published on the Sovrin MainNet ledger. The binary <a class="term-reference" href="#term:tails_file">TAILS_FILE</a>
-associated with the <a class="term-reference" href="#term:rev_reg">REV_REG</a> can be downloaded from the <code>tailsLocation</code>
-in the <a class="term-reference" href="#term:rev_reg">REV_REG</a> object.</p>
+<a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> using the issuer’s <a class="term-reference" href="#term:anoncreds-objects">AnonCreds Objects</a>. For example, see <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="140386"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/140386" >this
+REV_REG</a> that is published
+on the Sovrin MainNet instance of Hyperledger Indy. The binary <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> associated with the <a class="term-reference" href="#term:rev_reg">REV_REG</a> can be downloaded from the
+<code>tailsLocation</code> in the <a class="term-reference" href="#term:rev_reg">REV_REG</a> object.</p>
 <h4 id="creating-the-initial-revocation-registry-entry-object"><a class="toc-anchor" href="#creating-the-initial-revocation-registry-entry-object" >§</a> Creating the Initial Revocation Registry Entry Object</h4>
 <p>Published <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> objects contain the state of the <a class="term-reference" href="#term:rev_reg">REV_REG</a> at a given point in time such that <a class="term-reference" href="#term:holders">holders</a> can generate a
 proof of non-revocation (or not) about their specific credential and <a class="term-reference" href="#term:verifiers">verifiers</a> can verify that proof. An initial <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> is
@@ -762,28 +746,20 @@ credentials that can be issued using the <a class="term-reference" href="#term:r
 one for each credential to be issued from the <a class="term-reference" href="#term:rev_reg">REV_REG</a>.</li>
 <li><code>private_key</code>: The accumulator private key for the <a class="term-reference" href="#term:rev_reg">REV_REG</a>.</li>
 </ul>
-<p>With the collected information, the process generates an identifier for the
-<a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> and the initial cryptographic accumulator for the <a class="term-reference" href="#term:rev_reg">REV_REG</a>.</p>
-<p>The <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> identifier is the <a class="term-reference" href="#term:rev_reg">REV_REG</a> identifier
-prefixed with the <code>REV_REG_ENTRY</code> object type (<code>5</code>) and a <code>:</code>. For example:</p>
-<ul>
-<li><a class="term-reference" href="#term:rev_reg">REV_REG</a> identifier:
-<code>Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140389:mctc:CL_ACCUM:1-1024</code></li>
-<li><a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> identifier:
-<code>5:Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140389:mctc:CL_ACCUM:1-1024</code></li>
-</ul>
-<p>All of the <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> transactions for a given <a class="term-reference" href="#term:rev_reg">REV_REG</a>
-share the same identifier.</p>
+<p>With the collected information, the process the initial cryptographic
+accumulator for the <a class="term-reference" href="#term:rev_reg">REV_REG</a>. The format of the identifier for the
+<a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> is dependent on the <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a>
+used by the issuer.</p>
 <p>In simple terms, the cryptographic accumulator at any given point in time is the
-(modulo) product of the primes for each non-revoked credential in the <a class="term-reference" href="#term:rev_reg">REV_REG</a>. Initially, based on the value of <code>issuanceType</code>, all of the
-credentials are either revoked, or unrevoked. If all of the credentials are
+(modulo) product of the primes for each non-revoked credential in the <a class="term-reference" href="#term:rev_reg">REV_REG</a>. Based on the value of <code>issuanceType</code>, all of the
+credentials are initially either revoked, or unrevoked. If all of the credentials are
 initially revoked, the accumulator value is <code>0</code>, if all are unrevoked, the
 accumulator value has contributions from all of the entries in the array of
 primes.</p>
-<p>Specifically, the accumulator is calculated using the following steps:</p>
-<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>To Do: Adding the algorithm for calculating the accumulator</p>
+<p>The accumulator is calculated using the following steps:</p>
+<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>To Do: Adding the algorithm for calculating the accumulator</p>
 </div>
-<p>The initial <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> object uses the following data model:</p>
+<p>THe following is an example of an initial, published <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> object:</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"revocDefType"</span><span class="token operator">:</span> <span class="token string">"CL_ACCUM"</span><span class="token punctuation">,</span>
   <span class="token property">"revocRegDefId"</span><span class="token operator">:</span> <span class="token string">"Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140389:mctc:CL_ACCUM:1-1024"</span><span class="token punctuation">,</span>
@@ -795,7 +771,9 @@ primes.</p>
 <p>The items in the data model are:</p>
 <ul>
 <li><code>revocDefTyep</code>: the input parameter <code>type</code></li>
-<li><code>revocRegDefId</code>:</li>
+<li><code>revocRegDefId</code>: the identifier of the associated <a class="term-reference" href="#term:rev_reg_def">REV_REG_DEF</a>. The
+format of the identifier is dependent on the <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a>
+used by the issuer.</li>
 <li><code>accum</code>: the calculated cryptographic accumulator reflecting the initial state
 of the <a class="term-reference" href="#term:rev_reg">REV_REG</a></li>
 </ul>
@@ -804,10 +782,9 @@ link</a> to an initial <a class="term-reference" href="#term:rev_reg_entry">REV_
 <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="140392"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/140392" >a link</a> to an initial
 <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> where all of the credentials are unrevoked.</p>
 <h4 id="publishing-the-initial-initial-revocation-registry-entry-object"><a class="toc-anchor" href="#publishing-the-initial-initial-revocation-registry-entry-object" >§</a> Publishing the Initial Initial Revocation Registry Entry Object</h4>
-<p>Once constructed, the initial <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> is published by the <a class="term-reference" href="#term:issuer">issuer</a> in a <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a>, currently a Hyperledger Indy
-ledger. For example, see <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="140392"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/140392" >this
+<p>Once constructed, the initial <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> is published by the <a class="term-reference" href="#term:issuer">issuer</a> in a <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> using their selected <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a>. For example, see <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="140392"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/140392" >this
 REV_REG_ENTRY</a> that is
-published on the Sovrin MainNet ledger.</p>
+published on the Sovrin MainNet instance of Hyperledger Indy.</p>
 <h3 id="holder-create-and-store-link-secret"><a class="toc-anchor" href="#holder-create-and-store-link-secret" >§</a> Holder Create and Store Link Secret</h3>
 <p>To prepare to use AnonCreds credentials, the <a class="term-reference" href="#term:holder">Holder</a> must create a
 <a class="term-reference" href="#term:link-secret">link secret</a>, a unique identifier that allows credentials issued to a
@@ -891,14 +868,14 @@ sequenceDiagram
 </ul>
 <p>The <a class="term-reference" href="#term:issuer">issuer</a> sends the <a class="term-reference" href="#term:credential-offer">Credential Offer</a> to the <a class="term-reference" href="#term:holder">holder</a> (step 2), who then can process the <a class="term-reference" href="#term:credential-offer">Credential Offer</a> (step 3). In order to figure out, which kind of credential (which <a class="term-reference" href="#term:cred_def">CRED_DEF</a> and attributes) are offered to the <a class="term-reference" href="#term:holder">holder</a>, the <a class="term-reference" href="#term:holder">holder</a> needs to fetch the underlying <a class="term-reference" href="#term:schema">SCHEMA</a> from the <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> by using the <code>schema_id</code> as provided in the received <a class="term-reference" href="#term:credential-offer">Credential Offer</a>, since the referenced <a class="term-reference" href="#term:schema">SCHEMA</a> contains all attribute names of the offered credential (step 4 + 5).</p>
 <p>In case the credential respectively its attributes is of interest for the <a class="term-reference" href="#term:holder">holder</a>, the <a class="term-reference" href="#term:holder">holder</a> can reply to the issuer`s <a class="term-reference" href="#term:credential-offer">Credential Offer</a> with a <a class="term-reference" href="#term:credential-request">Credential Request</a> in order to ask the issuer for issuance of the offered credential and its attributes.</p>
-<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><ul>
+<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><ul>
 <li>Add info to key_correctness_proof</li>
 </ul>
 </div>
 <h3 id="credential-request"><a class="toc-anchor" href="#credential-request" >§</a> Credential Request</h3>
 <p>A <a class="term-reference" href="#term:credential-request">Credential Request</a> is a formal request from a <a class="term-reference" href="#term:holder">holder</a> to an <a class="term-reference" href="#term:issuer">issuer</a> to get a <a class="term-reference" href="#term:credential">credential</a> based on a concrete <a class="term-reference" href="#term:cred_def">CRED_DEF</a> issued by the <a class="term-reference" href="#term:issuer">issuer</a> to the <a class="term-reference" href="#term:holder">holder</a>.</p>
 <p>In order to be able as a <a class="term-reference" href="#term:holder">holder</a> to express within a <a class="term-reference" href="#term:credential-request">Credential Request</a> to the <a class="term-reference" href="#term:issuer">issuer</a> which kind of credential the <a class="term-reference" href="#term:issuer">issuer</a> shall issue to the <a class="term-reference" href="#term:holder">holder</a>, the <a class="term-reference" href="#term:holder">holder</a> requires the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> from the <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> if not already available in local storage (step 6 + 7). The <a class="term-reference" href="#term:credential-request">Credential Request</a> has to reference the same <a class="term-reference" href="#term:cred_def">CRED_DEF</a> and <a class="term-reference" href="#term:nonce">nonce</a> as given in the preceding <a class="term-reference" href="#term:credential-offer">Credential Offer</a>. Besides the <a class="term-reference" href="#term:cred_def">CRED_DEF</a>, the <a class="term-reference" href="#term:holder">holder</a> also requires his <a class="term-reference" href="#term:link-secret">link secret</a> in a blinded form, as well as the corresponding <a class="term-reference" href="#term:correctness-proof">Correctness Proof</a> of his <a class="term-reference" href="#term:link-secret">link secret</a>. The <a class="term-reference" href="#term:holder">holder</a> has now all relevant data for creating the <a class="term-reference" href="#term:credential-request">Credential Request</a> (step 8).</p>
-<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><ul>
+<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><ul>
 <li>Add here: How does the link secret get blinded? How does the cryptography work? How does it work with correctness proof?</li>
 </ul>
 </div>
@@ -912,7 +889,7 @@ sequenceDiagram
   <span class="token property">"nonce"</span><span class="token operator">:</span> string
 <span class="token punctuation">}</span>
 </code></pre>
-<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><p>is the <code>prover_did</code> the peer DID of the holder?</p>
+<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><p>is the <code>prover_did</code> the peer DID of the holder?</p>
 </div>
 <ul>
 <li><code>prover_did</code>: The <a class="term-reference" href="#term:did">DID</a> of the <a class="term-reference" href="#term:holder">holder</a>.</li>
@@ -925,7 +902,7 @@ sequenceDiagram
 <h3 id="issue-credential"><a class="toc-anchor" href="#issue-credential" >§</a> Issue Credential</h3>
 <p>After the <a class="term-reference" href="#term:issuer">issuer</a> received the <a class="term-reference" href="#term:credential-request">Credential Request</a> from the <a class="term-reference" href="#term:holder">holder</a>, the <a class="term-reference" href="#term:issuer">issuer</a> processes the <a class="term-reference" href="#term:credential-request">Credential Request</a> and decides whether to issue the credential as requested in the <a class="term-reference" href="#term:credential-request">Credential Request</a> to the <a class="term-reference" href="#term:holder">holder</a>.</p>
 <p>In case the <a class="term-reference" href="#term:issuer">issuer</a> decides to issue the requested credential to the <a class="term-reference" href="#term:holder">holder</a>, the following steps have to be executed by the <a class="term-reference" href="#term:issuer">issuer</a>:</p>
-<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><ul>
+<div id="todo-14" class="notice todo"><a class="notice-link" href="#todo-14">TODO</a><ul>
 <li>check nonce?</li>
 <li>check link secret and correctness proof?</li>
 </ul>
@@ -950,7 +927,7 @@ sequenceDiagram
 <li>The <a class="term-reference" href="#term:issuer">issuer</a> has to fetch the <a class="term-reference" href="#term:holder">holder</a>`s blinded <a class="term-reference" href="#term:link-secret">link secret</a> from the received <a class="term-reference" href="#term:credential-request">Credential Request</a>. The blinded <a class="term-reference" href="#term:link-secret">link secret</a> is available in the received <a class="term-reference" href="#term:credential-request">Credential Request</a> at <code>blinded_ms</code>.</li>
 <li>The <a class="term-reference" href="#term:issuer">issuer</a> has to sign each attribute value and the the blinded <a class="term-reference" href="#term:link-secret">link secret</a> by using the corresponding private key for each attribute as defined in the private part of the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> earlier.</li>
 </ol>
-<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><ul>
+<div id="todo-15" class="notice todo"><a class="notice-link" href="#todo-15">TODO</a><ul>
 <li>check how exactly the signing happens for the whole credential</li>
 </ul>
 </div>
@@ -1006,7 +983,7 @@ sequenceDiagram
     <span class="token property">"witness"</span><span class="token operator">:</span> <span class="token null keyword">null</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<div id="todo-14" class="notice todo"><a class="notice-link" href="#todo-14">TODO</a><ul>
+<div id="todo-16" class="notice todo"><a class="notice-link" href="#todo-16">TODO</a><ul>
 <li>what is the naming scheme for the CL signatures in p_credential? Since the shown JSON is the result of two mixed examples, the signatures for more than the three presented attributes are missung. m_2 is the link secret…</li>
 </ul>
 </div>
@@ -1019,7 +996,7 @@ sequenceDiagram
 <li><code>rev_reg</code>: The revocation registry ID of the revocation registry, the issued credentials is assigned.</li>
 <li><code>witness</code>: Witness information. (See Revocation)</li>
 </ul>
-<div id="todo-15" class="notice todo"><a class="notice-link" href="#todo-15">TODO</a><ul>
+<div id="todo-17" class="notice todo"><a class="notice-link" href="#todo-17">TODO</a><ul>
 <li>Add description for remaining keys of json shown above</li>
 <li>What kind of encoding algorithm for strings is used? Seems like this is not defined explicitely (<a path-0="jira.hyperledger.org"path-1="browse"path-2="IS-786"href="https://jira.hyperledger.org/browse/IS-786" ><span>https://jira.hyperledger.org/browse/IS-786</span></a>)</li>
 <li>Go deeper into signing with CL?</li>
@@ -1058,7 +1035,7 @@ presentation request received from the Verifier.</p>
 presentation request to the Verifier.</p>
 <p>In step 7, 8, and 9, the Verifier collects the required information and verifies the verifiable presentation and accepts it if the
 signature is valid, otherwise rejects the verifiable presentation.</p>
-<div id="todo-16" class="notice todo"><a class="notice-link" href="#todo-16">TODO</a><p>Question: VDR access for schema, revocation etc. retrieval mandatory?</p>
+<div id="todo-18" class="notice todo"><a class="notice-link" href="#todo-18">TODO</a><p>Question: VDR access for schema, revocation etc. retrieval mandatory?</p>
 </div>
 <h3 id="create-presentation-request"><a class="toc-anchor" href="#create-presentation-request" >§</a> Create Presentation Request</h3>
 <p>The Verifier starts the process in
@@ -1788,7 +1765,7 @@ other unrevoked credentials <strong>are</strong> included.</p>
 <p>Once the witness (<code>u</code>), the accumulator from the ledger (<code>e</code>) and the value of
 the tails file entry for the credential of interest (<code>b</code>) are known, the NRP can
 be generated as follows:</p>
-<div id="todo-17" class="notice todo"><a class="notice-link" href="#todo-17">TODO</a><p>To Do: Add more detail about the calculation of <code>C</code><sub><code>u</code></sub> and
+<div id="todo-19" class="notice todo"><a class="notice-link" href="#todo-19">TODO</a><p>To Do: Add more detail about the calculation of <code>C</code><sub><code>u</code></sub> and
 <code>C</code><sub><code>b</code></sub> in the following.</p>
 </div>
 <ul>
@@ -1835,7 +1812,7 @@ model:</p>
 <span class="token punctuation">}</span>
 </code></pre>
 <p>The values in the data model are:</p>
-<div id="todo-18" class="notice todo"><a class="notice-link" href="#todo-18">TODO</a><p>To Do: Enumerate each of the items in each NRP section of the presentation.</p>
+<div id="todo-20" class="notice todo"><a class="notice-link" href="#todo-20">TODO</a><p>To Do: Enumerate each of the items in each NRP section of the presentation.</p>
 </div>
 <ul>
 <li><code>x_list</code>&quot; is …
@@ -1974,9 +1951,9 @@ verification process, the <a class="term-reference" href="#term:verifier">verifi
 the presentation for the NRP being processed, plus the accumulator from
 appropriate <a class="term-reference" href="#term:revregentry">RevRegEntry</a>, the following steps are carried out to verify
 the NRP.</p>
-<div id="todo-19" class="notice todo"><a class="notice-link" href="#todo-19">TODO</a><p>To Do: Outline the NRP verification calculation.</p>
+<div id="todo-21" class="notice todo"><a class="notice-link" href="#todo-21">TODO</a><p>To Do: Outline the NRP verification calculation.</p>
 </div>
-<div id="todo-20" class="notice todo"><a class="notice-link" href="#todo-20">TODO</a><p>To Do: Is there a separate process to bind the NRP to the credential?</p>
+<div id="todo-22" class="notice todo"><a class="notice-link" href="#todo-22">TODO</a><p>To Do: Is there a separate process to bind the NRP to the credential?</p>
 </div>
 <p>The verification code MUST surface to the <a class="term-reference" href="#term:verifier">verifier</a> if any part of the
 presentation, including any NRP(s), fail cryptographic verification. The
@@ -2315,22 +2292,22 @@ Procedure:
 
 </code></pre>
 <h2 id="anoncreds-conventions"><a class="toc-anchor" href="#anoncreds-conventions" >§</a> AnonCreds Conventions</h2>
-<div id="todo-21" class="notice todo"><a class="notice-link" href="#todo-21">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
+<div id="todo-23" class="notice todo"><a class="notice-link" href="#todo-23">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
 </div>
 <h2 id="iana-considerations"><a class="toc-anchor" href="#iana-considerations" >§</a> IANA Considerations</h2>
 <p>This document has no IANA actions.</p>
 <h2 id="security-considerations"><a class="toc-anchor" href="#security-considerations" >§</a> Security Considerations</h2>
-<div id="todo-22" class="notice todo"><a class="notice-link" href="#todo-22">TODO</a><p>Add security considerations.</p>
+<div id="todo-24" class="notice todo"><a class="notice-link" href="#todo-24">TODO</a><p>Add security considerations.</p>
 </div>
 <h2 id="privacy-considerations"><a class="toc-anchor" href="#privacy-considerations" >§</a> Privacy Considerations</h2>
-<div id="todo-23" class="notice todo"><a class="notice-link" href="#todo-23">TODO</a><p>Add privacy considerations.</p>
+<div id="todo-25" class="notice todo"><a class="notice-link" href="#todo-25">TODO</a><p>Add privacy considerations.</p>
 </div>
 <h2 id="references"><a class="toc-anchor" href="#references" >§</a> References</h2>
 <h3 id="normative-references"><a class="toc-anchor" href="#normative-references" >§</a> Normative References</h3>
-<div id="todo-24" class="notice todo"><a class="notice-link" href="#todo-24">TODO</a><p>Add normative references</p>
+<div id="todo-26" class="notice todo"><a class="notice-link" href="#todo-26">TODO</a><p>Add normative references</p>
 </div>
 <h3 id="informative-references"><a class="toc-anchor" href="#informative-references" >§</a> Informative References</h3>
-<div id="todo-25" class="notice todo"><a class="notice-link" href="#todo-25">TODO</a><p>Add informative references</p>
+<div id="todo-27" class="notice todo"><a class="notice-link" href="#todo-27">TODO</a><p>Add informative references</p>
 </div>
 <h4 id="resources-on-cryptography"><a class="toc-anchor" href="#resources-on-cryptography" >§</a> Resources on cryptography</h4>
 <h5 id="sigma-protocols"><a class="toc-anchor" href="#sigma-protocols" >§</a> Sigma protocols</h5>
@@ -2353,7 +2330,7 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li>Matt Raffel - Kiva Microfiance</li>
 </ul>
 <h2 id="authors-addresses"><a class="toc-anchor" href="#authors-addresses" >§</a> Authors’ Addresses</h2>
-<div id="todo-26" class="notice todo"><a class="notice-link" href="#todo-26">TODO</a><p>Add authors’ addresses.</p>
+<div id="todo-28" class="notice todo"><a class="notice-link" href="#todo-28">TODO</a><p>Add authors’ addresses.</p>
 </div>
 
                     </article>    
