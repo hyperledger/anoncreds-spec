@@ -11,7 +11,7 @@ AnonCreds Specification
 
 - [Stephen Curran](https://github.com/swcurran)
 - Hakan Yaldiz
-- Sam Curran
+- Sam Curren
 - Victor Martinez Jurado
 
 <!-- -->
