@@ -11,7 +11,7 @@ process for [verifying the non-revocation proofs](#verify-non-revocation-proof)
 (if any) in the presentation.
 
 ```rust
-pub extern fn indy_verifier_verify_proof(command_handle: CommandHandle,
+pub extern fn anoncreds_verifier_verify_proof(command_handle: CommandHandle,
                                          proof_request_json: *const c_char,
                                          proof_json: *const c_char,
                                          schemas_json: *const c_char,
@@ -22,38 +22,38 @@ pub extern fn indy_verifier_verify_proof(command_handle: CommandHandle,
                                                               valid: bool)>) -> ErrorCode {}
 ```
 
-* `proof_request_json`: Proof request in JSON format.
-* `proof_json`: Proof for the given proof request.
-* `schemas_json`: Collection of all schemas participating in the proof.
-* `credential_defs_json`: Collection of all credential definitions participating in the proof.
-* `rev_reg_defs_json`: Collection of all revocation registry definitions participating in the proof.
+- `proof_request_json`: Proof request in JSON format.
+- `proof_json`: Proof for the given proof request.
+- `schemas_json`: Collection of all schemas participating in the proof.
+- `credential_defs_json`: Collection of all credential definitions participating in the proof.
+- `rev_reg_defs_json`: Collection of all revocation registry definitions participating in the proof.
 
-   ```json
-   {
-       "rev_reg_def1_id": <rev_reg_def1>,
-       "rev_reg_def2_id": <rev_reg_def2>,
-       "rev_reg_def3_id": <rev_reg_def3>,
-   }
-    ```
+  ```json
+  {
+      "rev_reg_def1_id": <rev_reg_def1>,
+      "rev_reg_def2_id": <rev_reg_def2>,
+      "rev_reg_def3_id": <rev_reg_def3>,
+  }
+  ```
 
-* `rev_regs_json`: Collection of all revocation registries participating in the proof.
-    ```json
-    {
-        "rev_reg_def1_id": {
-            "timestamp1": <rev_reg1>,
-            "timestamp2": <rev_reg2>,
-        },
-        "rev_reg_def2_id": {
-            "timestamp3": <rev_reg3>
-        },
-        "rev_reg_def3_id": {
-            "timestamp4": <rev_reg4>
-        },
-    }
-    ```
-* `cb`: Callback that takes command result as parameter.
-* `Returns`
-    * `valid`: true - if signature is valid, false - otherwise
+- `rev_regs_json`: Collection of all revocation registries participating in the proof.
+  ```json
+  {
+      "rev_reg_def1_id": {
+          "timestamp1": <rev_reg1>,
+          "timestamp2": <rev_reg2>,
+      },
+      "rev_reg_def2_id": {
+          "timestamp3": <rev_reg3>
+      },
+      "rev_reg_def3_id": {
+          "timestamp4": <rev_reg4>
+      },
+  }
+  ```
+- `cb`: Callback that takes command result as parameter.
+- `Returns`
+  - `valid`: true - if signature is valid, false - otherwise
 
 #### Verify Non-Revocation Proof
 
@@ -102,4 +102,3 @@ NRP was received. However, if the credential used in the generation of the
 proof is revocable, and the [[ref: holder]] did not provide the NRP, the
 verification code SHOULD surface to the [[ref: verifier]] that the presentation
 failed cryptographic verification.
-

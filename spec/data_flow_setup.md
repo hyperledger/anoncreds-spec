@@ -8,30 +8,30 @@ sequenceDiagram
     participant L as Verifiable<br>Data Registry
     participant SP as Schema Publisher
     participant I as Issuer
-    participant H as Holder   
-    
+    participant H as Holder
+
     Note over L, H: Schema Publisher: Publish Schema
-    
+
     SP ->> L: Publish Schema (Schema)
     L ->> I: Schema ID,<br>Schema Transaction ID
-        
+
     Note over L, H: Issuer: Create, Store and Publish CredDef
-   
+
     I ->> I: create_and_store_credential_def<br>(Schema, tag, support_revocation)
-    Note right of I:   store public / <br> private keys and<br>correctness proof    
+    Note right of I:   store public / <br> private keys and<br>correctness proof
     I ->> L: Publish CredDef (CredDef)
 
     Note over L, H: Issuer: Create, Store and Publish Revocation Registry (Optional)
-    
+
     I ->> I: create_and_store_revoc_reg (intCredDef)
     Note right of I: get keys
     Note right of I: store revoc_reg_def,<br>revoc_reg_accum,<br>priv_key,<br>tails_generator
     I ->> L: Publish RevReg <br>(revoc_reg_id,<br>revoc_reg_def_json,<br>revoc_reg_entry_json)
-    
+
     Note over L, H: Holder: Create and Store Link Secret
-    
-    H ->> H: indy_prover_create_master_secret
-    H ->> H: store master secret
+
+    H ->> H: anoncreds_prover_create_link_secret
+    H ->> H: store link secret
     rect rgb(191, 223, 255)
       Note left of H: 💡The "Verifier" role is<br>omitted in this<br>diagram, since<br>it is not required<br>for the setup
     end
@@ -89,29 +89,29 @@ The [[ref: SCHEMA]] is a JSON structure that can be manually constructed,
 containing the list of attributes (claims) that will be included in each
 AnonCreds credential of this type. The following is an example [[ref: SCHEMA]]:
 
-``` json
+```json
 {
-    "attr_names": [
-        "birthlocation",
-        "facephoto",
-        "expiry_date",
-        "citizenship",
-        "name",
-        "birthdate",
-        "firstname",
-        "uuid"
-    ],
-    "name": "BasicIdentity",
-    "version": "1.0.0"
+  "attr_names": [
+    "birthlocation",
+    "facephoto",
+    "expiry_date",
+    "citizenship",
+    "name",
+    "birthdate",
+    "firstname",
+    "uuid"
+  ],
+  "name": "BasicIdentity",
+  "version": "1.0.0"
 }
 ```
 
-* `attr_names` is the array of attribute names (claim names) that will
+- `attr_names` is the array of attribute names (claim names) that will
   constitute the AnonCred credential of this type.
-* `name` is a string defined by the schema publisher, the name of the schema.
-* `version` is a string defined by the schema publisher that the version of the
-    schema in [semver](https://semver.org/) format. The three part, period (".")
-    separated format MAY be enforced.
+- `name` is a string defined by the schema publisher, the name of the schema.
+- `version` is a string defined by the schema publisher that the version of the
+  schema in [semver](https://semver.org/) format. The three part, period (".")
+  separated format MAY be enforced.
 
 Once constructed, the [[ref: SCHEMA]] is published to a Verifiable Data Registry
 (VDR) using the Schema Publishers selected [[ref: AnonCreds Objects Method]].
@@ -131,14 +131,14 @@ diagram.
 
 In AnonCreds, the [[ref: CRED_DEF]] and [[ref: CRED_DEF]] identifier include the following elements.
 
-* A link to the Issuer of the credentials via the DID used to publish the
+- A link to the Issuer of the credentials via the DID used to publish the
   [[ref: CRED_DEF]].
-* A link to the [[ref: SCHEMA]] upon which the [[ref: CRED_DEF]] is based (the credential type).
-* A set of public/private key pairs, one per attribute (claim) in the
+- A link to the [[ref: SCHEMA]] upon which the [[ref: CRED_DEF]] is based (the credential type).
+- A set of public/private key pairs, one per attribute (claim) in the
   credential. The private keys will later be used to sign the claims when
   credentials to be issued are created.
-* Other information necessary for the cryptographic signing of credentials.
-* Information necessary for the revocation of credentials, if revocation is to
+- Other information necessary for the cryptographic signing of credentials.
+- Information necessary for the revocation of credentials, if revocation is to
   be enabled by the Issuer for this type of credential.
 
 We'll initially cover the generation and data for a [[ref: CRED_DEF]] created without the
@@ -162,10 +162,10 @@ must be on the same [[ref: VDR]].
 The [[ref: CRED_DEF]] is a JSON structure that is generated using cryptographic primitives
 (described below) given the following inputs.
 
-* A [[ref: SCHEMA]] for the credential type.
-* A `tag`, an arbitrary string defined by the Issuer, enabling an Issuer to
+- A [[ref: SCHEMA]] for the credential type.
+- A `tag`, an arbitrary string defined by the Issuer, enabling an Issuer to
   create multiple [[ref: CRED_DEF]]s for the same [[ref: SCHEMA]].
-* An optional flag `support_revocation` (default `false`) which if true
+- An optional flag `support_revocation` (default `false`) which if true
   generates some additional data in the [[ref: CRED_DEF]] to enable credential
   revocation. The additional data generated when this flag is `true` is covered
   in the [next section](#issuer-create-and-publish-revocation-registry-object)
@@ -173,10 +173,10 @@ The [[ref: CRED_DEF]] is a JSON structure that is generated using cryptographic 
 
 The operation produces two objects, as follows.
 
-* The [[ref: PRIVATE_CRED_DEF]], an internally managed object that includes the private keys
+- The [[ref: PRIVATE_CRED_DEF]], an internally managed object that includes the private keys
   generated for the [[ref: CRED_DEF]] and stored securely by the issuer.
-* The [[ref: CRED_DEF]], that includes the public keys generated for the [[ref:
-  CRED_DEF]], returned to the calling function and then published on a VDR
+- The [[ref: CRED_DEF]], that includes the public keys generated for the [[ref:
+CRED_DEF]], returned to the calling function and then published on a VDR
   (currently Hyperledger Indy).
 
 The following describes the process for generating the [[ref: CRED_DEF]] and
@@ -204,15 +204,15 @@ MainNet):
     "primary": {
       "n": "779...397",
       "r": {
-            "birthdate": "294...298",
-            "birthlocation": "533...284",
-            "citizenship": "894...102",
-            "expiry_date": "650...011",
-            "facephoto": "870...274",
-            "firstname": "656...226",
-            "master_secret": "521...922",
-            "name": "410...200",
-            "uuid": "226...757"
+        "birthdate": "294...298",
+        "birthlocation": "533...284",
+        "citizenship": "894...102",
+        "expiry_date": "650...011",
+        "facephoto": "870...274",
+        "firstname": "656...226",
+        "link_secret": "521...922",
+        "name": "410...200",
+        "uuid": "226...757"
       },
       "rctxt": "774...977",
       "s": "750..893",
@@ -220,7 +220,7 @@ MainNet):
     }
   },
   "ref": 54177,
-  "signature_type": "CL",
+  "signature_type": "BbsBlsBoundSignature2020",
   "tag": "latest"
 }
 ```
@@ -231,26 +231,26 @@ CRED_DEF]] contains a public key fragment for each message being signed by
 signatures generated with the respective private key. The length of the block of
 messages, `L`, being signed is defined by referencing a specific Schema with a
 certain number of attributes, `A = a1,a2,..` and setting `L` to `A+1`. The
-additional message being signed as part of a credential is for a `master_secret`
+additional message being signed as part of a credential is for a `link_secret`
 (called the [[ref: link_secret]] everywhere except in the existing open source
 code and data models) attribute which is included in all credentials. This value
 is blindly contributed to the credential during issuance and used to bind the
 issued credential to the entity to which it was issued.
 
-All integers within the above [[ref: CRED_DEF]] example json are shown with ellipses (e.g. `123...789`). They are 2048-bit integers represented as `617` decimal digits. These integers belong to an RSA-2048 group characterised by the `n` defined in the [[ref: CRED_DEF]]. 
+All integers within the above [[ref: CRED_DEF]] example json are shown with ellipses (e.g. `123...789`). They are 2048-bit integers represented as `617` decimal digits. These integers belong to an RSA-2048 group characterised by the `n` defined in the [[ref: CRED_DEF]].
 
-* `primary` is the data used for generating credentials.
-* `n` is a safe RSA-2048 number. A large semiprime number such that `n = p.q`, where `p` and `q` are safe primes. A safe prime `p` is a prime number such that `p = 2p'+ 1`, where `p'` is also a prime. Note: `p` and `q` are the private key for the public CL-RSA key this [[ref: CRED_DEF]] represents.
-* `r` is an object that defines a CL-RSA public key fragment for each attribute in the credential. Each fragment is a large number generated by computing `s^{xri}` where `xri` is a randomly selected integer between 2 and `p'q'-1`.
-  * `master_secret` (should be [[ref: link secret]]) is the name of an attribute that can be found in each [[ref: CRED_DEF]]. The associated private key is used for signing a blinded value given by the [[ref: Holder]] to the [[ref: Issuer]] during credential issuance, binding the credential to the [[ref: Holder]].
-  * The rest of the attributes in the list are those defined in the [[ref: SCHEMA]].
-  * The attribute names are normalized (lower case, spaces removed) and listed in the [[ref: CRED_DEF]] in alphabetical order.
-* `rctxt` is equal to `s^(xrctxt)`, where `xrctxt` is a randomly selected integer between `2` and `p'q'-1`. (I believe this is used for the commitment scheme, allowing entities to blindly contribute values to credentials.)
-* `s` is a randomly selected quadratic residue of `n`. This makes up part of the CL-RSA public key, independent of the message blocks being signed.
-* `z` is equal to `s^(xz)`, where `xz` is a randomly selected integer between `2` and `p'q'-1`. This makes up part of the CL-RSA public key, independent of the message blocks being signed.
-* `ref` is the identifier of the schema. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] used in publishing the [[ref: SCHEMA]].
-* `signature_type` is always `CL` in this version of AnonCreds.
-* `tag` is the `tag` value (a string) passed in by the [[ref: Issuer]] to an AnonCred's [[ref: CRED_DEF]] create and store implementation.
+- `primary` is the data used for generating credentials.
+- `n` is a safe RSA-2048 number. A large semiprime number such that `n = p.q`, where `p` and `q` are safe primes. A safe prime `p` is a prime number such that `p = 2p'+ 1`, where `p'` is also a prime. Note: `p` and `q` are the private key for the public CL-RSA key this [[ref: CRED_DEF]] represents.
+- `r` is an object that defines a CL-RSA public key fragment for each attribute in the credential. Each fragment is a large number generated by computing `s^{xri}` where `xri` is a randomly selected integer between 2 and `p'q'-1`.
+  - `link_secret` (should be [[ref: link secret]]) is the name of an attribute that can be found in each [[ref: CRED_DEF]]. The associated private key is used for signing a blinded value given by the [[ref: Holder]] to the [[ref: Issuer]] during credential issuance, binding the credential to the [[ref: Holder]].
+  - The rest of the attributes in the list are those defined in the [[ref: SCHEMA]].
+  - The attribute names are normalized (lower case, spaces removed) and listed in the [[ref: CRED_DEF]] in alphabetical order.
+- `rctxt` is equal to `s^(xrctxt)`, where `xrctxt` is a randomly selected integer between `2` and `p'q'-1`. (I believe this is used for the commitment scheme, allowing entities to blindly contribute values to credentials.)
+- `s` is a randomly selected quadratic residue of `n`. This makes up part of the CL-RSA public key, independent of the message blocks being signed.
+- `z` is equal to `s^(xz)`, where `xz` is a randomly selected integer between `2` and `p'q'-1`. This makes up part of the CL-RSA public key, independent of the message blocks being signed.
+- `ref` is the identifier of the schema. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] used in publishing the [[ref: SCHEMA]].
+- `signature_type` is always `CL` in this version of AnonCreds.
+- `tag` is the `tag` value (a string) passed in by the [[ref: Issuer]] to an AnonCred's [[ref: CRED_DEF]] create and store implementation.
 
 ::: todo
 Evaluate the impact in the existing implementations of making the `ref`
@@ -280,7 +280,7 @@ Describe the revocation data generation process for the CRED_DEF.
 Provide a reference to the published articles on revocation used here.
 :::
 
-A [[ref: PRIVATE_CRED_DEF]] with revocation enabled has the following format.  In this, the
+A [[ref: PRIVATE_CRED_DEF]] with revocation enabled has the following format. In this, the
 details of the `primary` element are hidden, as they are the same as was covered
 above.
 
@@ -314,7 +314,7 @@ they are the same as was covered above.
     }
   },
   "ref": 54753,
-  "signature_type": "CL",
+  "signature_type": "BbsBlsBoundSignature2020",
   "tag": "state_license"
 }
 ```
@@ -325,19 +325,19 @@ or 6 hex integers, as noted below. In the following, only the `revocation` item
 is described, as the rest of items (`primary`, `ref`, etc.) are described in the
 previous section of this document.
 
-* `revocation` is the data used for managing the revocation status of
+- `revocation` is the data used for managing the revocation status of
   credentials issued using this [[ref: CRED_DEF]].
-* `g` is the ...
-* `g_dash` is the ...
-* `h` is the ...
-* `h0` is the ...
-* `h1` is the ...
-* `h2` is the ...
-* `h_cap` is the ...
-* `htilde` is the ...
-* `pk` is the ...
-* `u` is the ...
-* `y` is the ...
+- `g` is the ...
+- `g_dash` is the ...
+- `h` is the ...
+- `h0` is the ...
+- `h1` is the ...
+- `h2` is the ...
+- `h_cap` is the ...
+- `htilde` is the ...
+- `pk` is the ...
+- `u` is the ...
+- `y` is the ...
 
 #### Publishing the CRED_DEF on a Verifiable Data Registry
 
@@ -365,21 +365,21 @@ publishing of the [[ref: REV_REG_DEF]] includes creating and publishing the
 A secure process must be run to create the revocation registry object, taking
 the following input parameters.
 
-* `type`: the type of revocation registry being created. For Hyperledger Indy
+- `type`: the type of revocation registry being created. For Hyperledger Indy
   this is always "CL_ACCUM."
-* `cred_def_id`: the ID of the [[ref: CRED_DEF]] to which the [[ref: REV_REG]]
+- `cred_def_id`: the ID of the [[ref: CRED_DEF]] to which the [[ref: REV_REG]]
   is to be associated
-* `tag`: an [[ref: issuer]]-defined tag that is included in the identifier for
+- `tag`: an [[ref: issuer]]-defined tag that is included in the identifier for
   the [[ref: REV_REG]]
-* `issuanceType`: an enumerated value that defines the initial state of
+- `issuanceType`: an enumerated value that defines the initial state of
   credentials in the [[ref: REV_REG]]: revoked ("ISSUANCE_ON_DEMAND") or
   non-revoked ("ISSUANCE_BY_DEFAULT"). See the [warning and recommendation
   against the use of
   `ISSUANCE_ON_DEMAND`](#recommend-not-using-issuanceondemand).
-* `maxCredNum`: The capacity of the [[ref: REV_REG]], a count of the number of
+- `maxCredNum`: The capacity of the [[ref: REV_REG]], a count of the number of
   credentials that can be issued using the [[ref: REV_REG]].
-* `tailsLocation`: A URL indicating where the [[ref: TAILS_FILE]] for the [[ref
-  REV_REG]] will be available to all [[ref: holders]] of credential issued using
+- `tailsLocation`: A URL indicating where the [[ref: TAILS_FILE]] for the [[ref
+REV_REG]] will be available to all [[ref: holders]] of credential issued using
   this revocation registry.
 
 Three outputs are generated from the process to generate the [[ref; REV_REG]]:
@@ -424,7 +424,7 @@ The [[ref: REV_REG_DEF]] object has the following data model. This example is fr
 [this transaction](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140386) on the
 Sovrin MainNet and instance of Hyperledger Indy.
 
-``` json
+```json
 {
   "credDefId": "Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc",
   "id": "Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc:CL_ACCUM:1-1024",
@@ -450,17 +450,17 @@ The items within the data model are as follows:
 Update this to be the inputs for generating a REV_REG vs. the already published object
 :::
 
-* `credDefId`: the input parameter `cred_def_id`
-* `id`: the identifier of the [[ref: REV_REG]]. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] is to publish the object.
-* `revocDefType`, the input parameter `type`
-* `tag`, the input parameter `tag`
-* `issuanceType`, the input parameter `issuanceType`
-* `maxCredNum`, the input parameter `maxCredNum`
-* `z`, a public key used to sign the accumulator (described further below)
-* `tailsHash`, the calculated hash of the contents of the [[ref: TAILS_FILE]],
+- `credDefId`: the input parameter `cred_def_id`
+- `id`: the identifier of the [[ref: REV_REG]]. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] is to publish the object.
+- `revocDefType`, the input parameter `type`
+- `tag`, the input parameter `tag`
+- `issuanceType`, the input parameter `issuanceType`
+- `maxCredNum`, the input parameter `maxCredNum`
+- `z`, a public key used to sign the accumulator (described further below)
+- `tailsHash`, the calculated hash of the contents of the [[ref: TAILS_FILE]],
   as described in the [next section](#tails-file-and-tails-file-generation) on
   [[ref: TAILS_FILE]] generation.
-* `tailsFileLocation`, the input parameter `tailsLocation`
+- `tailsFileLocation`, the input parameter `tailsLocation`
 
 As noted, most of the items come directly from the input parameters provided by
 the [[ref: issuer]]. The `z` [[ref: REV_REG]] accumulator public key is
@@ -513,9 +513,9 @@ for use when generating proofs of non-revocation when creating a presentation
 that uses its revocable verifiable credential. How the [[ref: TAILS_FILE]] is
 used is covered elsewhere in this specification:
 
-* in the section about the [[ref: issuer]] publishing credential revocation
+- in the section about the [[ref: issuer]] publishing credential revocation
   state updates, and
-* in the section about [[ref: holders]] creating a proof of non-revocation.
+- in the section about [[ref: holders]] creating a proof of non-revocation.
 
 ##### PRIVATE_REV_REG Object Generation
 
@@ -552,27 +552,27 @@ one or more credentials within the [[ref: REV_REG]] change.
 A secure process must be run to create the initial [[ref: REV_REG_ENTRY]] object,
 taking the following input parameters.
 
-* `type`: the type of revocation registry being created. For Hyperledger Indy
+- `type`: the type of revocation registry being created. For Hyperledger Indy
   this is always "CL_ACCUM."
-* `rev_reg_id`: the ID of the [[ref: REV_REG]] for which the initial [[ref:
-  REV_REG_ENTRY]] is to be generated.
-    * The process uses this identifier to find the associated [[ref:
-      PRIVATE_REV_REG]] to access the information within that object.
+- `rev_reg_id`: the ID of the [[ref: REV_REG]] for which the initial [[ref:
+REV_REG_ENTRY]] is to be generated.
+  - The process uses this identifier to find the associated [[ref:
+PRIVATE_REV_REG]] to access the information within that object.
 
 The process collects from the identified [[ref: PRIVATE_REV_REG]] information to
 calculate the cryptographic accumulator value for the initial [[ref:
 REV_REG_ENTRY]], including:
 
-* `issuanceType`: an enumerated value that defines the initial state of
+- `issuanceType`: an enumerated value that defines the initial state of
   credentials in the [[ref: REV_REG]]: revoked ("ISSUANCE_ON_DEMAND") or
   non-revoked ("ISSUANCE_BY_DEFAULT"). See the [warning and recommendation
   against the use of
   `ISSUANCE_ON_DEMAND`](#recommend-not-using-issuanceondemand).
-* `maxCredNum`: The capacity of the [[ref: REV_REG]], a count of the number of
+- `maxCredNum`: The capacity of the [[ref: REV_REG]], a count of the number of
   credentials that can be issued using the [[ref: REV_REG]].
-* `tailsArray`: The contents of the [[ref: TAILS_FILE]], the array of primes,
+- `tailsArray`: The contents of the [[ref: TAILS_FILE]], the array of primes,
   one for each credential to be issued from the [[ref: REV_REG]].
-* `private_key`: The accumulator private key for the [[ref: REV_REG]].
+- `private_key`: The accumulator private key for the [[ref: REV_REG]].
 
 With the collected information, the process the initial cryptographic
 accumulator for the [[ref: REV_REG]]. The format of the identifier for the
@@ -607,11 +607,11 @@ THe following is an example of an initial, published [[ref: REV_REG_ENTRY]] obje
 
 The items in the data model are:
 
-* `revocDefTyep`: the input parameter `type`
-* `revocRegDefId`: the identifier of the associated [[ref: REV_REG_DEF]]. The
+- `revocDefTyep`: the input parameter `type`
+- `revocRegDefId`: the identifier of the associated [[ref: REV_REG_DEF]]. The
   format of the identifier is dependent on the [[ref: AnonCreds Objects Method]]
   used by the issuer.
-* `accum`: the calculated cryptographic accumulator reflecting the initial state
+- `accum`: the calculated cryptographic accumulator reflecting the initial state
   of the [[ref: REV_REG]]
 
 To see what [[ref: REV_REG_ENTRY]] transactions look like on a [[ref: VDR]], this is [a
