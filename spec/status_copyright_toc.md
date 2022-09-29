@@ -4,7 +4,7 @@ This is a proposal for version v1.0 of AnonCreds which aims at AnonCreds being l
 
 This document is a product of the [AnonCreds Working Group](https://github.com/AnonCreds-WG).
 It represents the consensus of the AnonCreds community.
-This paper has been extended from the 0.1 version in order achieve ledger agnostic AnonCreds. This is a effort is a product of the [RWOT2022](https://rebootthehague.com/) event in the Hague, Netherlands.
+The proposal for v1.0 has partly been worked out at the [RWOT2022](https://rebootthehague.com/) event in the Hague, Netherlands.
 
 Information about the current status of this document, any errata,
 and how to provide feedback on it may be obtained at

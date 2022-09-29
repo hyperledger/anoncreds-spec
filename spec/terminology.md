@@ -50,7 +50,7 @@ The correlatability of credentials due to the necessity of revealing a persisten
 
 ~ AnonCreds are bound to the [[ref: holder]] with a non-correlatable secret only known to the [[ref: holder]] itself called a link secret\*. Instead of a persistent identifier, the link secret as a blind attribute is sent to the [[ref: issuer]] during credential issuance. The issuer signs every claim (including the blinded link secret) individually, enabling [[ref: selective disclosure]] (see below). It means the [[ref: issuer]] does not know the exact value of the link secret, and the [[ref: holder]] can prove the ownership of credentials to a [[ref: verifier]] without disclosing a persistent identifier.
 
-~ \*) The link secret is known as master secret in the Hyperledger Indy source code. However, the term "master secret" is outside the source code and older publications deprecated.
+~ *) The link secret is known as master secret in the Hyperledger Indy source code. The term "master secret" is deprecated in AnonCreds.
 
 [[def: nonce]]
 ~ A nonce is an arbitrary unique number that is used to ensure secure communications. Within AnonCreds, nonces are used during credential issuance e.g. for binding a [[ref: Credential Request]] to a [[ref: Credential Offer]].
