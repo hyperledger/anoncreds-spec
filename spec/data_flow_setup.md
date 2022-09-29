@@ -488,6 +488,10 @@ The process of generating the primes that populate the [[ref: TAILS_FILE]] is as
 follows:
 
 ::: todo
+To Do: Document hashing of the tails file ([see also](https://github.com/hyperledger/indy-shared-rs/blob/d22373265f7c4cf93d59dd3c111251ef96d6a63d/indy-credx/src/services/tails.rs#L151)).
+:::
+
+::: todo
 To Do: Document the process for generating the primes.
 :::
 
