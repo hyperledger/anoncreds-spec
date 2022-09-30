@@ -71,19 +71,24 @@ A [[ref:Credential Request]] is a formal request from a [[ref:holder]] to an [[r
 
 In order to be able as a [[ref:holder]] to express within a [[ref:Credential Request]] to the [[ref:issuer]] which kind of credential the [[ref:issuer]] shall issue to the [[ref:holder]], the [[ref:holder]] requires the [[ref:CRED_DEF]] from the [[ref:Verifiable Data Registry]] if not already available in local storage (step 6 + 7). The [[ref:Credential Request]] has to reference the same [[ref:CRED_DEF]] and [[ref:nonce]] as given in the preceding [[ref:Credential Offer]]. Besides the [[ref:CRED_DEF]], the [[ref:holder]] also requires his [[ref:link secret]] in a blinded form, as well as the corresponding [[ref: Correctness Proof]] of his [[ref:link secret]]. The [[ref: holder]] has now all relevant data for creating the [[ref:Credential Request]] (step 8).
 
-#### Blinding hidden attributes
+#### Blinding Link Secret
 
-The [[ref: link secret]] is a default hidden attribute.
+The [[ref:link secret]] is a default hidden attribute.
+Whilst it is cryptographically possible to have multiple hidden attributes,
+in AnonCreds,
+only [[ref:link secret]] is used.
+
 The blinding process is done specifically for an issuer's specific [[ref:CRED_DEF]].
-The `blinded_secrets` sent to the issuer includes:
+The data included in the [[ref:Credential Request]] sent to the issuer includes:
 
-*- the aggregated values of all blinded hidden attributes
-*- the hidden attrbute key values
+*- the blinded [[ref:link secret]]
+*- the hidden attrbute key, aka [[ref:link secret]]
 *- the [[ref:Correctness Proof]]
 
-A `blinding factory` is used as a secret held by the [[ref:holder]] for blinding the hidden attributes before sending it to issuer and to unblind the signed values in the signature received from the issuer.
+A `blinding factor` is used as a secret held by the [[ref:holder]] for blinding the [[ref:link secret]] before sending it to issuer and to unblind the signed values in the signature received from the issuer.
 
-A `CredentialPrimaryPublicKey`, $P$, is a field in the [[ref:CRED_DEF]] in the form of CL Signatures and it is defined by:
+The process of blinding uses the [[ref:issuer]]'s `CredentialPrimaryPublicKey`, $P$,
+which is included in the [[ref:CRED_DEF]] and it is defined by:
 
 ```json
 {
@@ -95,15 +100,13 @@ A `CredentialPrimaryPublicKey`, $P$, is a field in the [[ref:CRED_DEF]] in the f
 }
 ```
 
-Each hidden attributed, $h_i$ is blinded by
+The [[ref:link secret]], $A_l$ is blinded by
 
-$bh_i = P_r^{h_i} mod P_n$
+$A_{bl} = P_r^{A_l} mod P_n$
 
-The product of all $bh_i$ is multiplied by the `blinding factory`, $v$, by
+$A_{bl}$ is multiplied by the `blinding factory`, $v$,
 
-$(P_s^v \times \prod_{i=0}^{i=l}bh_i)Mod P_n$
-
-This means that all hidden attributes produce one value before provided to the issuer to sign.
+$(P_s^v \times A_{bl})Mod P_n$
 
 ::: todo
 *- How does the cryptography work? How does it work with correctness proof?
