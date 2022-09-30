@@ -45,7 +45,7 @@ DIDs are not used in the processing of credentials, and notably, the public keys
 used in AnonCreds signatures come not from DIDs, but rather from [[def:
 CRED_DEF]] objects. DIDs may be used to identify the entity publishing the
 objects that are then used in the processing of credentials -- the [[def:
-SCEHMA]], [[def: CRED_DEF]], [[def: REV_REG_DEF]] and [[def: REV_REG_ENTRY]]
+SCEHMA]], [[def: CRED_DEF]], [[def: Revocation Registry Definition]] and [[def: REV_REG_ENTRY]]
 objects. There is an enforced relationship between an identifier (such as a DID)
 for the entity publishing the AnonCred objects, and the objects themselves. For
 example, in the Hyperledger Indy implementation of AnonCreds, for a credential
@@ -352,12 +352,12 @@ present.
 ### Issuer Create and Publish Revocation Registry Objects
 
 Once the [[ref: issuer]] has created a [[ref: CRED_DEF]] with revocation
-enabled, the [[ref: issuer]] must also create and publish a [[ref: REV_REG_DEF]] and
+enabled, the [[ref: issuer]] must also create and publish a [[ref: Revocation Registry Definition]] and
 create and publish the first [[ref: REV_REG_ENTRY]] for the registry.
 
 In this section, we'll cover the create and publish steps for each
-of the [[ref: REV_REG_DEF]] and [[ref: REV_REG_ENTRY]] objects. The creation and
-publishing of the [[ref: REV_REG_DEF]] includes creating and publishing the
+of the [[ref: Revocation Registry Definition]] and [[ref: REV_REG_ENTRY]] objects. The creation and
+publishing of the [[ref: Revocation Registry Definition]] includes creating and publishing the
 [[ref: TAILS_FILE]] for the [[ref: REG_REV]].
 
 #### Creating the Revocation Registry Object
@@ -418,29 +418,21 @@ interested in understanding what use cases there are for `ISSUANCE_ON_DEMAND`.
 
 :::
 
-##### REV_REG_DEF Object Generation
+##### Revocation Registry Definition Object Generation
 
-The [[ref: REV_REG_DEF]] object has the following data model. This example is from
+The [[ref: Revocation Registry Definition]] object has the following data model. This example is from
 [this transaction](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140386) on the
 Sovrin MainNet and instance of Hyperledger Indy.
 
 ``` json
 {
-  "credDefId": "Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc",
-  "id": "Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc:CL_ACCUM:1-1024",
-  "revocDefType": "CL_ACCUM",
-  "tag": "1-1024",
-  "value": {
-    "issuanceType": "ISSUANCE_BY_DEFAULT",
-    "maxCredNum": 1024,
-    "publicKeys": {
-      "accumKey": {
-        "z": "1 0BB...386"
-      }
-    },
-    "tailsHash": "BrCqQS487HcdLeihGwnk65nWwavKYfrhSrMaUpYGvouH",
-    "tailsLocation": "https://api.portal.streetcred.id/agent/tails/BrCqQS487HcdLeihGwnk65nWwavKYfrhSrMaUpYGvouH"
-  }
+    "type": "CL_ACCUM",
+    "cred_def_id": "Ehx3RZSV38pn3MYvxtHhbQ:3:CL:264697:default",
+    "tag": "MyCustomCredentialDefinition",
+    "issuanceType": "ISSUANCE_ON_DEMAND",
+    "maxCredNum": 666,
+    "tailsLocation": "https://my.revocations.tails/tailsfile.txt",
+    "tailsHash": "91zvq2cFmBZmHCcLqFyzv7bfehHH5rMhdAG5wTjqy2PE"
 }
 ```
 
@@ -450,23 +442,15 @@ The items within the data model are as follows:
 Update this to be the inputs for generating a REV_REG vs. the already published object
 :::
 
-* `credDefId`: the input parameter `cred_def_id`
-* `id`: the identifier of the [[ref: REV_REG]]. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] is to publish the object.
-* `revocDefType`, the input parameter `type`
-* `tag`, the input parameter `tag`
-* `issuanceType`, the input parameter `issuanceType`
-* `maxCredNum`, the input parameter `maxCredNum`
-* `z`, a public key used to sign the accumulator (described further below)
-* `tailsHash`, the calculated hash of the contents of the [[ref: TAILS_FILE]],
-  as described in the [next section](#tails-file-and-tails-file-generation) on
-  [[ref: TAILS_FILE]] generation.
-* `tailsFileLocation`, the input parameter `tailsLocation`
+* `type` - the type of revocation registry
+* `cred_def_id` - The credential definition id
+* `tag` - the tag of the credential definition 
+* `issuanceType` - the issuance type; either of "ISSUANCE_BY_DEFAULT" or "ISSUANCE_ON_DEMAND"
+* `maxCredNumber` - The maximum amount of Credentials that can be revoked in the Revocation Registry before a new one needs to be started
+* `tailsLocation` - The URL pointing to the related tails file
+* `tailsHash` - The hash of the tails file resulting from hashing the tails file version prepended to the tails file as SHA256 and then encoded to base58.
 
-As noted, most of the items come directly from the input parameters provided by
-the [[ref: issuer]]. The `z` [[ref: REV_REG]] accumulator public key is
-generated using (TODO: fill in details) algorithm. The use of the accumulator
-public key is discussed in the Credential Issuance section, when the publication
-of revocations is described. The calculation of the tailsHash is described in
+The calculation of the tailsHash is described in
 the [next section](#tails-file-and-tails-file-generation) on [[ref: TAILS_FILE]]
 generation.
 
@@ -495,7 +479,7 @@ Once generated, the array of primes is static, regardless of credential issuance
 or revocation events. Once generated, the SHA256 (TO BE VERIFIED) hash of the
 array of primes is calculated and returned to be inserted into the `tailsHash`
 item of the [[ref: REV_REG]] object (as described in the [previous
-section](#rev_reg_def-object-generation)). Typically, the array is streamed into a
+section](#revocation-registry-definition-object-generation)). Typically, the array is streamed into a
 file (hence, the term "Tails File") and published to a [[def: URL]] indicated by
 the `tailsLocation` input parameter provided by the [[ref: issuer]].
 
@@ -608,7 +592,7 @@ THe following is an example of an initial, published [[ref: REV_REG_ENTRY]] obje
 The items in the data model are:
 
 * `revocDefTyep`: the input parameter `type`
-* `revocRegDefId`: the identifier of the associated [[ref: REV_REG_DEF]]. The
+* `revocRegDefId`: the identifier of the associated [[ref: Revocation Registry Definition]]. The
   format of the identifier is dependent on the [[ref: AnonCreds Objects Method]]
   used by the issuer.
 * `accum`: the calculated cryptographic accumulator reflecting the initial state

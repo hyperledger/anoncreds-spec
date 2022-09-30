@@ -2,7 +2,7 @@
 
 In the AnonCreds data flows are specifications of data models that contain
 identifiers to public AnonCreds objects ([[ref: Schemas]], [[ref: CredDefs]],
-[[ref: Rev_Reg_Defs]] and [[ref: Rev_Reg_Entrys]]) that are published by issuers
+[[ref: Revocation Registry Definitions]] and [[ref: Rev_Reg_Entrys]]) that are published by issuers
 to locations ([[ref: Verifiable Data Registries]] or VDRs) that must be
 accessible to holders and verifiers to enable presentation generation and
 verification. The format of the objects identifiers and the

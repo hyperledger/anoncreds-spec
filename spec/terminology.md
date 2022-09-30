@@ -19,7 +19,7 @@ Describe (key) Correctness Proof
 
 ~ The **CRED_DEF_PRIVATE** part of a CRED_DEF is stored on the [[ref: issuer]]'s side and is an object that contains the [[ref:issuer]]`s private keys for signing the attributes (one key for one attribute) when issuing an AnonCreds [[ref:Credential]]. These private keys are used to create signature proofs for the issued anonymous credentials, which then can be validated in a derived form by a [[ref: verifier]] by using the published public keys of the CRED_DEF_PUBLIC part. A CRED_DEF_PRIVATE never leaves the [[ref: Issuer]]'s domain and is stored securely.
 
-~ Revokable Verifiable Credentials require (besides) a CRED_DEF also a [[ref: REV_REG_DEF]].
+~ Revokable Verifiable Credentials require (besides) a CRED_DEF also a [[ref: Revocation Registry Definition]].
 
 [[def: Credential Offer]]
 ~ A credential offer is an offering from an [[ref: issuer ]] towards a [[ref: holder]] to issue a [[ref: credential]]. The credential offer contains the details about the claims the [[ref: issuer]] intends to issue to the [[ref: holder]]. A [[ref: holder]] can reply to the [[ref: issuer]] with a [[ref: Credential Request]]. A credential offer also includes a [[ref: nonce]].
@@ -61,15 +61,15 @@ The correlatability of credentials due to the necessity of revealing a persisten
 [[def: Non-Revocation Proof (NRP)]]
 ~ TODO
 
-[[def: REV_REG_DEF]]
-~ A REV_REG_DEF object (short for "revocation registry definition") contains information required for [[ref: verifiers]] in order to enable them to verify whether a revokable verifiable credential has been revoked by the issuer since issuance.
+[[def: Revocation Registry Definition]]
+~ A Revocation Registry Definition object contains information required for [[ref: verifiers]] in order to enable them to verify whether a revokable verifiable credential has been revoked by the issuer since issuance.
 
-~ REV_REG_DEFs are only needed for revokable verifiable credentials and are most commonly [written](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#claim-def) to a public location (e.g. an indy ledger) by the owner of a [[ref: CRED_DEF]] immediatly after the [[ref: CRED_DEF]] has been written. They can be [read](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-attrib) from a Hyperledger Indy Node by any client and are updated in case of the revocation of a credential, which is based on the used [[ref: CRED_DEF]].
+~ Revocation Registry Definitions are only needed for revokable verifiable credentials and are most commonly [written](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#claim-def) to a public location (e.g. an indy ledger) by the owner of a [[ref: CRED_DEF]] immediatly after the [[ref: CRED_DEF]] has been written. They can be [read](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-attrib) from a Hyperledger Indy Node by any client and are updated in case of the revocation of a credential, which is based on the used [[ref: CRED_DEF]].
 
 ~ Further details about Hyperledger Indy's revocation process can be found [here](https://hyperledger-indy.readthedocs.io/projects/hipe/en/latest/text/0011-cred-revocation/README.html).
 
 [[def: REV_REG_ENTRY]]
-~ A REV_REG_ENTRY object (short for "revocation registry entry") marks the current status ("revoked" or "not revoked") of one or more revokable verifiable credentials in the ledger in a privacy preserving manner. A REV_REG_ENTRY is [written](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#revoc-reg-entry) by the owner of a [[ref: REV_REG_DEF]] respectively the issuer of the credential(s) based on a [[ref: CRED_DEF]] and its [[ref: REV_REG_DEF]]. Any REV_REG_ENTRY condensed with further required information can be [read](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-revoc-reg-delta) by any Hyperledger Indy client.
+~ A REV_REG_ENTRY object (short for "revocation registry entry") marks the current status ("revoked" or "not revoked") of one or more revokable verifiable credentials in the ledger in a privacy preserving manner. A REV_REG_ENTRY is [written](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#revoc-reg-entry) by the owner of a [[ref: Revocation Registry Definition]] respectively the issuer of the credential(s) based on a [[ref: CRED_DEF]] and its [[ref: Revocation Registry Definition]]. Any REV_REG_ENTRY condensed with further required information can be [read](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-revoc-reg-delta) by any Hyperledger Indy client.
 
 ~ Further details about Hyperledger Indy's revocation process can be found [here](https://hyperledger-indy.readthedocs.io/projects/hipe/en/latest/text/0011-cred-revocation/README.html).
 
@@ -90,7 +90,7 @@ The correlatability of credentials due to the necessity of revealing a persisten
 [[def: Verifiable Data Registry]]
 ~ [[ref: DIDs]] and DID documents have to be stored on some kind of system, which is available (to the public, in most cases). Such a system can be a distributed ledger, a (decentralized) file system, database and others. Such an anchor for [[ref: DID]s] and DID documents is called Verifiable Data Registry. 
 
-~ In the case of Hyperledger Indy a distributed ledger is used as Verifiable Data Registry. Besides [[ref: DIDs]] and DID documents an instance of a Hyperledger Indy network stores additional data on the ledger, which is required for issuance (e.g. [[ref: SCHEMA]] and [[ref: CRED_DEF]]), verification (e.g. [[ref: REV_REG_DEF]])) and revocation (e.g [[ref: REV_REG_ENTRY]]) of credentials.
+~ In the case of Hyperledger Indy a distributed ledger is used as Verifiable Data Registry. Besides [[ref: DIDs]] and DID documents an instance of a Hyperledger Indy network stores additional data on the ledger, which is required for issuance (e.g. [[ref: SCHEMA]] and [[ref: CRED_DEF]]), verification (e.g. [[ref: Revocation Registry Definition]])) and revocation (e.g [[ref: REV_REG_ENTRY]]) of credentials.
 
 [[def: Verifier, verifiers]]
 
