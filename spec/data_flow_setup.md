@@ -430,6 +430,11 @@ Sovrin MainNet and instance of Hyperledger Indy.
     "cred_def_id": "Ehx3RZSV38pn3MYvxtHhbQ:3:CL:264697:default",
     "tag": "MyCustomCredentialDefinition",
     "issuanceType": "ISSUANCE_ON_DEMAND",
+    "publicKeys": {
+      "accumKey": {
+        "z": "1 0BB...386"
+      }
+    },
     "maxCredNum": 666,
     "tailsLocation": "https://my.revocations.tails/tailsfile.txt",
     "tailsHash": "91zvq2cFmBZmHCcLqFyzv7bfehHH5rMhdAG5wTjqy2PE"
@@ -446,6 +451,7 @@ Update this to be the inputs for generating a REV_REG vs. the already published 
 * `cred_def_id` - The credential definition id
 * `tag` - the tag of the credential definition 
 * `issuanceType` - the issuance type; either of "ISSUANCE_BY_DEFAULT" or "ISSUANCE_ON_DEMAND"
+* `z` - a public key used to sign the accumulator (described further below)
 * `maxCredNumber` - The maximum amount of Credentials that can be revoked in the Revocation Registry before a new one needs to be started
 * `tailsLocation` - The URL pointing to the related tails file
 * `tailsHash` - The hash of the tails file resulting from hashing the tails file version prepended to the tails file as SHA256 and then encoded to base58.
