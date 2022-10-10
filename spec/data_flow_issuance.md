@@ -39,7 +39,7 @@ The [[ref:issuer]] can decide whether to accept the received [[ref: Credential R
 
 ### Credential Offer
 
-Before issuing a credential to the [[ref:holder]], the [[ref:issuer]] has to send a [[ref:Credential Offer]] to the potential [[ref:holder]] (step 1 and 2). A [[ref:Credential Offer]] contains information about the credential the [[ref:issuer]] intends to issue and send to the [[ref:holder]]. For creating a [[ref:Credential Offer]], the [[ref:issuer]] is required to fetch the [[ref:CRED_DEF]] as well as its correctness proof from the [[ref: Verifiable Data Registry]]. The [[ref:issuer]] also prepares a [[ref:nonce]] which will be embedded within the [[ref:Credential Offer]] in order to prevent replay attacks and authenticate between protocol steps.
+Before issuing a credential to the [[ref:holder]], the [[ref:issuer]] has to send a [[ref:Credential Offer]] to the potential [[ref:holder]] (step 1 and 2). A [[ref:Credential Offer]] contains information about the credential the [[ref:issuer]] intends to issue and send to the [[ref:holder]]. For creating a [[ref:Credential Offer]], the [[ref:issuer]] is required to fetch the [[ref:CRED_DEF]] as well as its [[ref:Credential Key Correctness Proof]] from the [[ref: Verifiable Data Registry]]. The [[ref:issuer]] also prepares a [[ref:nonce]] which will be embedded within the [[ref:Credential Offer]] in order to prevent replay attacks and authenticate between protocol steps.
 
 The resulting JSON for a created [[ref:Credential Offer]] is shown here:
 
@@ -173,7 +173,7 @@ is the ```prover_did``` the peer DID of the holder?
 * `prover_did`: The [[ref:DID]] of the [[ref:holder]].
 * `cred_def_id`: The ID of the [[ref:CRED_DEF]] on which the [[ref:Credential]] to be issued shall be based.
 * `blinded_ms`: The [[ref:link secret]] in its blinded form.
-* `blinded_ms_correctness_proof`: The [[ref: Correctness Proof]] of the blinded [[ref:link secret]].
+* `blinded_ms_correctness_proof`: The [[ref: Blinded Secrets Correctness Proof]] of the blinded [[ref:link secret]].
 * `nonce`: Used for preventing replay attacks and authentication between protocol steps. Reused from the initially received [[ref:Credential Offer]].
 
 The [[ref:issuer]] sends the [[ref:Credential Request]] to the [[ref:issuer]] (step 9), who then can reply to the [[ref:holder]] by sending an issued credential.
@@ -186,7 +186,7 @@ In case the [[ref:issuer]] decides to issue the requested credential to the [[re
 
 :::todo
 - check nonce?
-- check link secret and correctness proof?
+- check link secret and blinded secrets correctness proof?
 :::
 
 1. The [[ref:issuer]] has to fetch the [[ref:CRED_DEF]] for the `cred_def_id` given in the received [[ref:Credential Request]] either from the ledger or local storage (if already available).
@@ -277,7 +277,7 @@ The [[ref:issuer]] has to transmit the whole credential data to the [[ref:holder
 * `cred_def_id`: The ID of the [[ref:CRED_DEF]] on which the [[ref:Credential]] issued is based.
 * `values`: The raw and encoded credential attribute values as JSON (cred_values_json).
 * `signature`: The signatures of the separately signed attributes
-* `signature_correctness_proof`: The signature correctness proof of the signature for the whole credential data.
+* `signature_correctness_proof`: The [[ref: Signature Correctness Proof]] of the signature for the whole credential data.
 * `rev_reg`: The revocation registry ID of the revocation registry, the issued credentials is assigned.
 * `witness`: Witness information. (See Revocation)
 
