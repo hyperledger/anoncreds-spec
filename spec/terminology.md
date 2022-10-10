@@ -3,10 +3,12 @@
 [[def: claim, claims]]
 ~ A claim is a part of digital identity related to a [[ref: subject]]. A claim can be attested by the identity subject itself, or it can be asserted by another entity. 
 
-[[def: Correctness Proof]]
-~ TODO
+[[def: Credential Key Correctness Proof]]
+~  This is produced during the creation of the [[ref: CRED_DEF]] and is included in the [[ref: Credential Offer]] so that the [[ref:holder]] can verify that the [[ref::CRED_DEF_PUBLIC]] used in the blinding process belongs to the [[ref:issuer]].
+
 ::: todo
-Describe (key) Correctness Proof
+[[def: Signature Correctness Proof]]
+[[def: Blinded Secrets Correctness Proof]]
 :::
 
 [[def: credential, credentials]]
@@ -22,7 +24,7 @@ Describe (key) Correctness Proof
 ~ Revokable Verifiable Credentials require (besides) a CRED_DEF also a [[ref: REV_REG_DEF]].
 
 [[def: Credential Offer]]
-~ A credential offer is an offering from an [[ref: issuer ]] towards a [[ref: holder]] to issue a [[ref: credential]]. The credential offer contains the details about the claims the [[ref: issuer]] intends to issue to the [[ref: holder]]. A [[ref: holder]] can reply to the [[ref: issuer]] with a [[ref: Credential Request]]. A credential offer also includes a [[ref: nonce]].
+~ A credential offer is an offering from an [[ref: issuer ]] towards a [[ref: holder]] to issue a [[ref: credential]]. The credential offer contains the details about the claims the [[ref: issuer]] intends to issue to the [[ref: holder]]. A [[ref: holder]] can reply to the [[ref: issuer]] with a [[ref: Credential Request]]. A credential offer also includes a [[ref: nonce]] and a [[ref: Credential Key Correctness Proof]].
 
 [[def: Credential Request]]
 ~ A credential request is a request from an [[ref: holder]] towards a [[ref: issuer]] to get a credential issued by the [[ref: issuer]]. The credential request references a preceding [[ref: Credential offer]] and defines the claims the [[ref: holder]] wants to get issued. A credential request also includes a [[ref: nonce]].

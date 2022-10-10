@@ -69,7 +69,59 @@ In case the credential respectively its attributes is of interest for the [[ref:
 
 A [[ref:Credential Request]] is a formal request from a [[ref:holder]] to an [[ref:issuer]] to get a [[ref:credential]] based on a concrete [[ref:CRED_DEF]] issued by the [[ref:issuer]] to the [[ref:holder]]. 
 
-In order to be able as a [[ref:holder]] to express within a [[ref:Credential Request]] to the [[ref:issuer]] which kind of credential the [[ref:issuer]] shall issue to the [[ref:holder]], the [[ref:holder]] requires the [[ref:CRED_DEF]] from the [[ref:Verifiable Data Registry]] if not already available in local storage (step 6 + 7). The [[ref:Credential Request]] has to reference the same [[ref:CRED_DEF]] and [[ref:nonce]] as given in the preceding [[ref:Credential Offer]]. Besides the [[ref:CRED_DEF]], the [[ref:holder]] also requires his [[ref:link secret]] in a blinded form, as well as the corresponding [[ref: Correctness Proof]] of his [[ref:link secret]]. The [[ref: holder]] has now all relevant data for creating the [[ref:Credential Request]] (step 8).
+In order to be able as a [[ref:holder]] to express within a [[ref:Credential Request]] to the [[ref:issuer]] which kind of credential the [[ref:issuer]] shall issue to the [[ref:holder]], the [[ref:holder]] requires the [[ref:CRED_DEF]] from the [[ref:Verifiable Data Registry]] if not already available in local storage (step 6 + 7). The [[ref:Credential Request]] has to reference the same [[ref:CRED_DEF]] and [[ref:nonce]] as given in the preceding [[ref:Credential Offer]]. Besides the [[ref:CRED_DEF]], the [[ref:holder]] also requires his [[ref:link secret]] in a blinded form, as well as the corresponding [[ref:Blinded Secrets Correctness Proof]] of his [[ref:link secret]]. The [[ref: holder]] has now all relevant data for creating the [[ref:Credential Request]] (step 8).
+
+#### Check Credential Key Correctness Proof
+
+The blinding process is done specifically for an issuer's specific [[ref:CRED_DEF_PUBLIC]], therefore it is importatnt for the [[ref:holder]] to check if the [[ref:Credential Key Correctness Proof]] matched the [[ref:CRED_DEF]] retrievable from the [[ref: Credential Offer]]
+
+The [[ref: Credential Key Correctness Proof]] is prepared by the [[ref: issuer]] when creating the [[ref: CRED_DEF]].
+
+The proof has the following format:
+
+```json
+{
+    "c": BigNumber,
+    "xz_cap": BigNumber,
+    "xr_cap": Vec<(String, BigNumber)>,
+}
+```
+
+where:
+
+* `c` can be viewed as the committed value derived from the hash of the concatenated byte values in the process of [creating the CRED_DEF](#Issuer-Create-and-Publish-CRED_DEF-Object).
+
+  $c = H(z || {r_i}  || \~{z} ||\~{r_i})$
+
+  where
+  * $z$ is $z = s ^ {x_z}\ Mod\ n$ where `z`, `s` and `n` are values in [[ref: CRED_DEF_PUBLIC]]
+  * $r_i$ are the values in the `r` map in [[ref: CRED_DEF_PUBLIC]], individual attribute public key
+  * $\~z$ is similar to $z$ which equal to $s^{\~{x_z}}$, where $\~{x_z}$ is a randomly selected integer between `2` and `p'q'-1`
+  * $r_i$ are the values in the `r` map in [[ref: CRED_DEF_PUBLIC]]
+  * $\~{r_i}$ is similar to $r$, which equal to $s^{\~{x_i}}\ mod\ n$, where $\~{x_i}$ are randomly selected integer between `2` and `p'q'-1`
+
+* `xz_cap`:  $\hat{x_z} = c x_z + \~{x_z}$
+* `xr_cap`: Vec<(attribute_name_i, $cr_i + \~{r_i}$)>
+
+The check is done as follows:
+
+1. checks that all attributes (except the [[ref: link secret]]) in [[ref:CRED_DEF_PUBLIC]] are included in `xr_cap`
+1. Compute $c'$
+1. If $c' == c$, proof is accepted
+
+$$c' = H(z || {r_i}  || \hat{z'} ||\hat{r_i'})$$
+
+where we first fist the inverse of $z$
+$$ z^{-1}z = 1\ (Mod\ n) $$
+
+Then 
+$$ \hat{z'} = z^{-c} s^{\hat{x_z}} \ (Mod\ n)$$
+$$= z^{-c} s^{cx_z + \~{x_z}}\ (Mod\ n)$$
+$$= z^{-c} z^{c}  s^{\~{x_z}}\ (Mod\ n)$$
+
+$$ \hat{z'} = \~z$$
+
+Therefore $c'$ is equivalent to $c$ if the proof matches the [[ref:CRED_DEF_PUBLIC]] by simply using modular inverse of $z$ and $r_i$. Since the process is same for both, we have demonstrated for $z$ only.  
 
 #### Blinding Link Secret
 
@@ -78,38 +130,26 @@ Whilst it is cryptographically possible to have multiple hidden attributes,
 in AnonCreds,
 only [[ref:link secret]] is used.
 
-The blinding process is done specifically for an issuer's specific [[ref:CRED_DEF]].
-The data included in the [[ref:Credential Request]] sent to the issuer includes:
-
-*- the blinded [[ref:link secret]]
-*- the hidden attrbute key, aka [[ref:link secret]]
-*- the [[ref:Correctness Proof]]
-
 A `blinding factor` is used as a secret held by the [[ref:holder]] for blinding the [[ref:link secret]] before sending it to issuer and to unblind the signed values in the signature received from the issuer.
 
 The process of blinding uses the [[ref:issuer]]'s `CredentialPrimaryPublicKey`, $P$,
-which is included in the [[ref:CRED_DEF]] and it is defined by:
+which is included in the [[ref:CRED_DEF_PUBLIC]] containing
+`z`, `r`, `s` and `n`.
 
-```json
-{
-    n: BigNumber,
-    s: BigNumber,
-    r: HashMap<string /* attr_name */, BigNumber>,
-    rctxt: BigNumber,
-    z: BigNumber,
-}
-```
+`r` contains the public keys to all attributes, the one of interest in this process is $r_{link secret}$
 
 The [[ref:link secret]], $A_l$ is blinded by
 
-$A_{bl} = P_r^{A_l} mod P_n$
+$A_{bl} = r_{link_secret}^{A_l}\ Mod\ n$
 
 $A_{bl}$ is multiplied by the `blinding factory`, $v$,
 
-$(P_s^v \times A_{bl})Mod P_n$
+$(s^v \times A_{bl})\ Mod\ n$
+
+#### Creating Blinded Secrets Correctness Proof
 
 ::: todo
-*- How does the cryptography work? How does it work with correctness proof?
+*- How does it work with correctness proof?
 :::
 
 The resulting JSON for a created [[ref:Credential Request]] is shown here:
