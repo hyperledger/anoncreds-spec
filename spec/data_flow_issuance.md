@@ -13,8 +13,8 @@ sequenceDiagram
   I ->> H: Send Credential Offer
   H ->> H: Process Credential Offer
   opt
-    H ->> L: Request SCHEMA
-    L ->> H: Return SCHEMA
+    H ->> L: Request Schema
+    L ->> H: Return Schema
   end
   H ->> L: Request CRED_DEF
   L ->> H: Return CRED_DEF
@@ -52,12 +52,12 @@ The resulting JSON for a created [[ref:Credential Offer]] is shown here:
     "key_correctness_proof" : <key_correctness_proof>
 }
 ```
-* `schema_id`: The ID of the [[ref:SCHEMA]] on which the [[ref:CRED_DEF]] for the offered [[ref:Credential]] is based.
+* `schema_id`: The ID of the [[ref:Schema]] on which the [[ref:CRED_DEF]] for the offered [[ref:Credential]] is based.
 * `cred_def_id`: The ID of the [[ref:CRED_DEF]] on which the [[ref:Credential]] to be issued will be based.
 * `nonce`: Used for preventing replay attacks and authentication between protocol steps. Has to be reused within a [[ref:Credential Request]] by the [[ref:holder]].
 * `key_correctness_proof`: TODO.
 
-The [[ref:issuer]] sends the [[ref:Credential Offer]] to the [[ref:holder]] (step 2), who then can process the [[ref: Credential Offer]] (step 3). In order to figure out, which kind of credential (which [[ref:CRED_DEF]] and attributes) are offered to the [[ref:holder]], the [[ref:holder]] needs to fetch the underlying [[ref:SCHEMA]] from the [[ref:Verifiable Data Registry]] by using the ```schema_id``` as provided in the received [[ref:Credential Offer]], since the referenced [[ref:SCHEMA]] contains all attribute names of the offered credential (step 4 + 5). 
+The [[ref:issuer]] sends the [[ref:Credential Offer]] to the [[ref:holder]] (step 2), who then can process the [[ref: Credential Offer]] (step 3). In order to figure out, which kind of credential (which [[ref:CRED_DEF]] and attributes) are offered to the [[ref:holder]], the [[ref:holder]] needs to fetch the underlying [[ref:Schema]] from the [[ref:Verifiable Data Registry]] by using the ```schema_id``` as provided in the received [[ref:Credential Offer]], since the referenced [[ref:Schema]] contains all attribute names of the offered credential (step 4 + 5). 
 
 In case the credential respectively its attributes is of interest for the [[ref:holder]], the [[ref:holder]] can reply to the issuer`s [[ref:Credential Offer]] with a [[ref:Credential Request]] in order to ask the issuer for issuance of the offered credential and its attributes.
 
@@ -196,7 +196,7 @@ The [[ref:issuer]] has to transmit the whole credential data to the [[ref:holder
 - what is the naming scheme for the CL signatures in p_credential? Since the shown JSON is the result of two mixed examples, the signatures for more than the three presented attributes are missung. m_2 is the link secret...
 :::
 
-* `schema_id`: The ID of the [[ref:SCHEMA]] on which the [[ref:CRED_DEF]] for the offered [[ref:Credential]] is based.
+* `schema_id`: The ID of the [[ref:Schema]] on which the [[ref:CRED_DEF]] for the offered [[ref:Credential]] is based.
 * `cred_def_id`: The ID of the [[ref:CRED_DEF]] on which the [[ref:Credential]] issued is based.
 * `values`: The raw and encoded credential attribute values as JSON (cred_values_json).
 * `signature`: The signatures of the separately signed attributes
