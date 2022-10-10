@@ -71,10 +71,15 @@ A [[ref:Credential Request]] is a formal request from a [[ref:holder]] to an [[r
 
 In order to be able as a [[ref:holder]] to express within a [[ref:Credential Request]] to the [[ref:issuer]] which kind of credential the [[ref:issuer]] shall issue to the [[ref:holder]], the [[ref:holder]] requires the [[ref:CRED_DEF]] from the [[ref:Verifiable Data Registry]] if not already available in local storage (step 6 + 7). The [[ref:Credential Request]] has to reference the same [[ref:CRED_DEF]] and [[ref:nonce]] as given in the preceding [[ref:Credential Offer]]. Besides the [[ref:CRED_DEF]], the [[ref:holder]] also requires his [[ref:link secret]] in a blinded form, as well as the corresponding [[ref:Blinded Secrets Correctness Proof]] of his [[ref:link secret]]. The [[ref: holder]] has now all relevant data for creating the [[ref:Credential Request]] (step 8).
 
+The blinding process requires the target [[ref: CRED_DEF]] to construct the blinded secret and the [[ref: Blinded Secrets Correctness Proof]].
+The [[ref:holder]] should ensure that the blinded secret is unique per request by producing unique [[ref:blinding factor]] every time.
+
 #### Check Credential Key Correctness Proof
 
-The blinding process is done specifically for an issuer's specific [[ref:CRED_DEF_PUBLIC]], therefore it is importatnt for the [[ref:holder]] to check if the [[ref:Credential Key Correctness Proof]] matched the [[ref:CRED_DEF]] retrievable from the [[ref: Credential Offer]]
+It is important to ensure that[[ref:CRED_DEF_PUBLIC]] used in the blinding process is the intended public key,
+otherwise, the received signature from the [[ref:issuer]] will not be valid when generating presentation.
 
+Therefore, the [[ref:holder]] first checks if the [[ref:Credential Key Correctness Proof]] matches the [[ref:CRED_DEF]] retrievable from the [[ref: Credential Offer]].
 The [[ref: Credential Key Correctness Proof]] is prepared by the [[ref: issuer]] when creating the [[ref: CRED_DEF]].
 
 The proof has the following format:
@@ -111,17 +116,18 @@ The check is done as follows:
 
 $$c' = H(z || {r_i}  || \hat{z'} ||\hat{r_i'})$$
 
-where we first fist the inverse of $z$
+where we first find the inverse of $z$
 $$ z^{-1}z = 1\ (Mod\ n) $$
 
-Then 
+Then
 $$ \hat{z'} = z^{-c} s^{\hat{x_z}} \ (Mod\ n)$$
 $$= z^{-c} s^{cx_z + \~{x_z}}\ (Mod\ n)$$
 $$= z^{-c} z^{c}  s^{\~{x_z}}\ (Mod\ n)$$
 
 $$ \hat{z'} = \~z$$
 
-Therefore $c'$ is equivalent to $c$ if the proof matches the [[ref:CRED_DEF_PUBLIC]] by simply using modular inverse of $z$ and $r_i$. Since the process is same for both, we have demonstrated for $z$ only.  
+Therefore $c'$ is equivalent to $c$ if the proof matches the [[ref:CRED_DEF_PUBLIC]] by simply using the multiplicative inverse of $z$ and $r_i$. 
+Since the process is same for both, we have demonstrated for $z$ only.  
 
 #### Blinding Link Secret
 
@@ -130,7 +136,7 @@ Whilst it is cryptographically possible to have multiple hidden attributes,
 in AnonCreds,
 only [[ref:link secret]] is used.
 
-A `blinding factor` is used as a secret held by the [[ref:holder]] for blinding the [[ref:link secret]] before sending it to issuer and to unblind the signed values in the signature received from the issuer.
+A [[ref:blinding factor]] is used as a secret held by the [[ref:holder]] for blinding the [[ref:link secret]] before sending it to issuer and to unblind the signed values in the signature received from the issuer.
 
 The process of blinding uses the [[ref:issuer]]'s `CredentialPrimaryPublicKey`, $P$,
 which is included in the [[ref:CRED_DEF_PUBLIC]] containing
@@ -142,7 +148,7 @@ The [[ref:link secret]], $A_l$ is blinded by
 
 $A_{bl} = r_{link_secret}^{A_l}\ Mod\ n$
 
-$A_{bl}$ is multiplied by the `blinding factory`, $v$,
+$A_{bl}$ is multiplied by the [[ref:blinding factor]], $v$,
 
 $(s^v \times A_{bl})\ Mod\ n$
 

@@ -1,5 +1,9 @@
 ## Terminology
 
+::: todo
+[[def: blinding factor]]
+:::
+
 [[def: claim, claims]]
 ~ A claim is a part of digital identity related to a [[ref: subject]]. A claim can be attested by the identity subject itself, or it can be asserted by another entity. 
 
