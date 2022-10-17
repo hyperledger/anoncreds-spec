@@ -117,13 +117,16 @@ NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “NOT RECOMMENDED”
 described in BCP 14 [RFC2119] [RFC8174] when, and only when, they
 appear in all capitals, as shown here.</p>
 <h2 id="terminology"><a class="toc-anchor" href="#terminology" >§</a> Terminology</h2>
+<div id="todo-2" class="notice todo"><a class="notice-link" href="#todo-2">TODO</a><p><span id="term:blinding-factor">blinding factor</span></p>
+</div>
 <dl>
 <dt><span id="term:claims"><span id="term:claim">claim</span></span></dt>
 <dd>A claim is a part of digital identity related to a <a class="term-reference" href="#term:subject">subject</a>. A claim can be attested by the identity subject itself, or it can be asserted by another entity.</dd>
-<dt><span id="term:correctness-proof">Correctness Proof</span></dt>
-<dd>TODO</dd>
+<dt><span id="term:credential-key-correctness-proof">Credential Key Correctness Proof</span></dt>
+<dd>This is produced during the creation of the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> and is included in the <a class="term-reference" href="#term:credential-offer">Credential Offer</a> so that the <a class="term-reference" href="#term:holder">holder</a> can verify that the <a class="term-reference" href="#term::cred_def_public">:CRED_DEF_PUBLIC</a> used in the blinding process belongs to the <a class="term-reference" href="#term:issuer">issuer</a>.</dd>
 </dl>
-<div id="todo-2" class="notice todo"><a class="notice-link" href="#todo-2">TODO</a><p>Describe (key) Correctness Proof</p>
+<div id="todo-3" class="notice todo"><a class="notice-link" href="#todo-3">TODO</a><p><span id="term:signature-correctness-proof">Signature Correctness Proof</span>
+<span id="term:blinded-secrets-correctness-proof">Blinded Secrets Correctness Proof</span></p>
 </div>
 <dl>
 <dt><span id="term:credentials"><span id="term:credential">credential</span></span></dt>
@@ -145,7 +148,7 @@ appear in all capitals, as shown here.</p>
 </dd>
 <dt><span id="term:credential-offer">Credential Offer</span></dt>
 <dd>
-<p>A credential offer is an offering from an <a class="term-reference" href="#term:issuer">issuer</a> towards a <a class="term-reference" href="#term:holder">holder</a> to issue a <a class="term-reference" href="#term:credential">credential</a>. The credential offer contains the details about the claims the <a class="term-reference" href="#term:issuer">issuer</a> intends to issue to the <a class="term-reference" href="#term:holder">holder</a>. A <a class="term-reference" href="#term:holder">holder</a> can reply to the <a class="term-reference" href="#term:issuer">issuer</a> with a <a class="term-reference" href="#term:credential-request">Credential Request</a>. A credential offer also includes a <a class="term-reference" href="#term:nonce">nonce</a>.</p>
+<p>A credential offer is an offering from an <a class="term-reference" href="#term:issuer">issuer</a> towards a <a class="term-reference" href="#term:holder">holder</a> to issue a <a class="term-reference" href="#term:credential">credential</a>. The credential offer contains the details about the claims the <a class="term-reference" href="#term:issuer">issuer</a> intends to issue to the <a class="term-reference" href="#term:holder">holder</a>. A <a class="term-reference" href="#term:holder">holder</a> can reply to the <a class="term-reference" href="#term:issuer">issuer</a> with a <a class="term-reference" href="#term:credential-request">Credential Request</a>. A credential offer also includes a <a class="term-reference" href="#term:nonce">nonce</a> and a <a class="term-reference" href="#term:credential-key-correctness-proof">Credential Key Correctness Proof</a>.</p>
 </dd>
 <dt><span id="term:credential-request">Credential Request</span></dt>
 <dd>
@@ -420,7 +423,7 @@ generated for the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> a
 </ul>
 <p>The following describes the process for generating the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> and
 <a class="term-reference" href="#term:private_cred_def">PRIVATE_CRED_DEF</a> data.</p>
-<div id="todo-3" class="notice todo"><a class="notice-link" href="#todo-3">TODO</a><p>Describe the generation process for the CRED_DEF.</p>
+<div id="todo-4" class="notice todo"><a class="notice-link" href="#todo-4">TODO</a><p>Describe the generation process for the CRED_DEF.</p>
 </div>
 <p>The <a class="term-reference" href="#term:private_cred_def">PRIVATE_CRED_DEF</a> produced by the generation process has the following format:</p>
 <pre class="language-json"><code class="language-json">
@@ -483,7 +486,7 @@ issued credential to the entity to which it was issued.</p>
 <li><code>signature_type</code> is always <code>CL</code> in this version of AnonCreds.</li>
 <li><code>tag</code> is the <code>tag</code> value (a string) passed in by the <a class="term-reference" href="#term:issuer">Issuer</a> to an AnonCred’s <a class="term-reference" href="#term:cred_def">CRED_DEF</a> create and store implementation.</li>
 </ul>
-<div id="todo-4" class="notice todo"><a class="notice-link" href="#todo-4">TODO</a><p>Evaluate the impact in the existing implementations of making the <code>ref</code>
+<div id="todo-5" class="notice todo"><a class="notice-link" href="#todo-5">TODO</a><p>Evaluate the impact in the existing implementations of making the <code>ref</code>
 an identifier vs. the current Hyperledger Indy Txn number – an integer.</p>
 </div>
 <p>The <code>credDefId</code> identifier for the <a class="term-reference" href="#term:cred_def">Cred_Def</a> is dependent on the <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a> used in publishing the <a class="term-reference" href="#term:schema">Schema</a>.</p>
@@ -499,7 +502,7 @@ process.</p>
 <a class="term-reference" href="#term:cred_def">CRED_DEF</a> data when the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> is created with the <code>support_revocation</code> flag
 set to <code>true</code>. This process extends the process for generating a <a class="term-reference" href="#term:cred_def">CRED_DEF</a> in the
 <a href="#generating-a-creddef-without-revocation-support" >previous section</a> of this document.</p>
-<div id="todo-5" class="notice todo"><a class="notice-link" href="#todo-5">TODO</a><p>Describe the revocation data generation process for the CRED_DEF.
+<div id="todo-6" class="notice todo"><a class="notice-link" href="#todo-6">TODO</a><p>Describe the revocation data generation process for the CRED_DEF.
 Provide a reference to the published articles on revocation used here.</p>
 </div>
 <p>A <a class="term-reference" href="#term:private_cred_def">PRIVATE_CRED_DEF</a> with revocation enabled has the following format.  In this, the
@@ -638,7 +641,7 @@ Sovrin MainNet and instance of Hyperledger Indy.</p>
 <span class="token punctuation">}</span>
 </code></pre>
 <p>The items within the data model are as follows:</p>
-<div id="todo-6" class="notice todo"><a class="notice-link" href="#todo-6">TODO</a><p>Update this to be the inputs for generating a REV_REG vs. the already published object</p>
+<div id="todo-7" class="notice todo"><a class="notice-link" href="#todo-7">TODO</a><p>Update this to be the inputs for generating a REV_REG vs. the already published object</p>
 </div>
 <ul>
 <li><code>credDefId</code>: the input parameter <code>cred_def_id</code></li>
@@ -671,9 +674,9 @@ revocations within the <a class="term-reference" href="#term:rev_reg">REV_REG</a
 not been revoked.</p>
 <p>The process of generating the primes that populate the <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> is as
 follows:</p>
-<div id="todo-7" class="notice todo"><a class="notice-link" href="#todo-7">TODO</a><p>To Do: Document hashing of the tails file (<a path-0="github.com"path-1="hyperledger"path-2="indy-shared-rs"path-3="blob"path-4="d22373265f7c4cf93d59dd3c111251ef96d6a63d"path-5="indy-credx"path-6="src"path-7="services"path-8="tails.rs#L151"href="https://github.com/hyperledger/indy-shared-rs/blob/d22373265f7c4cf93d59dd3c111251ef96d6a63d/indy-credx/src/services/tails.rs#L151" >see also</a>).</p>
+<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>To Do: Document hashing of the tails file (<a path-0="github.com"path-1="hyperledger"path-2="indy-shared-rs"path-3="blob"path-4="d22373265f7c4cf93d59dd3c111251ef96d6a63d"path-5="indy-credx"path-6="src"path-7="services"path-8="tails.rs#L151"href="https://github.com/hyperledger/indy-shared-rs/blob/d22373265f7c4cf93d59dd3c111251ef96d6a63d/indy-credx/src/services/tails.rs#L151" >see also</a>).</p>
 </div>
-<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>To Do: Document the process for generating the primes.</p>
+<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>To Do: Document the process for generating the primes.</p>
 </div>
 <p>Once generated, the array of primes is static, regardless of credential issuance
 or revocation events. Once generated, the SHA256 (TO BE VERIFIED) hash of the
@@ -683,7 +686,7 @@ section</a>). Typically, the array is streamed into a
 file (hence, the term “Tails File”) and published to a <span id="term:url">URL</span> indicated by
 the <code>tailsLocation</code> input parameter provided by the <a class="term-reference" href="#term:issuer">issuer</a>.</p>
 <p>The format of a <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> is as follows:</p>
-<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>To Do: Define the format of the Tails File</p>
+<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>To Do: Define the format of the Tails File</p>
 </div>
 <p>While not required, the Hyperledger Indy community has created a component, the “<a path-0="github.com"path-1="bcgov"path-2="indy-tails-server"href="https://github.com/bcgov/indy-tails-server" >Indy Tails
 Server</a>,” which is basically a web
@@ -699,7 +702,7 @@ state updates, and</li>
 </ul>
 <h5 id="private_rev_reg-object-generation"><a class="toc-anchor" href="#private_rev_reg-object-generation" >§</a> PRIVATE_REV_REG Object Generation</h5>
 <p>In addition to generating the <a class="term-reference" href="#term:rev_reg">REV_REG</a> object, a <a class="term-reference" href="#term:private_rev_reg">PRIVATE_REV_REG</a> object is generated and securely stored by the <a class="term-reference" href="#term:issuer">issuer</a>. The data model and definition of the items in the <a class="term-reference" href="#term:private_rev_reg">PRIVATE_REV_REG</a> is as follows:</p>
-<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>To Do: Fill in the details about the PRIVATE_REV_REG</p>
+<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><p>To Do: Fill in the details about the PRIVATE_REV_REG</p>
 </div>
 <h4 id="publishing-the-revocation-registry-object"><a class="toc-anchor" href="#publishing-the-revocation-registry-object" >§</a> Publishing the Revocation Registry Object</h4>
 <p>Once constructed, the <a class="term-reference" href="#term:rev_reg">REV_REG</a> is published by the <a class="term-reference" href="#term:issuer">issuer</a> in a
@@ -749,7 +752,7 @@ initially revoked, the accumulator value is <code>0</code>, if all are unrevoked
 accumulator value has contributions from all of the entries in the array of
 primes.</p>
 <p>The accumulator is calculated using the following steps:</p>
-<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><p>To Do: Adding the algorithm for calculating the accumulator</p>
+<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><p>To Do: Adding the algorithm for calculating the accumulator</p>
 </div>
 <p>THe following is an example of an initial, published <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a> object:</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
@@ -842,7 +845,7 @@ sequenceDiagram
 <p>Based on the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> received from the <a class="term-reference" href="#term:verfiable-data-registry">Verfiable Data Registry</a>, the <a class="term-reference" href="#term:holder">holder</a> prepares a <a class="term-reference" href="#term:credential-request">Credential Request</a> (step 8). A <a class="term-reference" href="#term:credential-request">Credential Request</a> is a formal request from a <a class="term-reference" href="#term:holder">holder</a> to an <a class="term-reference" href="#term:issuer">issuer</a> to get a <a class="term-reference" href="#term:credential">credential</a> based on the given <a class="term-reference" href="#term:cred_def">CRED_DEF</a> issued to the <a class="term-reference" href="#term:holder">holder</a>. The <a class="term-reference" href="#term:holder">holder</a> sends the <a class="term-reference" href="#term:credential-request">Credential Request</a> to the <a class="term-reference" href="#term:issuer">issuer</a> (step 9), who then evaluates the incoming request (step 10).</p>
 <p>The <a class="term-reference" href="#term:issuer">issuer</a> can decide whether to accept the received <a class="term-reference" href="#term:credential-request">Credential Request</a> and issues the <a class="term-reference" href="#term:credential">credential</a> (step 11) in the case of request acceptance. The <a class="term-reference" href="#term:issuer">issuer</a> sends the credential to the <a class="term-reference" href="#term:holder">holder</a> (step 12), who then can store the received <a class="term-reference" href="#term:credential">credential</a> in his wallet (step 13).</p>
 <h3 id="credential-offer"><a class="toc-anchor" href="#credential-offer" >§</a> Credential Offer</h3>
-<p>Before issuing a credential to the <a class="term-reference" href="#term:holder">holder</a>, the <a class="term-reference" href="#term:issuer">issuer</a> has to send a <a class="term-reference" href="#term:credential-offer">Credential Offer</a> to the potential <a class="term-reference" href="#term:holder">holder</a> (step 1 and 2). A <a class="term-reference" href="#term:credential-offer">Credential Offer</a> contains information about the credential the <a class="term-reference" href="#term:issuer">issuer</a> intends to issue and send to the <a class="term-reference" href="#term:holder">holder</a>. For creating a <a class="term-reference" href="#term:credential-offer">Credential Offer</a>, the <a class="term-reference" href="#term:issuer">issuer</a> is required to fetch the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> as well as its correctness proof from the <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a>. The <a class="term-reference" href="#term:issuer">issuer</a> also prepares a <a class="term-reference" href="#term:nonce">nonce</a> which will be embedded within the <a class="term-reference" href="#term:credential-offer">Credential Offer</a> in order to prevent replay attacks and authenticate between protocol steps.</p>
+<p>Before issuing a credential to the <a class="term-reference" href="#term:holder">holder</a>, the <a class="term-reference" href="#term:issuer">issuer</a> has to send a <a class="term-reference" href="#term:credential-offer">Credential Offer</a> to the potential <a class="term-reference" href="#term:holder">holder</a> (step 1 and 2). A <a class="term-reference" href="#term:credential-offer">Credential Offer</a> contains information about the credential the <a class="term-reference" href="#term:issuer">issuer</a> intends to issue and send to the <a class="term-reference" href="#term:holder">holder</a>. For creating a <a class="term-reference" href="#term:credential-offer">Credential Offer</a>, the <a class="term-reference" href="#term:issuer">issuer</a> is required to fetch the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> as well as its <a class="term-reference" href="#term:credential-key-correctness-proof">Credential Key Correctness Proof</a> from the <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a>. The <a class="term-reference" href="#term:issuer">issuer</a> also prepares a <a class="term-reference" href="#term:nonce">nonce</a> which will be embedded within the <a class="term-reference" href="#term:credential-offer">Credential Offer</a> in order to prevent replay attacks and authenticate between protocol steps.</p>
 <p>The resulting JSON for a created <a class="term-reference" href="#term:credential-offer">Credential Offer</a> is shown here:</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
     <span class="token property">"schema_id"</span><span class="token operator">:</span> string<span class="token punctuation">,</span>
@@ -860,16 +863,80 @@ sequenceDiagram
 </ul>
 <p>The <a class="term-reference" href="#term:issuer">issuer</a> sends the <a class="term-reference" href="#term:credential-offer">Credential Offer</a> to the <a class="term-reference" href="#term:holder">holder</a> (step 2), who then can process the <a class="term-reference" href="#term:credential-offer">Credential Offer</a> (step 3). In order to figure out, which kind of credential (which <a class="term-reference" href="#term:cred_def">CRED_DEF</a> and attributes) are offered to the <a class="term-reference" href="#term:holder">holder</a>, the <a class="term-reference" href="#term:holder">holder</a> needs to fetch the underlying <a class="term-reference" href="#term:schema">Schema</a> from the <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> by using the <code>schema_id</code> as provided in the received <a class="term-reference" href="#term:credential-offer">Credential Offer</a>, since the referenced <a class="term-reference" href="#term:schema">Schema</a> contains all attribute names of the offered credential (step 4 + 5).</p>
 <p>In case the credential respectively its attributes is of interest for the <a class="term-reference" href="#term:holder">holder</a>, the <a class="term-reference" href="#term:holder">holder</a> can reply to the issuer`s <a class="term-reference" href="#term:credential-offer">Credential Offer</a> with a <a class="term-reference" href="#term:credential-request">Credential Request</a> in order to ask the issuer for issuance of the offered credential and its attributes.</p>
-<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><ul>
+<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><ul>
 <li>Add info to key_correctness_proof</li>
 </ul>
 </div>
 <h3 id="credential-request"><a class="toc-anchor" href="#credential-request" >§</a> Credential Request</h3>
 <p>A <a class="term-reference" href="#term:credential-request">Credential Request</a> is a formal request from a <a class="term-reference" href="#term:holder">holder</a> to an <a class="term-reference" href="#term:issuer">issuer</a> to get a <a class="term-reference" href="#term:credential">credential</a> based on a concrete <a class="term-reference" href="#term:cred_def">CRED_DEF</a> issued by the <a class="term-reference" href="#term:issuer">issuer</a> to the <a class="term-reference" href="#term:holder">holder</a>.</p>
-<p>In order to be able as a <a class="term-reference" href="#term:holder">holder</a> to express within a <a class="term-reference" href="#term:credential-request">Credential Request</a> to the <a class="term-reference" href="#term:issuer">issuer</a> which kind of credential the <a class="term-reference" href="#term:issuer">issuer</a> shall issue to the <a class="term-reference" href="#term:holder">holder</a>, the <a class="term-reference" href="#term:holder">holder</a> requires the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> from the <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> if not already available in local storage (step 6 + 7). The <a class="term-reference" href="#term:credential-request">Credential Request</a> has to reference the same <a class="term-reference" href="#term:cred_def">CRED_DEF</a> and <a class="term-reference" href="#term:nonce">nonce</a> as given in the preceding <a class="term-reference" href="#term:credential-offer">Credential Offer</a>. Besides the <a class="term-reference" href="#term:cred_def">CRED_DEF</a>, the <a class="term-reference" href="#term:holder">holder</a> also requires his <a class="term-reference" href="#term:link-secret">link secret</a> in a blinded form, as well as the corresponding <a class="term-reference" href="#term:correctness-proof">Correctness Proof</a> of his <a class="term-reference" href="#term:link-secret">link secret</a>. The <a class="term-reference" href="#term:holder">holder</a> has now all relevant data for creating the <a class="term-reference" href="#term:credential-request">Credential Request</a> (step 8).</p>
-<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><ul>
-<li>Add here: How does the link secret get blinded? How does the cryptography work? How does it work with correctness proof?</li>
+<p>In order to be able as a <a class="term-reference" href="#term:holder">holder</a> to express within a <a class="term-reference" href="#term:credential-request">Credential Request</a> to the <a class="term-reference" href="#term:issuer">issuer</a> which kind of credential the <a class="term-reference" href="#term:issuer">issuer</a> shall issue to the <a class="term-reference" href="#term:holder">holder</a>, the <a class="term-reference" href="#term:holder">holder</a> requires the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> from the <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> if not already available in local storage (step 6 + 7). The <a class="term-reference" href="#term:credential-request">Credential Request</a> has to reference the same <a class="term-reference" href="#term:cred_def">CRED_DEF</a> and <a class="term-reference" href="#term:nonce">nonce</a> as given in the preceding <a class="term-reference" href="#term:credential-offer">Credential Offer</a>. Besides the <a class="term-reference" href="#term:cred_def">CRED_DEF</a>, the <a class="term-reference" href="#term:holder">holder</a> also requires his <a class="term-reference" href="#term:link-secret">link secret</a> in a blinded form, as well as the corresponding <a class="term-reference" href="#term:blinded-secrets-correctness-proof">Blinded Secrets Correctness Proof</a> of his <a class="term-reference" href="#term:link-secret">link secret</a>. The <a class="term-reference" href="#term:holder">holder</a> has now all relevant data for creating the <a class="term-reference" href="#term:credential-request">Credential Request</a> (step 8).</p>
+<p>The blinding process requires the target <a class="term-reference" href="#term:cred_def">CRED_DEF</a> to construct the blinded secret and the <a class="term-reference" href="#term:blinded-secrets-correctness-proof">Blinded Secrets Correctness Proof</a>.
+The <a class="term-reference" href="#term:holder">holder</a> should ensure that the blinded secret is unique per request by producing unique <a class="term-reference" href="#term:blinding-factor">blinding factor</a> every time.</p>
+<h4 id="check-credential-key-correctness-proof"><a class="toc-anchor" href="#check-credential-key-correctness-proof" >§</a> Check Credential Key Correctness Proof</h4>
+<p>It is important to ensure that<a class="term-reference" href="#term:cred_def_public">CRED_DEF_PUBLIC</a> used in the blinding process is the intended public key,
+otherwise, the received signature from the <a class="term-reference" href="#term:issuer">issuer</a> will not be valid when generating presentation.</p>
+<p>Therefore, the <a class="term-reference" href="#term:holder">holder</a> first checks if the <a class="term-reference" href="#term:credential-key-correctness-proof">Credential Key Correctness Proof</a> matches the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> retrievable from the <a class="term-reference" href="#term:credential-offer">Credential Offer</a>.
+The <a class="term-reference" href="#term:credential-key-correctness-proof">Credential Key Correctness Proof</a> is prepared by the <a class="term-reference" href="#term:issuer">issuer</a> when creating the <a class="term-reference" href="#term:cred_def">CRED_DEF</a>.</p>
+<p>The proof has the following format:</p>
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+    <span class="token property">"c"</span><span class="token operator">:</span> BigNumber<span class="token punctuation">,</span>
+    <span class="token property">"xz_cap"</span><span class="token operator">:</span> BigNumber<span class="token punctuation">,</span>
+    <span class="token property">"xr_cap"</span><span class="token operator">:</span> Vec&lt;(String<span class="token punctuation">,</span> BigNumber)><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>where:</p>
+<ul>
+<li>
+<p><code>c</code> can be viewed as the committed value derived from the hash of the concatenated byte values in the process of <a href="#Issuer-Create-and-Publish-CRED_DEF-Object" >creating the CRED_DEF</a>.</p>
+<p>$c = H(z || {r_i}  || ~{z} ||~{r_i})$</p>
+<p>where</p>
+<ul>
+<li>$z$ is $z = s <a class="term-reference" href="#term:cred_def_public">CRED_DEF_PUBLIC</a>^ {x_z}\ Mod\ n$ where <code>z</code>, <code>s</code> and <code>n</code> are values in <a class="term-reference" href="#term:cred_def_public">CRED_DEF_PUBLIC</a></li>
+<li>$r_i$ are the values in the <code>r</code> map in <a class="term-reference" href="#term:cred_def_public">CRED_DEF_PUBLIC</a>, individual attribute public key</li>
+<li>$~z$ is similar to $z$ which equal to $s^{~{x_z}}$, where $~{x_z}$ is a randomly selected integer between <code>2</code> and <code>p'q'-1</code></li>
+<li>$r_i$ are the values in the <code>r</code> map in <a class="term-reference" href="#term:cred_def_public">CRED_DEF_PUBLIC</a></li>
+<li>$~{r_i}$ is similar to $r$, which equal to $s^{~{x_i}}\ mod\ n$, where $~{x_i}$ are randomly selected integer between <code>2</code> and <code>p'q'-1</code></li>
 </ul>
+</li>
+<li>
+<p><code>xz_cap</code>:  $\hat{x_z} = c x_z + ~{x_z}$</p>
+</li>
+<li>
+<p><code>xr_cap</code>: Vec&lt;(attribute_name_i, $cr_i + ~{r_i}$)&gt;</p>
+</li>
+</ul>
+<p>The check is done as follows:</p>
+<ol>
+<li>checks that all attributes (except the <a class="term-reference" href="#term:link-secret">link secret</a>) in <a class="term-reference" href="#term:cred_def_public">CRED_DEF_PUBLIC</a> are included in <code>xr_cap</code></li>
+<li>Compute $c’$</li>
+<li>If $c’ == c$, proof is accepted</li>
+</ol>
+<p>$$c’ = H(z || {r_i}  || \hat{z’} ||\hat{r_i’})$$</p>
+<p>where we first find the inverse of $z$
+$$ z^{-1}z = 1\ (Mod\ n) $$</p>
+<p>Then
+$$ \hat{z’} = z^{-c} s^{\hat{x_z}} \ (Mod\ n)$$
+$$= z^{-c} s^{cx_z + ~{x_z}}\ (Mod\ n)$$
+$$= z^{-c} z^{c}  s^{~{x_z}}\ (Mod\ n)$$</p>
+<p>$$ \hat{z’} = ~z$$</p>
+<p>Therefore $c’$ is equivalent to $c$ if the proof matches the <a class="term-reference" href="#term:cred_def_public">CRED_DEF_PUBLIC</a> by simply using the multiplicative inverse of $z$ and $r_i$.
+Since the process is same for both, we have demonstrated for $z$ only.</p>
+<h4 id="blinding-link-secret"><a class="toc-anchor" href="#blinding-link-secret" >§</a> Blinding Link Secret</h4>
+<p>The <a class="term-reference" href="#term:link-secret">link secret</a> is a default hidden attribute.
+Whilst it is cryptographically possible to have multiple hidden attributes,
+in AnonCreds,
+only <a class="term-reference" href="#term:link-secret">link secret</a> is used.</p>
+<p>A <a class="term-reference" href="#term:blinding-factor">blinding factor</a> is used as a secret held by the <a class="term-reference" href="#term:holder">holder</a> for blinding the <a class="term-reference" href="#term:link-secret">link secret</a> before sending it to issuer and to unblind the signed values in the signature received from the issuer.</p>
+<p>The process of blinding uses the <a class="term-reference" href="#term:issuer">issuer</a>'s <code>CredentialPrimaryPublicKey</code>, $P$,
+which is included in the <a class="term-reference" href="#term:cred_def_public">CRED_DEF_PUBLIC</a> containing
+<code>z</code>, <code>r</code>, <code>s</code> and <code>n</code>.</p>
+<p><code>r</code> contains the public keys to all attributes, the one of interest in this process is $r_{link secret}$</p>
+<p>The <a class="term-reference" href="#term:link-secret">link secret</a>, $A_l$ is blinded by</p>
+<p>$A_{bl} = r_{link_secret}^{A_l}\ Mod\ n$</p>
+<p>$A_{bl}$ is multiplied by the <a class="term-reference" href="#term:blinding-factor">blinding factor</a>, $v$,</p>
+<p>$(s^v \times A_{bl})\ Mod\ n$</p>
+<h4 id="creating-blinded-secrets-correctness-proof"><a class="toc-anchor" href="#creating-blinded-secrets-correctness-proof" >§</a> Creating Blinded Secrets Correctness Proof</h4>
+<div id="todo-14" class="notice todo"><a class="notice-link" href="#todo-14">TODO</a><p>*- How does it work with correctness proof?</p>
 </div>
 <p>The resulting JSON for a created <a class="term-reference" href="#term:credential-request">Credential Request</a> is shown here:</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
@@ -881,22 +948,22 @@ sequenceDiagram
   <span class="token property">"nonce"</span><span class="token operator">:</span> string
 <span class="token punctuation">}</span>
 </code></pre>
-<div id="todo-14" class="notice todo"><a class="notice-link" href="#todo-14">TODO</a><p>is the <code>prover_did</code> the peer DID of the holder?</p>
+<div id="todo-15" class="notice todo"><a class="notice-link" href="#todo-15">TODO</a><p>is the <code>prover_did</code> the peer DID of the holder?</p>
 </div>
 <ul>
 <li><code>prover_did</code>: The <a class="term-reference" href="#term:did">DID</a> of the <a class="term-reference" href="#term:holder">holder</a>.</li>
 <li><code>cred_def_id</code>: The ID of the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> on which the <a class="term-reference" href="#term:credential">Credential</a> to be issued shall be based.</li>
 <li><code>blinded_ms</code>: The <a class="term-reference" href="#term:link-secret">link secret</a> in its blinded form.</li>
-<li><code>blinded_ms_correctness_proof</code>: The <a class="term-reference" href="#term:correctness-proof">Correctness Proof</a> of the blinded <a class="term-reference" href="#term:link-secret">link secret</a>.</li>
+<li><code>blinded_ms_correctness_proof</code>: The <a class="term-reference" href="#term:blinded-secrets-correctness-proof">Blinded Secrets Correctness Proof</a> of the blinded <a class="term-reference" href="#term:link-secret">link secret</a>.</li>
 <li><code>nonce</code>: Used for preventing replay attacks and authentication between protocol steps. Reused from the initially received <a class="term-reference" href="#term:credential-offer">Credential Offer</a>.</li>
 </ul>
 <p>The <a class="term-reference" href="#term:issuer">issuer</a> sends the <a class="term-reference" href="#term:credential-request">Credential Request</a> to the <a class="term-reference" href="#term:issuer">issuer</a> (step 9), who then can reply to the <a class="term-reference" href="#term:holder">holder</a> by sending an issued credential.</p>
 <h3 id="issue-credential"><a class="toc-anchor" href="#issue-credential" >§</a> Issue Credential</h3>
 <p>After the <a class="term-reference" href="#term:issuer">issuer</a> received the <a class="term-reference" href="#term:credential-request">Credential Request</a> from the <a class="term-reference" href="#term:holder">holder</a>, the <a class="term-reference" href="#term:issuer">issuer</a> processes the <a class="term-reference" href="#term:credential-request">Credential Request</a> and decides whether to issue the credential as requested in the <a class="term-reference" href="#term:credential-request">Credential Request</a> to the <a class="term-reference" href="#term:holder">holder</a>.</p>
 <p>In case the <a class="term-reference" href="#term:issuer">issuer</a> decides to issue the requested credential to the <a class="term-reference" href="#term:holder">holder</a>, the following steps have to be executed by the <a class="term-reference" href="#term:issuer">issuer</a>:</p>
-<div id="todo-15" class="notice todo"><a class="notice-link" href="#todo-15">TODO</a><ul>
+<div id="todo-16" class="notice todo"><a class="notice-link" href="#todo-16">TODO</a><ul>
 <li>check nonce?</li>
-<li>check link secret and correctness proof?</li>
+<li>check link secret and blinded secrets correctness proof?</li>
 </ul>
 </div>
 <ol>
@@ -919,7 +986,7 @@ sequenceDiagram
 <li>The <a class="term-reference" href="#term:issuer">issuer</a> has to fetch the <a class="term-reference" href="#term:holder">holder</a>`s blinded <a class="term-reference" href="#term:link-secret">link secret</a> from the received <a class="term-reference" href="#term:credential-request">Credential Request</a>. The blinded <a class="term-reference" href="#term:link-secret">link secret</a> is available in the received <a class="term-reference" href="#term:credential-request">Credential Request</a> at <code>blinded_ms</code>.</li>
 <li>The <a class="term-reference" href="#term:issuer">issuer</a> has to sign each attribute value and the the blinded <a class="term-reference" href="#term:link-secret">link secret</a> by using the corresponding private key for each attribute as defined in the private part of the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> earlier.</li>
 </ol>
-<div id="todo-16" class="notice todo"><a class="notice-link" href="#todo-16">TODO</a><ul>
+<div id="todo-17" class="notice todo"><a class="notice-link" href="#todo-17">TODO</a><ul>
 <li>check how exactly the signing happens for the whole credential</li>
 </ul>
 </div>
@@ -975,7 +1042,7 @@ sequenceDiagram
     <span class="token property">"witness"</span><span class="token operator">:</span> <span class="token null keyword">null</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<div id="todo-17" class="notice todo"><a class="notice-link" href="#todo-17">TODO</a><ul>
+<div id="todo-18" class="notice todo"><a class="notice-link" href="#todo-18">TODO</a><ul>
 <li>what is the naming scheme for the CL signatures in p_credential? Since the shown JSON is the result of two mixed examples, the signatures for more than the three presented attributes are missung. m_2 is the link secret…</li>
 </ul>
 </div>
@@ -984,11 +1051,11 @@ sequenceDiagram
 <li><code>cred_def_id</code>: The ID of the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> on which the <a class="term-reference" href="#term:credential">Credential</a> issued is based.</li>
 <li><code>values</code>: The raw and encoded credential attribute values as JSON (cred_values_json).</li>
 <li><code>signature</code>: The signatures of the separately signed attributes</li>
-<li><code>signature_correctness_proof</code>: The signature correctness proof of the signature for the whole credential data.</li>
+<li><code>signature_correctness_proof</code>: The <a class="term-reference" href="#term:signature-correctness-proof">Signature Correctness Proof</a> of the signature for the whole credential data.</li>
 <li><code>rev_reg</code>: The revocation registry ID of the revocation registry, the issued credentials is assigned.</li>
 <li><code>witness</code>: Witness information. (See Revocation)</li>
 </ul>
-<div id="todo-18" class="notice todo"><a class="notice-link" href="#todo-18">TODO</a><ul>
+<div id="todo-19" class="notice todo"><a class="notice-link" href="#todo-19">TODO</a><ul>
 <li>Add description for remaining keys of json shown above</li>
 <li>What kind of encoding algorithm for strings is used? Seems like this is not defined explicitely (<a path-0="jira.hyperledger.org"path-1="browse"path-2="IS-786"href="https://jira.hyperledger.org/browse/IS-786" ><span>https://jira.hyperledger.org/browse/IS-786</span></a>)</li>
 <li>Go deeper into signing with CL?</li>
@@ -1027,7 +1094,7 @@ presentation request received from the Verifier.</p>
 presentation request to the Verifier.</p>
 <p>In step 7, 8, and 9, the Verifier collects the required information and verifies the verifiable presentation and accepts it if the
 signature is valid, otherwise rejects the verifiable presentation.</p>
-<div id="todo-19" class="notice todo"><a class="notice-link" href="#todo-19">TODO</a><p>Question: VDR access for schema, revocation etc. retrieval mandatory?</p>
+<div id="todo-20" class="notice todo"><a class="notice-link" href="#todo-20">TODO</a><p>Question: VDR access for schema, revocation etc. retrieval mandatory?</p>
 </div>
 <h3 id="create-presentation-request"><a class="toc-anchor" href="#create-presentation-request" >§</a> Create Presentation Request</h3>
 <p>The Verifier starts the process in
@@ -1757,7 +1824,7 @@ other unrevoked credentials <strong>are</strong> included.</p>
 <p>Once the witness (<code>u</code>), the accumulator from the ledger (<code>e</code>) and the value of
 the tails file entry for the credential of interest (<code>b</code>) are known, the NRP can
 be generated as follows:</p>
-<div id="todo-20" class="notice todo"><a class="notice-link" href="#todo-20">TODO</a><p>To Do: Add more detail about the calculation of <code>C</code><sub><code>u</code></sub> and
+<div id="todo-21" class="notice todo"><a class="notice-link" href="#todo-21">TODO</a><p>To Do: Add more detail about the calculation of <code>C</code><sub><code>u</code></sub> and
 <code>C</code><sub><code>b</code></sub> in the following.</p>
 </div>
 <ul>
@@ -1804,7 +1871,7 @@ model:</p>
 <span class="token punctuation">}</span>
 </code></pre>
 <p>The values in the data model are:</p>
-<div id="todo-21" class="notice todo"><a class="notice-link" href="#todo-21">TODO</a><p>To Do: Enumerate each of the items in each NRP section of the presentation.</p>
+<div id="todo-22" class="notice todo"><a class="notice-link" href="#todo-22">TODO</a><p>To Do: Enumerate each of the items in each NRP section of the presentation.</p>
 </div>
 <ul>
 <li><code>x_list</code>&quot; is …
@@ -1943,9 +2010,9 @@ verification process, the <a class="term-reference" href="#term:verifier">verifi
 the presentation for the NRP being processed, plus the accumulator from
 appropriate <a class="term-reference" href="#term:revregentry">RevRegEntry</a>, the following steps are carried out to verify
 the NRP.</p>
-<div id="todo-22" class="notice todo"><a class="notice-link" href="#todo-22">TODO</a><p>To Do: Outline the NRP verification calculation.</p>
+<div id="todo-23" class="notice todo"><a class="notice-link" href="#todo-23">TODO</a><p>To Do: Outline the NRP verification calculation.</p>
 </div>
-<div id="todo-23" class="notice todo"><a class="notice-link" href="#todo-23">TODO</a><p>To Do: Is there a separate process to bind the NRP to the credential?</p>
+<div id="todo-24" class="notice todo"><a class="notice-link" href="#todo-24">TODO</a><p>To Do: Is there a separate process to bind the NRP to the credential?</p>
 </div>
 <p>The verification code MUST surface to the <a class="term-reference" href="#term:verifier">verifier</a> if any part of the
 presentation, including any NRP(s), fail cryptographic verification. The
@@ -2351,22 +2418,22 @@ Procedure:
 
 </code></pre>
 <h2 id="anoncreds-conventions"><a class="toc-anchor" href="#anoncreds-conventions" >§</a> AnonCreds Conventions</h2>
-<div id="todo-24" class="notice todo"><a class="notice-link" href="#todo-24">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
+<div id="todo-25" class="notice todo"><a class="notice-link" href="#todo-25">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
 </div>
 <h2 id="iana-considerations"><a class="toc-anchor" href="#iana-considerations" >§</a> IANA Considerations</h2>
 <p>This document has no IANA actions.</p>
 <h2 id="security-considerations"><a class="toc-anchor" href="#security-considerations" >§</a> Security Considerations</h2>
-<div id="todo-25" class="notice todo"><a class="notice-link" href="#todo-25">TODO</a><p>Add security considerations.</p>
+<div id="todo-26" class="notice todo"><a class="notice-link" href="#todo-26">TODO</a><p>Add security considerations.</p>
 </div>
 <h2 id="privacy-considerations"><a class="toc-anchor" href="#privacy-considerations" >§</a> Privacy Considerations</h2>
-<div id="todo-26" class="notice todo"><a class="notice-link" href="#todo-26">TODO</a><p>Add privacy considerations.</p>
+<div id="todo-27" class="notice todo"><a class="notice-link" href="#todo-27">TODO</a><p>Add privacy considerations.</p>
 </div>
 <h2 id="references"><a class="toc-anchor" href="#references" >§</a> References</h2>
 <h3 id="normative-references"><a class="toc-anchor" href="#normative-references" >§</a> Normative References</h3>
-<div id="todo-27" class="notice todo"><a class="notice-link" href="#todo-27">TODO</a><p>Add normative references</p>
+<div id="todo-28" class="notice todo"><a class="notice-link" href="#todo-28">TODO</a><p>Add normative references</p>
 </div>
 <h3 id="informative-references"><a class="toc-anchor" href="#informative-references" >§</a> Informative References</h3>
-<div id="todo-28" class="notice todo"><a class="notice-link" href="#todo-28">TODO</a><p>Add informative references</p>
+<div id="todo-29" class="notice todo"><a class="notice-link" href="#todo-29">TODO</a><p>Add informative references</p>
 </div>
 <h4 id="resources-on-cryptography"><a class="toc-anchor" href="#resources-on-cryptography" >§</a> Resources on cryptography</h4>
 <h5 id="sigma-protocols"><a class="toc-anchor" href="#sigma-protocols" >§</a> Sigma protocols</h5>
@@ -2389,7 +2456,7 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li>Matt Raffel - Kiva Microfiance</li>
 </ul>
 <h2 id="authors-addresses"><a class="toc-anchor" href="#authors-addresses" >§</a> Authors’ Addresses</h2>
-<div id="todo-29" class="notice todo"><a class="notice-link" href="#todo-29">TODO</a><p>Add authors’ addresses.</p>
+<div id="todo-30" class="notice todo"><a class="notice-link" href="#todo-30">TODO</a><p>Add authors’ addresses.</p>
 </div>
 
                     </article>    
@@ -2447,7 +2514,13 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li><a href="#anoncreds-issuance-data-flow" >AnonCreds Issuance Data Flow</a>
 <ul>
 <li><a href="#credential-offer" >Credential Offer</a></li>
-<li><a href="#credential-request" >Credential Request</a></li>
+<li><a href="#credential-request" >Credential Request</a>
+<ul>
+<li><a href="#check-credential-key-correctness-proof" >Check Credential Key Correctness Proof</a></li>
+<li><a href="#blinding-link-secret" >Blinding Link Secret</a></li>
+<li><a href="#creating-blinded-secrets-correctness-proof" >Creating Blinded Secrets Correctness Proof</a></li>
+</ul>
+</li>
 <li><a href="#issue-credential" >Issue Credential</a></li>
 </ul>
 </li>
