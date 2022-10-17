@@ -3,34 +3,50 @@
 ### Cryptography
 
 #### Signature
-AnonCreds creation and validation 
+::: todo
+Add security considerations related to CL signatures
+::: 
 
 #### Revocation / Accumulators
-
-### Verifiable Data Registry
-
-#### Permission Management
-write, update schema Def, credDef, RevRegUpdate
-
-#### Security Requirements at DIDs and Related Keys
-
 ::: todo
-Do we want to add zeroMQ communication with Ledger / Nodes?
+Add security considerations related to cryptographic accumulators and AnonCreds revocation
 :::
 
+### Verifiable Data Registry
+It is recommended to use a [[ref: Verifiable Data Registry]] that complies with the state of the art security features and best practices.
+
+#### Permission Management
+The VDR for storing [[ref: SCHEMA]]s, [[ref: CRED_DEF]]s, [[ref: REV_REG_DEF]]s, and [[ref: REV_REG_ENTRY]]s shall ensure that only the owner or from the owner permitted entities can write, edit, or revoke those AnonCreds objects. Furthermore, public AnonCreds objects shall be readable by any entity that can access the VDR.
+
 #### Authentication of Issuer
-How does the verifier know that 
+The VDR shall allow only permitted entities to issue AnonCreds based on AnonCreds objects related to it.  
+
+#### Security Requirements at DIDs and Related Keys
+It is recommended to follow the best practices of decentralized key management system designs and achitectures. The Hyperledger Indy implementation of AnonCreds are build on the following [DKMS Design and Architecture](https://github.com/hyperledger/indy-sdk/blob/main/docs/design/005-dkms/DKMS%20Design%20and%20Architecture%20V3.md) 
 
 ### Envelope
+AnonCreds should be packed in a message envelope that can fulfill properties such as authenticity, integrity, confidentiality, and non-repudiation  of the message. A message can have these properties with signature and encryption algorithms. It is recommended to choose signature and encryption algorithms that are state of the art and offer such security. 
 
 ### Transport
+This specification does not mention which transport protocols should be used to exchange AnonCreds between parties. It is recommended to use transport protocols that are state of the art and offer such security.
+
 
 ### Wallet
+- Wallet security best practices
+- DIF Wallet Security WG reference
+::: todo
+To be written
+:::
+
 #### Recovery
-Seeds / DKMS etc.
+-Seeds / DKMS etc.
+::: todo
+To be written
+:::
 
 #### Support of Hardware Secure Modules
+The underlying signature algorithm of AnonCreds is currently not supported by any hardware secure module. Use cases requiring binding of an AnonCreds to a device (device binding) can follow the best practices of wallet security (hyperlink) until the AnonCreds signature algorithm is supported by hardware secure modules of enduser devices.  
 
 #### Crypto Agility
-Post quantum crypto security
+The underlying signature algorithm of AnonCreds is not known to be a post quantum computing resistant.
 
