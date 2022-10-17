@@ -48,5 +48,5 @@ To be written
 The underlying signature algorithm of AnonCreds is currently not supported by any hardware secure module. Use cases requiring binding of an AnonCreds to a device (device binding) can follow the best practices of wallet security (hyperlink) until the AnonCreds signature algorithm is supported by hardware secure modules of enduser devices.  
 
 #### Crypto Agility
-The underlying signature algorithm of AnonCreds is not known to be a post quantum computing resistant.
+The underlying signature algorithm of AnonCreds is not known to be a post quantum computing resistant. As signature algorithms evolve for the post quantum computing security, the underlying signature algorithm shall keep privacy-preserving features such as selective disclosure and non-correlatability.
 
