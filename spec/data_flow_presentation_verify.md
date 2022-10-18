@@ -22,11 +22,11 @@ pub extern fn anoncreds_verifier_verify_proof(command_handle: CommandHandle,
                                                               valid: bool)>) -> ErrorCode {}
 ```
 
-- `proof_request_json`: Proof request in JSON format.
-- `proof_json`: Proof for the given proof request.
-- `schemas_json`: Collection of all schemas participating in the proof.
-- `credential_defs_json`: Collection of all credential definitions participating in the proof.
-- `rev_reg_defs_json`: Collection of all revocation registry definitions participating in the proof.
+* `proof_request_json`: Proof request in JSON format.
+* `proof_json`: Proof for the given proof request.
+* `schemas_json`: Collection of all schemas participating in the proof.
+* `credential_defs_json`: Collection of all credential definitions participating in the proof.
+* `rev_reg_defs_json`: Collection of all revocation registry definitions participating in the proof.
 
   ```json
   {
@@ -51,9 +51,9 @@ pub extern fn anoncreds_verifier_verify_proof(command_handle: CommandHandle,
       },
   }
   ```
-- `cb`: Callback that takes command result as parameter.
-- `Returns`
-  - `valid`: true - if signature is valid, false - otherwise
+* `cb`: Callback that takes command result as parameter.
+* `Returns`
+  * `valid`: true - if signature is valid, false - otherwise
 
 #### Verify Non-Revocation Proof
 
