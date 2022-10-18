@@ -214,7 +214,7 @@ The list of allowed keys that can be combined into complex queries includes:
             {
                 "cred_def_id": "NcYxiDXkpYi6ov5FcYDi1e:3:CL:NcYxiDXkpYi6ov5FcYDi1e:2:gvt:1.0:TAG_1",
                 "issuer_did": "NcYxiDXkpYi6ov5FcYDi1e"
-            },
+            }
         }
     },
     "requested_predicates": {
