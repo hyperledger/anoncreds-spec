@@ -7,7 +7,7 @@ This specification is the work of the AnonCreds Working Group, which includes do
 of active and dedicated participants.  In particular, the following individuals
 contributed ideas, feedback, and wording that influenced this specification:
 
-* Artur Philipp - IDUnion
+* Artur Philipp - Technische Universität Berlin, IDunion
 * Hakan Yildiz - Technische Universität Berlin
 * Matt Raffel - Kiva Microfiance
 
