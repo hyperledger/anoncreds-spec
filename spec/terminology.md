@@ -61,8 +61,8 @@ The correlatability of credentials due to the necessity of revealing a persisten
 [[def: Verifiable Presentation]]
 ~ TODO
 
-[[def: Non-Revocation Proof (NRP)]]
-~ TODO
+[[def: NRP]]
+~ TODO Non Revocation Proof
 
 [[def: REV_REG_DEF]]
 ~ A REV_REG_DEF object (short for "revocation registry definition") contains information required for [[ref: verifiers]] in order to enable them to verify whether a revokable verifiable credential has been revoked by the issuer since issuance.
