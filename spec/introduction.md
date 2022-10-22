@@ -12,9 +12,9 @@ AnonCreds ZKP verifiable credentials provide capabilities that many see as impor
   - The use of predicate proofs to reduce the sharing of PII and potentially correlating data, especially dates (birth, credential issuance/expiry, etc.).
   - A revocation scheme that proves a presentation is based on credentials that have not been revoked by the issuers without revealing correlatable revocation identifiers.
 
-The AnonCreds v0.1 Specification matches the existing [Hyperledger Indy SDK (“libindy”)](https://github.com/hyperledger/indy-sdk/blob/master/libindy/src/api/anoncreds.rs) and [Indy Credential Exchange (“cred-x”)](https://github.com/hyperledger/indy-shared-rs/tree/main/indy-credx) implementations. 
+The AnonCreds v0.1 Specification matches the existing [Hyperledger Indy SDK (“libindy”)](https://github.com/hyperledger/indy-sdk/blob/master/libindy/src/api/anoncreds.rs) and [Indy Credential Exchange (“cred-x”)](https://github.com/hyperledger/indy-shared-rs/tree/main/indy-credx) implementations.
 
-The next version of the specification (tentatively v1.0) will remove from the v0.1 specification any dependence on Hyperledger Indy by removing any requirements related to the storage of the objects used in AnonCreds, whether they be stored remotely on a “verifiable data registry” (including Hyperledger Indy) or in local secure storage. 
+The next version of the specification (tentatively v1.0) will remove from the v0.1 specification any dependence on Hyperledger Indy by removing any requirements related to the storage of the objects used in AnonCreds, whether they be stored remotely on a “verifiable data registry” (including Hyperledger Indy) or in local secure storage.
 
 The following diagram and explanation below give a high level overview of all AnonCreds Data objects, their relations and the owner respectively receiver of each of the data objects. 
 
