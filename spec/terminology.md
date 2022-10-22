@@ -58,9 +58,6 @@ The correlatability of credentials due to the necessity of revealing a persisten
 [[def: predicates]]
 ~ A predicate is a boolean assertion about the value of a [[ref: claim]] without disclosing the value itself. In contrast to any signature suite and algorithm implemented according to the W3C [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/), predicates are fully supported by AnonCreds.
 
-[[def: Verifiable Presentation]]
-~ TODO
-
 [[def: NRP]]
 ~ TODO Non Revocation Proof
 
@@ -95,6 +92,9 @@ The correlatability of credentials due to the necessity of revealing a persisten
 
 [[def: Verifiable Data Registry, VDR]]
 ~ [[ref: DIDs]] and DID documents have to be stored on some kind of system, which is available (to the public, in most cases). Such a system can be a distributed ledger, a (decentralized) file system, database and others. Such an anchor for [[ref: DID]s] and DID documents is called Verifiable Data Registry. 
+
+[[def: Verifiable Presentation]]
+~ TODO
 
 ~ In the case of Hyperledger Indy a distributed ledger is used as Verifiable Data Registry. Besides [[ref: DIDs]] and DID documents an instance of a Hyperledger Indy network stores additional data on the ledger, which is required for issuance (e.g. [[ref: Schema]] and [[ref: CRED_DEF]]), verification (e.g. [[ref: REV_REG_DEF]])) and revocation (e.g [[ref: REV_REG_ENTRY]]) of credentials.
 
