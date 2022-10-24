@@ -2423,17 +2423,46 @@ Procedure:
 <h2 id="iana-considerations"><a class="toc-anchor" href="#iana-considerations" >§</a> IANA Considerations</h2>
 <p>This document has no IANA actions.</p>
 <h2 id="security-considerations"><a class="toc-anchor" href="#security-considerations" >§</a> Security Considerations</h2>
-<div id="todo-26" class="notice todo"><a class="notice-link" href="#todo-26">TODO</a><p>Add security considerations.</p>
+<h3 id="cryptography"><a class="toc-anchor" href="#cryptography" >§</a> Cryptography</h3>
+<h4 id="signature"><a class="toc-anchor" href="#signature" >§</a> Signature</h4>
+<div id="todo-26" class="notice todo"><a class="notice-link" href="#todo-26">TODO</a><p>Add security considerations related to CL signatures</p>
 </div>
+<h4 id="revocation-accumulators"><a class="toc-anchor" href="#revocation-accumulators" >§</a> Revocation / Accumulators</h4>
+<div id="todo-27" class="notice todo"><a class="notice-link" href="#todo-27">TODO</a><p>Add security considerations related to cryptographic accumulators and AnonCreds revocation</p>
+<ul>
+<li>issues with too small revocation registries</li>
+<li>…</li>
+</ul>
+</div>
+<h3 id="verifiable-data-registry"><a class="toc-anchor" href="#verifiable-data-registry" >§</a> Verifiable Data Registry</h3>
+<p>It is recommended to use a <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> that complies with the state of the art security features and best practices.</p>
+<h4 id="permission-management"><a class="toc-anchor" href="#permission-management" >§</a> Permission Management</h4>
+<p>The VDR for storing <a class="term-reference" href="#term:schema">SCHEMA</a>s, <a class="term-reference" href="#term:cred_def">CRED_DEF</a>s, <a class="term-reference" href="#term:rev_reg_def">REV_REG_DEF</a>s, and <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a>s shall ensure that only the owner or from the owner permitted entities can write, edit, or revoke those AnonCreds objects. Furthermore, public AnonCreds objects shall be readable by any entity that can access the VDR.</p>
+<h4 id="authentication-of-issuer"><a class="toc-anchor" href="#authentication-of-issuer" >§</a> Authentication of Issuer</h4>
+<p>The VDR shall allow only permitted entities to issue AnonCreds based on AnonCreds objects related to it.</p>
+<h4 id="security-requirements-at-dids-and-related-keys"><a class="toc-anchor" href="#security-requirements-at-dids-and-related-keys" >§</a> Security Requirements at DIDs and Related Keys</h4>
+<p>It is recommended to follow the best practices of decentralized key management system designs and architectures. For example, an option for publishing AnonCreds is the Hyperledger Indy, which are built on the following <a path-0="github.com"path-1="hyperledger"path-2="indy-sdk"path-3="blob"path-4="main"path-5="docs"path-6="design"path-7="005-dkms"path-8="DKMS%20Design%20and%20Architecture%20V3.md"href="https://github.com/hyperledger/indy-sdk/blob/main/docs/design/005-dkms/DKMS%20Design%20and%20Architecture%20V3.md" >DKMS Design and Architecture</a></p>
+<h3 id="envelope"><a class="toc-anchor" href="#envelope" >§</a> Envelope</h3>
+<p>AnonCreds should be packed in a message envelope that can fulfill properties such as authenticity, integrity, confidentiality, and non-repudiation of the message. A message can have these properties with signature and encryption algorithms. It is recommended to choose signature and encryption algorithms that are state of the art and offer such security. For example, Hyperledger Indy utilizes DIDComm v1 as message envelope for exchanging AnonCreds between <a class="term-reference" href="#term:issuer">issuer</a>s, <a class="term-reference" href="#term:holder">holder</a>s, and <a class="term-reference" href="#term:verifier">verifier</a>s.</p>
+<h3 id="transport"><a class="toc-anchor" href="#transport" >§</a> Transport</h3>
+<p>This specification does not mention which transport protocols should be used to exchange AnonCreds between parties. It is recommended to use transport protocols that are state of the art and offer such security.</p>
+<h3 id="wallet"><a class="toc-anchor" href="#wallet" >§</a> Wallet</h3>
+<p>It is recommended to follow the wallet security best practices such as the one created by the [DIF Wallet Security Working Group] (<a path-0="github.com"path-1="decentralized-identity"path-2="wallet-security"href="https://github.com/decentralized-identity/wallet-security" ><span>https://github.com/decentralized-identity/wallet-security</span></a>)</p>
+<h4 id="recovery"><a class="toc-anchor" href="#recovery" >§</a> Recovery</h4>
+<p>The wallets for AnonCreds shall offer recovery mechanisms for the <a class="term-reference" href="#term:holder">holder</a>s to export their keys and/or <a class="term-reference" href="#term:link-secret">link secret</a>s to different devices. Furthermore, wallet applications should offer portability mechanisms for <a class="term-reference" href="#term:holder">holder</a>s to migrate their credentials from one wallet (or end device) to another.</p>
+<h4 id="support-of-hardware-secure-modules"><a class="toc-anchor" href="#support-of-hardware-secure-modules" >§</a> Support of Hardware Secure Modules</h4>
+<p>The current underlying signature algorithm of AnonCreds is currently not supported by any hardware secure module. Use cases requiring binding of an AnonCreds to a device (device binding) can follow the best practices of wallet security (hyperlink) until the AnonCreds signature algorithm is supported by hardware secure modules of enduser devices.</p>
+<h3 id="crypto-agility"><a class="toc-anchor" href="#crypto-agility" >§</a> Crypto Agility</h3>
+<p>The underlying signature algorithm of AnonCreds is not known to be a post-quantum computing resistant. As new signature algorithms evolve for the post-quantum computing security, the underlying signature algorithm of AnonCreds shall keep privacy-preserving features such as selective disclosure and non-correlatability.</p>
 <h2 id="privacy-considerations"><a class="toc-anchor" href="#privacy-considerations" >§</a> Privacy Considerations</h2>
-<div id="todo-27" class="notice todo"><a class="notice-link" href="#todo-27">TODO</a><p>Add privacy considerations.</p>
+<div id="todo-28" class="notice todo"><a class="notice-link" href="#todo-28">TODO</a><p>Add privacy considerations.</p>
 </div>
 <h2 id="references"><a class="toc-anchor" href="#references" >§</a> References</h2>
 <h3 id="normative-references"><a class="toc-anchor" href="#normative-references" >§</a> Normative References</h3>
-<div id="todo-28" class="notice todo"><a class="notice-link" href="#todo-28">TODO</a><p>Add normative references</p>
+<div id="todo-29" class="notice todo"><a class="notice-link" href="#todo-29">TODO</a><p>Add normative references</p>
 </div>
 <h3 id="informative-references"><a class="toc-anchor" href="#informative-references" >§</a> Informative References</h3>
-<div id="todo-29" class="notice todo"><a class="notice-link" href="#todo-29">TODO</a><p>Add informative references</p>
+<div id="todo-30" class="notice todo"><a class="notice-link" href="#todo-30">TODO</a><p>Add informative references</p>
 </div>
 <h4 id="resources-on-cryptography"><a class="toc-anchor" href="#resources-on-cryptography" >§</a> Resources on cryptography</h4>
 <h5 id="sigma-protocols"><a class="toc-anchor" href="#sigma-protocols" >§</a> Sigma protocols</h5>
@@ -2456,7 +2485,7 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li>Matt Raffel - Kiva Microfiance</li>
 </ul>
 <h2 id="authors-addresses"><a class="toc-anchor" href="#authors-addresses" >§</a> Authors’ Addresses</h2>
-<div id="todo-30" class="notice todo"><a class="notice-link" href="#todo-30">TODO</a><p>Add authors’ addresses.</p>
+<div id="todo-31" class="notice todo"><a class="notice-link" href="#todo-31">TODO</a><p>Add authors’ addresses.</p>
 </div>
 
                     </article>    
@@ -2577,7 +2606,32 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 </li>
 <li><a href="#anoncreds-conventions" >AnonCreds Conventions</a></li>
 <li><a href="#iana-considerations" >IANA Considerations</a></li>
-<li><a href="#security-considerations" >Security Considerations</a></li>
+<li><a href="#security-considerations" >Security Considerations</a>
+<ul>
+<li><a href="#cryptography" >Cryptography</a>
+<ul>
+<li><a href="#signature" >Signature</a></li>
+<li><a href="#revocation-accumulators" >Revocation / Accumulators</a></li>
+</ul>
+</li>
+<li><a href="#verifiable-data-registry" >Verifiable Data Registry</a>
+<ul>
+<li><a href="#permission-management" >Permission Management</a></li>
+<li><a href="#authentication-of-issuer" >Authentication of Issuer</a></li>
+<li><a href="#security-requirements-at-dids-and-related-keys" >Security Requirements at DIDs and Related Keys</a></li>
+</ul>
+</li>
+<li><a href="#envelope" >Envelope</a></li>
+<li><a href="#transport" >Transport</a></li>
+<li><a href="#wallet" >Wallet</a>
+<ul>
+<li><a href="#recovery" >Recovery</a></li>
+<li><a href="#support-of-hardware-secure-modules" >Support of Hardware Secure Modules</a></li>
+</ul>
+</li>
+<li><a href="#crypto-agility" >Crypto Agility</a></li>
+</ul>
+</li>
 <li><a href="#privacy-considerations" >Privacy Considerations</a></li>
 <li><a href="#references" >References</a>
 <ul>
