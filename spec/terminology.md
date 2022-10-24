@@ -64,8 +64,8 @@ The correlatability of credentials due to the necessity of revealing a persisten
 [[def: predicates]]
 ~ A predicate is a boolean assertion about the value of a [[ref: claim]] without disclosing the value itself. In contrast to any signature suite and algorithm implemented according to the W3C [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/), predicates are fully supported by AnonCreds.
 
-[[def: Non-Revocation Proof (NRP)]]
-~ TODO
+[[def: NRP]]
+~ TODO Non Revocation Proof
 
 [[def: REV_REG_DEF]]
 ~ A REV_REG_DEF object (short for "revocation registry definition") contains information required for [[ref: verifiers]] in order to enable them to verify whether a revokable verifiable credential has been revoked by the issuer since issuance.
@@ -79,7 +79,7 @@ The correlatability of credentials due to the necessity of revealing a persisten
 
 ~ Further details about Hyperledger Indy's revocation process can be found [here](https://hyperledger-indy.readthedocs.io/projects/hipe/en/latest/text/0011-cred-revocation/README.html).
 
-[[def: Schema]]
+[[def: Schema, Schemas]]
 ~ A Schema object is a template that defines a set of attributes (also known as attribute names or [[ref: claims]]) which are going to be used by [[ref: issuers]] for issuance of [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) within a Hyperledger Indy network. Schemas have a name, version and can be [written](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/transactions.html#schema) to the ledger by any entity with proper permissions. Schemas can be [read](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-schema) from a Hyperledger Indy Node by any client.
 
 ~ In Hyperledger Indy, Credentials are based on a [[ref: CRED_DEF]]. Therefore [[ref: CRED_DEFs]] reference a Schema in order to define which attribute(names) will be used within the [[ref: CRED_DEF]].
@@ -93,8 +93,14 @@ The correlatability of credentials due to the necessity of revealing a persisten
 [[def: subject]]
 ~ A subject, also known as an identity subject, is the entity about whom [[ref: claims]] are made.
 
-[[def: Verifiable Data Registry]]
-~ [[ref: DIDs]] and DID documents have to be stored on some kind of system, which is available (to the public, in most cases). Such a system can be a distributed ledger, a (decentralized) file system, database and others. Such an anchor for [[ref: DID]s] and DID documents is called Verifiable Data Registry.
+[[def: Tails File]]
+~ TODO
+
+[[def: Verifiable Data Registry, VDR]]
+~ [[ref: DIDs]] and DID documents have to be stored on some kind of system, which is available (to the public, in most cases). Such a system can be a distributed ledger, a (decentralized) file system, database and others. Such an anchor for [[ref: DID]s] and DID documents is called Verifiable Data Registry. 
+
+[[def: Verifiable Presentation]]
+~ TODO
 
 ~ In the case of Hyperledger Indy a distributed ledger is used as Verifiable Data Registry. Besides [[ref: DIDs]] and DID documents an instance of a Hyperledger Indy network stores additional data on the ledger, which is required for issuance (e.g. [[ref: Schema]] and [[ref: CRED_DEF]]), verification (e.g. [[ref: REV_REG_DEF]])) and revocation (e.g [[ref: REV_REG_ENTRY]]) of credentials.
 
