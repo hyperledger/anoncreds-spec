@@ -31,7 +31,7 @@ sequenceDiagram
   end
 ```
 
-The [[ref:issuer]] prepares a [[ref:Credential Offer]] for the [[ref:holder]] (step 1). A [[ref:Credential Offer]] includes information about what kind of [[ref:credential]] (based on which [[ref: CRED_DEF]]) the [[ref:issuer]] is intending to issue to the [[ref:holder]]. The [[ref:issuer]] sends the [[ref:Credential Offer]] to the [[ref:holder]] (step 2), who then evaluates the incoming offer (step 3) and subsequently fetches required data (the [[ref:CRED_DEF]]) from the [[ref: Verifiable Data Registry]] (step 4-7).
+The [[ref:issuer]] prepares a [[ref:Credential Offer]] for the [[ref:holder]] (step 1). A [[ref:Credential Offer]] includes information about what kind of [[ref:credential]] (based on which [[ref: Credential Definition]]) the [[ref:issuer]] is intending to issue to the [[ref:holder]]. The [[ref:issuer]] sends the [[ref:Credential Offer]] to the [[ref:holder]] (step 2), who then evaluates the incoming offer (step 3) and subsequently fetches required data (the [[ref:CRED_DEF]]) from the [[ref: Verifiable Data Registry]] (step 4-7).
 
 Based on the [[ref:CRED_DEF]] received from the [[ref:Verfiable Data Registry]], the [[ref:holder]] prepares a [[ref:Credential Request]] (step 8). A [[ref: Credential Request]] is a formal request from a [[ref:holder]] to an [[ref:issuer]] to get a [[ref:credential]] based on the given [[ref:CRED_DEF]] issued to the [[ref:holder]]. The [[ref:holder]] sends the [[ref: Credential Request]] to the [[ref:issuer]] (step 9), who then evaluates the incoming request (step 10).
 
@@ -71,7 +71,7 @@ A [[ref:Credential Request]] is a formal request from a [[ref:holder]] to an [[r
 
 In order to be able as a [[ref:holder]] to express within a [[ref:Credential Request]] to the [[ref:issuer]] which kind of credential the [[ref:issuer]] shall issue to the [[ref:holder]], the [[ref:holder]] requires the [[ref:CRED_DEF]] from the [[ref:Verifiable Data Registry]] if not already available in local storage (step 6 + 7). The [[ref:Credential Request]] has to reference the same [[ref:CRED_DEF]] and [[ref:nonce]] as given in the preceding [[ref:Credential Offer]]. Besides the [[ref:CRED_DEF]], the [[ref:holder]] also requires his [[ref:link secret]] in a blinded form, as well as the corresponding [[ref:Blinded Secrets Correctness Proof]] of his [[ref:link secret]]. The [[ref: holder]] has now all relevant data for creating the [[ref:Credential Request]] (step 8).
 
-The blinding process requires the target [[ref: CRED_DEF]] to construct the blinded secret and the [[ref: Blinded Secrets Correctness Proof]].
+The blinding process requires the target [[ref: Credential Definition]] to construct the blinded secret and the [[ref: Blinded Secrets Correctness Proof]].
 The [[ref:holder]] should ensure that the blinded secret is unique per request by producing unique [[ref:blinding factor]] every time.
 
 #### Check Credential Key Correctness Proof
@@ -80,7 +80,7 @@ It is important to ensure that[[ref:CRED_DEF_PUBLIC]] used in the blinding proce
 otherwise, the received signature from the [[ref:issuer]] will not be valid when generating presentation.
 
 Therefore, the [[ref:holder]] first checks if the [[ref:Credential Key Correctness Proof]] matches the [[ref:CRED_DEF]] retrievable from the [[ref: Credential Offer]].
-The [[ref: Credential Key Correctness Proof]] is prepared by the [[ref: issuer]] when creating the [[ref: CRED_DEF]].
+The [[ref: Credential Key Correctness Proof]] is prepared by the [[ref: issuer]] when creating the [[ref: Credential Definition]].
 
 The proof has the following format:
 
