@@ -16,7 +16,7 @@ This version (v1.0) removes any dependence on Hyperledger Indy by removing any r
 
 The following diagram and explanation below give a high level overview of all AnonCreds Data objects, their relations and the owner respectively receiver of each of the data objects. 
 
-![AnonCreds Data Model Overview](../spec/diagrams/anoncreds-visual-data-model-overview-simple.png "AnonCreds Data Model Overview")
+![AnonCreds Data Model Overview](/spec/diagrams/anoncreds-visual-data-model-overview-simple.png)
 
 AnonCreds require a [[ref: Verifiable Data Registry]] (VDR). A [[ref: VDR]] (box in green) is a public registry (often a ledger) used for storing some of the AnonCreds data objects. 
 
