@@ -11,7 +11,7 @@ AnonCreds Specification
 
 - [Stephen Curran](https://github.com/swcurran)
 - Artur Philipp - Technische Universität Berlin, IDunion
-- Hakan Yaldiz
+- Hakan Yildiz - Technische Universität Berlin, IDunion
 - Sam Curren
 - Victor Martinez Jurado
 
