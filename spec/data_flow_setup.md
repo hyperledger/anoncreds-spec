@@ -1,6 +1,6 @@
 ## AnonCreds Setup Data Flow
 
-The following sequence diagram summarizes the setup operations performed by a [[ref: SCHEMA Publisher]], the [[ref: Issuer]] (one required and one optional) in preparing to issue an AnonCred credential based on provided [[ref: SCHEMA]], and the one setup operation performed by each [[ref: Holder]]. On successfully completing the operations, the [[ref: Issuer]] is able to issue credentials based on the given [[ref: SCHEMA]] to the [[ref: Holder]]. The subsections below the diagram detail each of these operations.
+The following sequence diagram summarizes the setup operations performed by a [[ref: Schema Publisher]], the [[ref: Issuer]] (one required and one optional) in preparing to issue an AnonCred credential based on provided [[ref:Schema]], and the one setup operation performed by each [[ref: Holder]]. On successfully completing the operations, the [[ref: Issuer]] is able to issue credentials based on the given [[ref:Schema]] to the [[ref: Holder]]. The subsections below the diagram detail each of these operations.
 
 ```mermaid
 sequenceDiagram
@@ -73,57 +73,46 @@ presentation of proofs.
 
 :::
 
-### SCHEMA Publisher: Publish SCHEMA Object
+### Schema Publisher: Publish Schema Object
 
-Each type of AnonCred credential is based on a [[ref: SCHEMA]] published to a Verifiable
+Each type of AnonCred credential is based on a [[ref:Schema]] published to a Verifiable
 Data Registry (VDR), an instance of Hyperledger Indy in this version of
-AnonCreds. The [[ref: SCHEMA]] is defined and published by the [[ref: SCHEMA Publisher]]. Any issuer
-who can reference the [[ref: SCHEMA]] (including the [[ref: SCHEMA Publisher]]) MAY issue
+AnonCreds. The [[ref:Schema]] is defined and published by the [[ref: Schema Publisher]]. Any issuer
+who can reference the [[ref:Schema]] (including the [[ref: Schema Publisher]]) MAY issue
 credentials of that type by creating and publishing a [[ref: Credential Definition]] based on the
-[[ref: SCHEMA]]. This part of the specification covers the operation to create and
-publish a [[ref: SCHEMA]]. The flow of operations to publish a [[ref: SCHEMA]] is illustrated in
-the `SCHEMA Publisher: Publish SCHEMA` section of the [AnonCreds Setup Data
+[[ref:Schema]]. This part of the specification covers the operation to create and
+publish a [[ref:Schema]]. The flow of operations to publish a [[ref:Schema]] is illustrated in
+the `Schema Publisher: Publish Schema` section of the [AnonCreds Setup Data
 Flow](#anoncreds-setup-data-flow) sequence diagram.
 
-The [[ref: SCHEMA]] is a JSON structure that can be manually constructed,
+The [[ref:Schema]] is a JSON structure that can be manually constructed,
 containing the list of attributes (claims) that will be included in each
-AnonCreds credential of this type. The following is an example [[ref: SCHEMA]]:
-
-``` json
+AnonCreds credential of this type. The following is an example [[ref: Schema]]:
+```json
 {
-    "attr_names": [
-        "birthlocation",
-        "facephoto",
-        "expiry_date",
-        "citizenship",
-        "name",
-        "birthdate",
-        "firstname",
-        "uuid"
-    ],
-    "name": "BasicIdentity",
-    "version": "1.0.0"
+    "id": "https://www.did.example/schema.json",
+    "name": "Example schema",
+    "version": "0.0.1",
+    "attr_names": ["name", "age", "vmax"]
 }
 ```
 
-* `attr_names` is the array of attribute names (claim names) that will
-  constitute the AnonCred credential of this type.
-* `name` is a string defined by the schema publisher, the name of the schema.
-* `version` is a string defined by the schema publisher that the version of the
-    schema in [semver](https://semver.org/) format. The three part, period (".")
-    separated format MAY be enforced.
+* `id` - (string) The identifier of the [[ref: Schema]]. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] used in publishing the [[ref: Schema]].
+* `name` (string) - the name of the schema
+* `version` (string) - the schema version
+* `attr_names` (str[]) - an array of strings with each string being the name of an attribute of the schema
 
-Once constructed, the [[ref: SCHEMA]] is published to a Verifiable Data Registry
+Once constructed, the [[ref: Schema]] is published to a Verifiable Data Registry
 (VDR) using the Schema Publishers selected [[ref: AnonCreds Objects Method]].
 The `schemaId` identifier for the [[ref: schema]] is dependent on where the
-[[ref: schema]] is published. For example, see [this
-SCHEMA](https://indyscan.io/tx/SOVRIN_MAINNET/domain/73904) that is published on
+[[ref: Schema]] is published. For example, see [this
+ Schema](https://indyscan.io/tx/SOVRIN_MAINNET/domain/73904) that is published on
 the Sovrin MainNet instance of Hyperledger Indy. The `schemaId` for that object
 is: `Y6LRXGU3ZCpm7yzjVRSaGu:2:BasicIdentity:1.0.0`
 
 ### Issuer Create and Publish Credential Definition Object
 
-Each Issuer of credentials of a given type (e.g. based on a specific [[ref: SCHEMA]]) must
+Each Issuer of credentials of a given type (e.g. based on a specific [[ref: Schema]]) must
 create a [[ref: Credential Definition]] for that credential type. The flow of operations to create and
 publish a [[ref: Credential Definition]] is illustrated in the `Issuer: Create, Store and Publish Credential Definition`
 section of the [AnonCreds Setup Data Flow](#anoncreds-setup-data-flow) sequence
@@ -133,7 +122,7 @@ In AnonCreds, the [[ref: Credential Definition]] and [[ref: Credential Definitio
 
 * A link to the Issuer of the credentials via the DID used to publish the
   [[ref: Credential Definition]].
-* A link to the [[ref: SCHEMA]] upon which the [[ref: Credential Definition]] is based (the credential type).
+* A link to the [[ref: Schema]] upon which the [[ref: Credential Definition]] is based (the credential type).
 * A set of public/private key pairs, one per attribute (claim) in the
   credential. The private keys will later be used to sign the claims when
   credentials to be issued are created.
@@ -147,14 +136,14 @@ option of revoking credentials. In the succeeding
 additions to the generation process and data structures when
 credential revocation is enabled for a given [[ref: Credential Definition]].
 
-#### Retrieving the SCHEMA Object
+#### Retrieving the Schema Object
 
 Prior to creating a [[ref: Credential Definition]], the Issuer must get an instance of the
-[[ref: SCHEMA]] upon which the [[ref: Credential Definition]] will be created. If the Issuer
-is also the [[ref: SCHEMA Publisher]], they will already have the [[ref:
-SCHEMA]]. If not, the Issuer must request that information from the [[ref: VDR]]
-on which the [[ref: SCHEMA]] is published. In some [[ref: AnonCreds Objects
-Methods]] there is a requirement that the [[ref: SCHEMA]] and [[ref: Credential Definition]]
+[[ref: Schema]] upon which the [[ref: Credential Definition]] will be created. If the Issuer
+is also the [[ref: Schema Publisher]], they will already have the [[ref:
+Schema]]. If not, the Issuer must request that information from the [[ref: VDR]]
+on which the [[ref:Schema]] is published. In some [[ref: AnonCreds Objects
+Methods]] there is a requirement that the [[ref: Schema]] and [[ref: Credential Definition]]
 must be on the same [[ref: VDR]].
 
 #### Generating a Credential Definition Without Revocation Support
@@ -162,9 +151,9 @@ must be on the same [[ref: VDR]].
 The [[ref: Credential Definition]] is a JSON structure that is generated using cryptographic primitives
 (described below) given the following inputs.
 
-* A [[ref: SCHEMA]] for the credential type.
+* A [[ref: Schema]] for the credential type.
 * A `tag`, an arbitrary string defined by the Issuer, enabling an Issuer to
-  create multiple [[ref: Credential Definition]]s for the same [[ref: SCHEMA]].
+  create multiple [[ref: Credential Definition]]s for the same [[ref: Schema]].
 * An optional flag `support_revocation` (default `false`) which if true
   generates some additional data in the [[ref: Credential Definition]] to enable credential
   revocation. The additional data generated when this flag is `true` is covered
@@ -241,7 +230,7 @@ issued credential to the entity to which it was issued.
 All integers within the above [[ref: Credential Definition]] example json are shown with ellipses (e.g. `123...789`). They are 2048-bit integers represented as `617` decimal digits. These integers belong to an RSA-2048 group characterised by the `n` defined in the [[ref: Credential Definition]]. 
 
 * `id` - (string) The identifier of the [[ref: Credential Definition]]. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] used in publishing the [[ref: Credential Definition]].
-* `schema_id` - (string) The identifier of the [[ref: Schema]] on which the [[ref: Credential Definition]] is based. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] used in publishing the [[ref: SCHEMA]].
+* `schema_id` - (string) The identifier of the [[ref: Schema]] on which the [[ref: Credential Definition]] is based. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] used in publishing the [[ref: Schema]].
 * `type` - (string) The signature type of the [[ref: Credential Definition]]. For this version of AnonCreds the value is always `CL`.
 * `tag` (string) - the tag value passed in by the [[ref: Issuer]] to an AnonCred’s [[ref: Credential Definition]] create and store implementation.
 * `value` - (object) an Ursa native object with the `primary` and `revocation` fields.
@@ -249,16 +238,25 @@ All integers within the above [[ref: Credential Definition]] example json are sh
     * `n` is a safe RSA-2048 number. A large semiprime number such that `n = p.q`, where `p` and `q` are safe primes. A safe prime `p` is a prime number such that `p = 2p'+ 1`, where `p'` is also a prime. Note: `p` and `q` are the private key for the public CL-RSA key this [[ref: Credential Definition]] represents.
     * `r` is an object that defines a CL-RSA public key fragment for each attribute in the credential. Each fragment is a large number generated by computing `s^{xri}` where `xri` is a randomly selected integer between 2 and `p'q'-1`.
       * `master_secret` (should be [[ref: link secret]]) is the name of an attribute that can be found in each [[ref: Credential Definition]]. The associated private key is used for signing a blinded value given by the [[ref: Holder]] to the [[ref: Issuer]] during credential issuance, binding the credential to the [[ref: Holder]].
-      * The rest of the attributes in the list are those defined in the [[ref: SCHEMA]].
+      * The rest of the attributes in the list are those defined in the [[ref: Schema]].
       * The attribute names are normalized (lower case, spaces removed) and listed in the [[ref: Credential Definition]] in alphabetical order.
     * `rctxt` is equal to `s^(xrctxt)`, where `xrctxt` is a randomly selected integer between `2` and `p'q'-1`. (I believe this is used for the commitment scheme, allowing entities to blindly contribute values to credentials.)
     * `s` is a randomly selected quadratic residue of `n`. This makes up part of the CL-RSA public key, independent of the message blocks being signed.
     * `z` is equal to `s^(xz)`, where `xz` is a randomly selected integer between `2` and `p'q'-1`. This makes up part of the CL-RSA public key, independent of the message blocks being signed.
 
+
+The `id` identifier for the [[ref: Credential Definition]] is dependent on the [[ref:
+AnonCreds Objects Method]] used in publishing the [[ref: Schema]].
+
 #### Generating a Credential Definition With Revocation Support
 
-Enabling revocation for a [[ref: Credential Definition]] requires additional data to be generated and
-added under the `value.revocation` property of the [[ref: Credential Definition]]. 
+The issuer enables the ability to revoke credentials produced from a [[ref: Credential Definition]] by
+passing to the [[ref: Credential Definition]] generation process the flag `support_revocation` as
+`true`. When revocation is to enabled for a [[ref: Credential Definition]], additional data related to
+revocation is generated and added to the [[ref: Credential Definition]] JSON objects defined above. In
+the following the additional steps in the [[ref: Credential Definition]] generation process to enable
+revocation are described, along with the additional data produced in that
+process.
 
 The following describes the process for generating the revocation portion of the
 [[ref: Credential Definition]] data. This process extends the process for generating a [[ref: Credential Definition]] in the
@@ -477,6 +475,10 @@ not been revoked.
 
 The process of generating the primes that populate the [[ref: TAILS_FILE]] is as
 follows:
+
+::: todo
+To Do: Document hashing of the tails file ([see also](https://github.com/hyperledger/indy-shared-rs/blob/d22373265f7c4cf93d59dd3c111251ef96d6a63d/indy-credx/src/services/tails.rs#L151)).
+:::
 
 ::: todo
 To Do: Document the process for generating the primes.
