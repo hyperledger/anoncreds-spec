@@ -14,9 +14,10 @@ AnonCreds ZKP verifiable credentials provide capabilities that many see as impor
 
 This version (v1.0) removes any dependence on Hyperledger Indy by removing any requirements related to the storage of the objects used in AnonCreds, whether they be stored remotely on a “verifiable data registry” (including Hyperledger Indy) or in local secure storage.
 
-The following diagram and explanation below give a high level overview of all AnonCreds Data objects, their relations and the owner respectively receiver of each of the data objects. 
+The following diagram and explanation below give a high level overview of all AnonCreds Data objects, their relations and the owner respectively receiver of each of the data objects.
 
-![AnonCreds Data Model Overview](https://raw.githubusercontent.com/AnonCreds-WG/anoncreds-spec/main/spec/diagrams/anoncreds-visual-data-model-overview-simple.png)
+[comment]: <> (The diagram below resides currently here: https://docs.google.com/presentation/d/1sUT3AgMd288FG1bI5_WtIvWpmSta5pYbdui8zZ9Z2Tk)
+![AnonCreds Data Model Overview](https://raw.githubusercontent.com/AnonCreds-WG/anoncreds-spec/main/spec/diagrams/anoncreds-visual-data-model-overview-simple-trust-triangle.png)
 
 AnonCreds require a [[ref: Verifiable Data Registry]] (VDR). A [[ref: VDR]] (box in green) is a public registry (often a ledger) used for storing some of the AnonCreds data objects. 
 
