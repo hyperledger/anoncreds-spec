@@ -2,13 +2,13 @@
 
 This is a proposal for version v1.0 of AnonCreds which aims at AnonCreds being ledger agnostic.
 
-This document is a product of the [AnonCreds Working Group](https://github.com/AnonCreds-WG).
+This document is a product of the [AnonCreds Working Group](https://github.com/hyperledger).
 It represents the consensus of the AnonCreds community.
 The proposal for v1.0 has partly been worked out at the [RWOT2022](https://rebootthehague.com/) event in the Hague, Netherlands.
 
 Information about the current status of this document, any errata,
 and how to provide feedback on it may be obtained at
-[https://github.com/AnonCreds-WG/anoncreds-spec](https://github.com/AnonCreds-WG/anoncreds-spec).
+[https://github.com/hyperledger/anoncreds-spec](https://github.com/hyperledger/anoncreds-spec).
 
 ## Copyright Notice
 
