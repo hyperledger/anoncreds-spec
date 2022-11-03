@@ -29,11 +29,11 @@
         "informative_references.md",
         "acknowledgements_authors.md"
       ],
-      "logo": "https://raw.githubusercontent.com/AnonCreds-WG/anoncreds-spec/main/spec/images/logo/anoncreds_logo_horizontal.svg",
-      "logo_link": "https://github.com/AnonCreds-WG/anoncreds-spec",
+      "logo": "https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/spec/images/logo/anoncreds_logo_horizontal.svg",
+      "logo_link": "https://github.com/hyperledger/anoncreds-spec",
       "source": {
         "host": "github",
-        "account": "AnonCreds-WG",
+        "account": "hyperledger",
         "repo": "anoncreds-spec"
       }
     }
