@@ -2,14 +2,14 @@
   "name": "anoncreds-spec",
   "description": "AnonCreds Verifiable Credential Specification",
   "version": "0.1.0",
-  "homepage": "http://github.com/AnonCreds-WG",
+  "homepage": "https://wiki.hyperledger.org/display/ANONCREDS/AnonCreds+Specification+Working+Group",
   "license": "Apache 2",
   "repository": {
     "type": "git",
-    "url": "git://github.com/AnonCreds-WG/anoncreds-spec"
+    "url": "git://github.com/hyperledger/anoncreds-spec"
   },
   "dependencies": {
-    "spec-up": "^0.10.3"
+    "spec-up": "^0.10.6"
   },
   "devDependencies": {
     "ace-custom-element": "1.6.5",

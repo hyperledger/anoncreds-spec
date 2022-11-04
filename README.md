@@ -2,16 +2,21 @@
 
 ![AnonCreds Logo](/spec/images/logo/anoncreds_logo_horizontal.svg)
 
-This repository contains the source documents for the AnonCreds open
-specification. This open specification is based on the open source
-verifiable credential implementation of AnonCreds that has been in use since 2017 as part of
-the [Hyperledger Indy](https://www.hyperledger.org/projects/hyperledger-indy)
-open source project. The extensive use of AnonCreds around the world has made it a de facto
-standard, and the AnonCreds Working Group (AnonCreds-WG) has been established to formalize the
-specification and place it on a standards track.
+This repository contains the source content for the AnonCreds open
+specification, a part of the [Hyperledger AnonCreds
+Project](https://wiki.hyperledger.org/display/anoncreds). This open
+specification is based on the open source AnonCreds verifiable credential
+implementation in the Hyperledger AnonCreds GitHub repository
+[anoncreds-rs](https://github.com/hyperledger/anoncreds-rs). That implementation
+was originally part of the [Hyperledger
+Indy](https://www.hyperledger.org/projects/hyperledger-indy) open source
+project, accepted into Hyperledger in 2017. The extensive use of AnonCreds
+around the world has made it a de facto standard, and the AnonCreds Working
+Group (hyperledger) has been established to formalize the specification and
+place it on a standards track.
 
 - This work is being conducted under the [Community Specification License v1.0](1._Community_Specification_License-v1.md)
-- The draft specification can be found here: [https://anoncreds-wg.github.io/anoncreds-spec/](https://anoncreds-wg.github.io/anoncreds-spec/)
+- The draft specification can be found here: [https://hyperledger.github.io/anoncreds-spec/](https://hyperledger.github.io/anoncreds-spec/)
 - The source specification documents can be found here: [Specification Source](/spec)
 
 This repository contains guidelines for [contributing](#contributions) to the specification and submitting [edits via GitHub pull requests](/EditingTheSpec.md).
@@ -23,9 +28,9 @@ this repository. The <tl;dr> summary is the following:
 
 The open source AnonCreds implementations
 ([here](https://github.com/hyperledger/indy-sdk/blob/master/libindy/src/api/anoncreds.rs)
-and [here](https://github.com/hyperledger/indy-shared-rs/tree/main/indy-credx))
-found in [Hyperledger
-Indy](https://www.hyperledger.org/projects/hyperledger-indy) provides
+in [Hyperledger
+Indy](https://www.hyperledger.org/projects/hyperledger-indy) and [here](https://github.com/hyperledger/anoncreds-rs)) in [Hyperledger AnonCreds](https://wiki.hyperledger.org/display/anoncreds)
+ provide
 capabilities that many see as important for digital identity use cases in
 particular, and verifiable data in general. These features include:
 
@@ -40,15 +45,13 @@ particular, and verifiable data in general. These features include:
   - The use of predicate proofs to reduce the sharing of PII and potentially correlating data, especially dates (birth, credential issuance/expiry, etc.).
   - A revocation scheme that proves a presentation is based on credentials that have not been revoked by the issuers without revealing correlatable revocation identifiers.
 
-The AnonCreds working group is producing an AnonCreds v1.0 specification
+The AnonCreds working group is producing an AnonCreds v1.0 specification that
 describes the existing implementation minus any dependency on the Hyperledger
-Indy ledger. Once sufficient progress has been made on the v1.0 specification, a
+Indy ledger ("ledger-agnostic"). Once sufficient progress has been made on the v1.0 specification, a
 forward looking version will be started that evolves the specification to add
 new elements while retaining the core features of AnonCreds (listed above). Such
 a future version is likely to include features such as replacing CL Signatures
-with BBS+ Signatures, defining a more scalable revocation scheme, and possibly
-aligning the data model with the in progress W3C Verifiable Credential v2.0 Data
-Model. Those participating in this Working Group will define the exact direction
+with BBS+ Signatures, defining a more scalable revocation scheme. Those participating in this Working Group will define the exact direction
 of future versions of the AnonCreds specification.
 
 ## Contributions
@@ -73,4 +76,4 @@ notes and links to the recordings are posted on the repository Wiki (to be done)
 
 ## Working Group Communications
 
-The working group has a Discord channel for participants, invitation for those interested: [https://discord.gg/hYmBNhTFY9](https://discord.gg/hYmBNhTFY9)
+The working group has an [AnonCreds Specification](https://discord.com/channels/905194001349627914/1037471404586709042) Discord channel for participants. Invitations for those interested: [https://discord.gg/hyperledger](https://discord.gg/hyperledger).
