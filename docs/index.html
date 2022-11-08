@@ -439,10 +439,23 @@ generated for the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> a
 <div id="todo-3" class="notice todo"><a class="notice-link" href="#todo-3">TODO</a><p>Describe the generation process for the CRED_DEF.</p>
 </div>
 <p>The <a class="term-reference" href="#term:private_cred_def">PRIVATE_CRED_DEF</a> produced by the generation process has the following format:</p>
-<pre class="language-json"><code class="language-json">
-To Do.
-
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"p_key"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"p"</span><span class="token operator">:</span> <span class="token string">"123...782"</span><span class="token punctuation">,</span>
+    <span class="token property">"q"</span><span class="token operator">:</span> <span class="token string">"234...456"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"r_key"</span><span class="token operator">:</span> <span class="token null keyword">null</span>
+<span class="token punctuation">}</span>
 </code></pre>
+<ul>
+<li><code>p_key</code> stands for the CredentialPrimaryPrivateKey and is defined by two safe primes <code>p</code> and <code>q</code>, which when multiplied together produce  <code>n</code> defining the Safe RSA group made public in the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> (see below).
+<ul>
+<li><code>p</code> a safe prime such that <code>p = 2p'+ 1</code>,</li>
+<li><code>q</code> a safe prime such that <code>q = 2q'+ 1</code>,</li>
+</ul>
+</li>
+<li><code>r_key</code> is for the RevocationPrivateKey and is defined in section on revocable CRED_DEF’s below. If the credential is not revocable, <code>r_key</code> is set to null.</li>
+</ul>
 <p>The <a class="term-reference" href="#term:cred_def">CRED_DEF</a> has the following format (from <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="99654"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/99654" >this example
 CRED_DEF</a> on the Sovrin
 MainNet):</p>
@@ -515,16 +528,34 @@ process.</p>
 <a class="term-reference" href="#term:cred_def">CRED_DEF</a> data when the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> is created with the <code>support_revocation</code> flag
 set to <code>true</code>. This process extends the process for generating a <a class="term-reference" href="#term:cred_def">CRED_DEF</a> in the
 <a href="#generating-a-creddef-without-revocation-support" >previous section</a> of this document.</p>
-<div id="todo-5" class="notice todo"><a class="notice-link" href="#todo-5">TODO</a><p>Describe the revocation data generation process for the CRED_DEF.
-Provide a reference to the published articles on revocation used here.</p>
+<p>The revocation scheme uses a pairing-based dynamic accumulator based on the <a path-0="link.springer.com"path-1="content"path-2="pdf"path-3="10.1007"path-4="978-3-642-00468-1_27.pdf"href="https://link.springer.com/content/pdf/10.1007/978-3-642-00468-1_27.pdf" >CKS scheme</a>.</p>
+<p>Pairing cryptography makes use of two pairing-friendly elliptic curve groups (G1, G2) with a known, computable pairing function e(G1,G2) -&gt; Gt that maps any two group elements from G1 and G2 respectively to an element in the third group Gt. All groups have the same order, q, the number of elements in the group. The accumulator scheme implemented uses Type-3 pairings such that G1 != G2 and there are no efficiently computable homomorphisms between G1 and G2. An introduction to pairings can be found <a path-0="www.math.uwaterloo.ca"path-1="~ajmeneze"path-2="publications"path-3="pairings.pdf"href="https://www.math.uwaterloo.ca/~ajmeneze/publications/pairings.pdf" >here</a>.</p>
+<p>NOTE: This scheme must use a specific pairing friendly elliptic curve. Believe it will be using BLS-381. But should confirm. For implementations to be interoperable they must use the same curve (or possibly support multiple, but then would have to identify the curve in this data somewhere. Feels like unnecessary complexity)</p>
+<div id="todo-5" class="notice todo"><a class="notice-link" href="#todo-5">TODO</a><p>Formally define a type-3 bilinear curve setup? Should this go in the appendix?</p>
 </div>
 <p>A <a class="term-reference" href="#term:private_cred_def">PRIVATE_CRED_DEF</a> with revocation enabled has the following format. In this, the
-details of the <code>primary</code> element are hidden, as they are the same as was covered
+details of the <code>p_key</code> element are hidden, as they are the same as was covered
 above.</p>
-<pre class="language-json"><code class="language-json">
-To Do.
-
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"p_key"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"p"</span><span class="token operator">:</span> <span class="token string">"123...782"</span><span class="token punctuation">,</span>
+    <span class="token property">"q"</span><span class="token operator">:</span> <span class="token string">"234...456"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"r_key"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"x"</span><span class="token operator">:</span> <span class="token string">"332...566"</span><span class="token punctuation">,</span>
+    <span class="token property">"sk"</span><span class="token operator">:</span> <span class="token string">"992...237"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 </code></pre>
+<ul>
+<li><code>r_key</code> is an object defining the private key for the CKS revocation scheme.
+<ul>
+<li><code>x</code> is a Big (128-bit?) integer selected at random from the the group of integers defined by the order of the bilinear groups <code>q</code></li>
+<li><code>sk</code> is a Big (128-bit?) integer selected at random from the the group of integers defined by the order of the bilinear groups <code>q</code></li>
+</ul>
+</li>
+</ul>
+<p><code>x</code> and <code>sk</code> are used as part of the revocation public key generation as defined below.</p>
 <p>A <a class="term-reference" href="#term:cred_def">CRED_DEF</a> with revocation enabled has the following format (from <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="55204"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/55204" >this
 example CRED_DEF</a> on the
 Sovrin MainNet). In this, the details of the <code>primary</code> element are hidden, as
@@ -551,25 +582,24 @@ they are the same as was covered above.</p>
   <span class="token property">"tag"</span><span class="token operator">:</span> <span class="token string">"state_license"</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<p>The elements with ellipses (e.g. <code>1F0...000</code>) in <code>g</code> are 64 digits hex integers.
-The rest of the elements are the same structure as <code>g</code> but containing either 3
-or 6 hex integers, as noted below. In the following, only the <code>revocation</code> item
-is described, as the rest of items (<code>primary</code>, <code>ref</code>, etc.) are described in the
-previous section of this document.</p>
+<p>All attributes in the <code>revocation</code> item represent elliptic curve points that are members of either G1 or G2. Group elements of G1 are represented using 3 64 digit hex integers, wheras G2 elements are represented using 6 64 digit hex integers. The <code>revocation</code> attributes define a CKS public key that can be used to authenticate updates from the issuer to the accumulator.</p>
+<p>In the following, only the <code>revocation</code> item is described, as the rest of items (<code>primary</code>, <code>ref</code>, etc.) are described in the previous section of this document.</p>
 <ul>
 <li><code>revocation</code> is the data used for managing the revocation status of
 credentials issued using this <a class="term-reference" href="#term:cred_def">CRED_DEF</a>.</li>
-<li><code>g</code> is the …</li>
-<li><code>g_dash</code> is the …</li>
-<li><code>h</code> is the …</li>
-<li><code>h0</code> is the …</li>
-<li><code>h1</code> is the …</li>
-<li><code>h2</code> is the …</li>
-<li><code>h_cap</code> is the …</li>
-<li><code>htilde</code> is the …</li>
-<li><code>pk</code> is the …</li>
-<li><code>u</code> is the …</li>
-<li><code>y</code> is the …</li>
+</ul>
+<ul>
+<li><code>g</code> is a generator for the elliptic curve group G1</li>
+<li><code>g_dash</code> is a generator for the elliptic curve group G2</li>
+<li><code>h</code> is a random elliptic curve element selected from G1</li>
+<li><code>h0</code> is a random elliptic curve element selected from G1</li>
+<li><code>h1</code> is a random elliptic curve element selected from G1</li>
+<li><code>h2</code> is a random elliptic curve element selected from G1</li>
+<li><code>h_cap</code> is a random elliptic curve element selected from G2</li>
+<li><code>htilde</code> is a random elliptic curve element selected from G1</li>
+<li><code>pk</code> is the public key in G1 for the issuer respective to this accumulator. (g^sk)</li>
+<li><code>u</code> is a random elliptic curve element selected from G2</li>
+<li><code>y</code> is the an elliptic curve element in G1 calculated as h_cap^x, where x is selected at random by the issuer from the set Z_q.</li>
 </ul>
 <h4 id="publishing-the-cred_def-on-a-verifiable-data-registry"><a class="toc-anchor" href="#publishing-the-cred_def-on-a-verifiable-data-registry" >§</a> Publishing the CRED_DEF on a Verifiable Data Registry</h4>
 <p>Once constructed, the <a class="term-reference" href="#term:cred_def">CRED_DEF</a> is published by the Issuer to a <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> using the issuers preferred <a class="term-reference" href="#term:anoncreds-objects">AnonCreds Objects</a>. For example, see <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="73905"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/73905" >this

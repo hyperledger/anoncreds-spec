@@ -178,10 +178,19 @@ Describe the generation process for the CRED_DEF.
 The [[ref: PRIVATE_CRED_DEF]] produced by the generation process has the following format:
 
 ```json
-
-To Do.
-
+{
+  "p_key": {
+    "p": "123...782",
+    "q": "234...456"
+  },
+  "r_key": null
+}
 ```
+
+* `p_key` stands for the CredentialPrimaryPrivateKey and is defined by two safe primes `p` and `q`, which when multiplied together produce  `n` defining the Safe RSA group made public in the [[ref: CRED_DEF]] (see below).
+    * `p` a safe prime such that `p = 2p'+ 1`,
+    * `q` a safe prime such that `q = 2q'+ 1`,
+* `r_key` is for the RevocationPrivateKey and is defined in section on revocable CRED_DEF's below. If the credential is not revocable, `r_key` is set to null.
 
 The [[ref: CRED_DEF]] has the following format (from [this example
 CRED_DEF](https://indyscan.io/tx/SOVRIN_MAINNET/domain/99654) on the Sovrin
@@ -264,20 +273,38 @@ The following describes the process for generating the revocation portion of the
 set to `true`. This process extends the process for generating a [[ref: CRED_DEF]] in the
 [previous section](#generating-a-creddef-without-revocation-support) of this document.
 
+The revocation scheme uses a pairing-based dynamic accumulator based on the [CKS scheme](https://link.springer.com/content/pdf/10.1007/978-3-642-00468-1_27.pdf). 
+
+Pairing cryptography makes use of two pairing-friendly elliptic curve groups (G1, G2) with a known, computable pairing function e(G1,G2) -> Gt that maps any two group elements from G1 and G2 respectively to an element in the third group Gt. All groups have the same order, q, the number of elements in the group. The accumulator scheme implemented uses Type-3 pairings such that G1 != G2 and there are no efficiently computable homomorphisms between G1 and G2. An introduction to pairings can be found [here](https://www.math.uwaterloo.ca/~ajmeneze/publications/pairings.pdf).
+ 
+NOTE: This scheme must use a specific pairing friendly elliptic curve. Believe it will be using BLS-381. But should confirm. For implementations to be interoperable they must use the same curve (or possibly support multiple, but then would have to identify the curve in this data somewhere. Feels like unnecessary complexity)
+
 ::: todo
-Describe the revocation data generation process for the CRED_DEF.
-Provide a reference to the published articles on revocation used here.
+Formally define a type-3 bilinear curve setup? Should this go in the appendix?
 :::
 
 A [[ref: PRIVATE_CRED_DEF]] with revocation enabled has the following format. In this, the
-details of the `primary` element are hidden, as they are the same as was covered
+details of the `p_key` element are hidden, as they are the same as was covered
 above.
 
 ```json
-
-To Do.
-
+{
+  "p_key": {
+    "p": "123...782",
+    "q": "234...456"
+  },
+  "r_key": {
+    "x": "332...566",
+    "sk": "992...237"
+  }
+}
 ```
+
+* `r_key` is an object defining the private key for the CKS revocation scheme.
+    * `x` is a Big (128-bit?) integer selected at random from the the group of integers defined by the order of the bilinear groups `q`
+    * `sk` is a Big (128-bit?) integer selected at random from the the group of integers defined by the order of the bilinear groups `q`
+
+`x` and `sk` are used as part of the revocation public key generation as defined below.
 
 A [[ref: CRED_DEF]] with revocation enabled has the following format (from [this
 example CRED_DEF](https://indyscan.io/tx/SOVRIN_MAINNET/domain/55204) on the
@@ -308,25 +335,24 @@ they are the same as was covered above.
 }
 ```
 
-The elements with ellipses (e.g. `1F0...000`) in `g` are 64 digits hex integers.
-The rest of the elements are the same structure as `g` but containing either 3
-or 6 hex integers, as noted below. In the following, only the `revocation` item
-is described, as the rest of items (`primary`, `ref`, etc.) are described in the
-previous section of this document.
+All attributes in the `revocation` item represent elliptic curve points that are members of either G1 or G2. Group elements of G1 are represented using 3 64 digit hex integers, wheras G2 elements are represented using 6 64 digit hex integers. The `revocation` attributes define a CKS public key that can be used to authenticate updates from the issuer to the accumulator.
+
+In the following, only the `revocation` item is described, as the rest of items (`primary`, `ref`, etc.) are described in the previous section of this document.
 
 - `revocation` is the data used for managing the revocation status of
   credentials issued using this [[ref: CRED_DEF]].
-- `g` is the ...
-- `g_dash` is the ...
-- `h` is the ...
-- `h0` is the ...
-- `h1` is the ...
-- `h2` is the ...
-- `h_cap` is the ...
-- `htilde` is the ...
-- `pk` is the ...
-- `u` is the ...
-- `y` is the ...
+* `g` is a generator for the elliptic curve group G1
+* `g_dash` is a generator for the elliptic curve group G2
+* `h` is a random elliptic curve element selected from G1
+* `h0` is a random elliptic curve element selected from G1
+* `h1` is a random elliptic curve element selected from G1
+* `h2` is a random elliptic curve element selected from G1
+* `h_cap` is a random elliptic curve element selected from G2
+* `htilde` is a random elliptic curve element selected from G1
+* `pk` is the public key in G1 for the issuer respective to this accumulator. (g^sk)
+* `u` is a random elliptic curve element selected from G2
+* `y` is the an elliptic curve element in G1 calculated as h_cap^x, where x is selected at random by the issuer from the set Z_q.
+
 
 #### Publishing the CRED_DEF on a Verifiable Data Registry
 
