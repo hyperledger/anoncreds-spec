@@ -1,6 +1,6 @@
 # AnonCred Logos
 
-![AnonCreds Logo](/spec/images/logo/hl_anoncreds_color.svg)
+![AnonCreds Logo](/spec/images/logo/hl_anoncreds_colour.svg)
 
 The set of AnonCreds logos found in this folder were created as a collaborative
 effort of the AnonCreds Specification Working Group and the Government of
