@@ -1,6 +1,6 @@
 # The AnonCreds Specification
 
-![AnonCreds Logo](/spec/images/logo/anoncreds_logo_horizontal.svg)
+![AnonCreds Logo](/spec/images/logo/hl_anoncreds_color.svg)
 
 This repository contains the source content for the AnonCreds open
 specification, a part of the [Hyperledger AnonCreds
