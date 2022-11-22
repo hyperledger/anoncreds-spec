@@ -34,7 +34,7 @@ one notable exception is permitted. The exception is that for backwards
 compatibility, the AnonCreds identifiers used in the early (pre
 `did:indy`) open source Hyperledger Indy AnonCreds implementation are permitted.
 In the [AnonCreds Method Registry](#anoncreds-method-registry),
-this is the [Hyperledger Indy Legacy AnonCreds Method](https://anoncreds-wg.github.io/anoncreds-methods-registry/#hyperledger-indy-legacy-anoncreds-method).
+this is the [Hyperledger Indy Legacy AnonCreds Method](https://hyperledger.github.io/anoncreds-methods-registry/#hyperledger-indy-legacy-anoncreds-method).
 
 ### Revocation Support
 
@@ -57,18 +57,18 @@ support.
 ### AnonCreds Method Registry
 
 The AnonCreds Method Registry is published
-[here](https://anoncreds-wg.github.io/anoncreds-methods-registry/). The
+[here](https://hyperledger.github.io/anoncreds-methods-registry/). The
 registry contains a description, metadata and a link to a specification for each
 AnonCreds Method submitted by its implementers/maintainers. The registry is a web page
 generated from [this
-repository](https://github.com/AnonCreds-WG/anoncreds-methods-registry).
+repository](https://github.com/hyperledger/anoncreds-methods-registry).
 
 The AnonCreds Methods registry repository and published registry is
 managed by the AnonCreds Specification Working Group based on this [governance
-framework](https://anoncreds-wg.github.io/anoncreds-methods-registry/#governance).
+framework](https://hyperledger.github.io/anoncreds-methods-registry/#governance).
 
 Each entry in the [AnonCreds Method
-Registry](https://anoncreds-wg.github.io/anoncreds-methods-registry/)
+Registry](https://hyperledger.github.io/anoncreds-methods-registry/)
 links to a specification for the associated [[ref: AnonCreds objects method]].
 The method specifications must include information about the AnonCreds identifiers
 used by the method, along with the mechanisms for AnonCreds objects registration
