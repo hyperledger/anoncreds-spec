@@ -442,8 +442,8 @@ Sovrin MainNet and instance of Hyperledger Indy.
 ```json
 {
     "type": "CL_ACCUM",
+    "credDefId": "Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc",
     "id": "Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc:CL_ACCUM:1-1024",
-    "credDefId": "Ehx3RZSV38pn3MYvxtHhbQ:3:CL:264697:default",
     "tag": "MyCustomCredentialDefinition",
     "publicKeys": {
       "accumKey": {
