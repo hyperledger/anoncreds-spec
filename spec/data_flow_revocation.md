@@ -107,7 +107,7 @@ entries, up to the total number of credentials in the [[ref: RevReg]].
 
 The algorithm to calculate the value of a [[ref: RevRegEntry]] accumulator at
 any time is the same: determine the (modulo) product of the primes for each
-non-revoked credential in the [[ref: REV_REG]], as described
+non-revoked credential in the [[ref: Revocation Registry]], as described
 [here](#creating-the-initial-revocation-registry-entry-object).
 
 ::: note
