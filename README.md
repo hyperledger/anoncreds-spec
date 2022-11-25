@@ -1,4 +1,4 @@
-# The AnonCreds Specification
+# AnonCreds Specification
 
 ![AnonCreds Logo](/spec/images/logo/hl_anoncreds_color.svg)
 
@@ -30,7 +30,7 @@ The open source AnonCreds implementations
 ([here](https://github.com/hyperledger/indy-sdk/blob/master/libindy/src/api/anoncreds.rs)
 in [Hyperledger
 Indy](https://www.hyperledger.org/projects/hyperledger-indy) and [here](https://github.com/hyperledger/anoncreds-rs)) in [Hyperledger AnonCreds](https://wiki.hyperledger.org/display/anoncreds)
- provide
+provide
 capabilities that many see as important for digital identity use cases in
 particular, and verifiable data in general. These features include:
 
