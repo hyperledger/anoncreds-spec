@@ -5,12 +5,13 @@ AnonCreds Specification
 
 **Latest Draft:**
 
-[https://github.com/AnonCreds-WG/anoncreds-spec](https://github.com/AnonCreds-WG/anoncreds-spec)
+[https://github.com/hyperledger/anoncreds-spec](https://github.com/hyperledger/anoncreds-spec)
 
 **Editors:**
 
 - [Stephen Curran](https://github.com/swcurran)
-- Hakan Yaldiz
+- Artur Philipp - Technische Universität Berlin, IDunion
+- Hakan Yildiz - Technische Universität Berlin, IDunion
 - Sam Curren
 - Victor Martinez Jurado
 
@@ -18,8 +19,8 @@ AnonCreds Specification
 
 **Participate:**
 
-~ [GitHub repo](https://github.com/AnonCreds-WG/anoncreds-spec)
-~ [Commit history](https://github.com/AnonCreds-WG/anoncreds-spec/commits/main)
+~ [GitHub repo](https://github.com/hyperledger/anoncreds-spec)
+~ [Commit history](https://github.com/hyperledger/anoncreds-spec/commits/main)
 ~ [Discord](https://discord.gg/hYmBNhTFY9)
 
 ------------------------------------
