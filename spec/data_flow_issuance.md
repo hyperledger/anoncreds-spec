@@ -1,6 +1,6 @@
 ## AnonCreds Issuance Data Flow
 
-The issuance of an anonymous [[ref:credential]] requires several steps and involves the roles [[ref:issuer]], [[ref:holder]] as well as the [[ref: Verifiable Data Registry]] (see diagramm below).
+The issuance of an anonymous [[ref: credential]] requires several steps and involves the roles [[ref: issuer]], [[ref: holder]] as well as the [[ref: Verifiable Data Registry]] (see diagram below).
 
 ```mermaid
 sequenceDiagram
@@ -11,7 +11,7 @@ sequenceDiagram
 
   I ->> I: Create Credential Offer
   I ->> H: Send Credential Offer
-  H ->> H: Process Credential Offer
+  H ->> H: Verify Credential Offer
   opt
     H ->> L: Request Schema
     L ->> H: Return Schema
@@ -20,102 +20,124 @@ sequenceDiagram
   L ->> H: Return Credential Definition
   H ->> H: Create Credential Request
   H ->> I: Send Credential Request
-  I ->> I: Process Credential Request
+  I ->> I: Verify Credential Request
   I ->> I: Issue Credential
   I ->> H: Send Credential
-  H ->> H: Store Credential
+  H ->> H: Verify and Store Credential
 
 
   rect rgb(191, 223, 255)
-    Note left of H: 💡The "Verifier" and "Schema Publisher" roles are<br>omitted in this diagram, since they is not required<br>for the credential issuance data flow.
+    Note left of H: 💡The "Verifier" and "Schema Publisher" roles are<br>omitted in this diagram, since they do not participate<br>in the credential issuance data flow.
   end
 ```
 
-The [[ref:issuer]] prepares a [[ref:Credential Offer]] for the [[ref:holder]] (step 1). A [[ref:Credential Offer]] includes information about what kind of [[ref:credential]] (based on which [[ref: Credential Definition]]) the [[ref:issuer]] is intending to issue to the [[ref:holder]]. The [[ref:issuer]] sends the [[ref:Credential Offer]] to the [[ref:holder]] (step 2), who then evaluates the incoming offer (step 3) and subsequently fetches required data (the [[ref: Credential Definition]]) from the [[ref: Verifiable Data Registry]] (step 4-7).
+The [[ref: issuer]] prepares a [[ref: Credential Offer]] for the [[ref: holder]] (step 1). A [[ref: Credential Offer]] includes a commitment about the [[ref: credential]] (referencing a [[ref: Public Credential Definition]]) the [[ref: issuer]] is intending to issue to the [[ref: holder]]. The [[ref: issuer]] sends the [[ref: Credential Offer]] to the [[ref: holder]] (step 2), who evaluates the offer (step 3) and fetches data about the offer (the [[ref: Public Credential Definition]]) from the [[ref: Verifiable Data Registry]] (steps 4-7).
 
-Based on the [[ref: Credential Definition]] received from the [[ref:Verfiable Data Registry]], the [[ref:holder]] prepares a [[ref:Credential Request]] (step 8). A [[ref: Credential Request]] is a formal request from a [[ref:holder]] to an [[ref:issuer]] to get a [[ref:credential]] based on the given [[ref: Credential Definition]] issued to the [[ref:holder]]. The [[ref:holder]] sends the [[ref: Credential Request]] to the [[ref:issuer]] (step 9), who then evaluates the incoming request (step 10).
+Using the data from the [[ref: Credential Offer]] and the [[ref: Public Credential Definition]] retrieved from the [[ref: Verifiable Data Registry]], the [[ref: holder]] prepares a [[ref: Credential Request]] (step 8), a formal request to the [[ref: issuer]] to issue a [[ref: credential]] based on the given [[ref: Public Credential Definition]] to the [[ref: holder]]. The [[ref: Credential Request]] includes a cryptographic commitment to the [[ref: holder]]'s [[ref: link secret]]. The [[ref: holder]] sends the [[ref: Credential Request]] to the [[ref: issuer]] (step 9).
 
-The [[ref:issuer]] can decide whether to accept the received [[ref: Credential Request]] and issues the [[ref:credential]] (step 11) in the case of request acceptance. The [[ref:issuer]] sends the credential to the [[ref:holder]] (step 12), who then can store the received [[ref:credential]] in his wallet (step 13).
+The [[ref: issuer]] verifies and decides whether to accept the [[ref: Credential Request]] (step 10) and if so, prepares the [[ref: credential]] (step 11). The [[ref: issuer]] sends the [[ref: credential]] to the [[ref: holder]] (step 12), who verifies the [[ref: credential]] and (usually) securely stores it (step 13).
+
+Details about each step in the issuance process are covered in the following sections.
 
 ### Credential Offer
 
-Before issuing a credential to the [[ref:holder]], the [[ref:issuer]] has to send a [[ref:Credential Offer]] to the potential [[ref:holder]] (step 1 and 2). A [[ref:Credential Offer]] contains information about the credential the [[ref:issuer]] intends to issue and send to the [[ref:holder]]. For creating a [[ref:Credential Offer]], the [[ref:issuer]] is required to fetch the [[ref: Credential Definition]] as well as its correctness proof from the [[ref: Verifiable Data Registry]]. The [[ref:issuer]] also prepares a [[ref:nonce]] which will be embedded within the [[ref:Credential Offer]] in order to prevent replay attacks and authenticate between protocol steps.
-
-The resulting JSON for a created [[ref:Credential Offer]] is shown here:
+The AnonCreds issuance process begins with the [[ref: issuer]] constructing and sending a [[ref: Credential Offer]] to the potential [[ref: holder]]. The Credential Offer contains the following JSON elements:
 
 ```json
 {
     "schema_id": string,
     "cred_def_id": string,
-    // Fields below can depend on Cred Def type
     "nonce": string,
     "key_correctness_proof" : <key_correctness_proof>
 }
 ```
 
-- `schema_id`: The ID of the [[ref:Schema]] on which the [[ref: Credential Definition]] for the offered [[ref:Credential]] is based.
-- `cred_def_id`: The ID of the [[ref: Credential Definition]] on which the [[ref:Credential]] to be issued will be based.
-- `nonce`: Used for preventing replay attacks and authentication between protocol steps. Has to be reused within a [[ref:Credential Request]] by the [[ref:holder]].
-- `key_correctness_proof`: TODO.
+::: todo
 
-The [[ref:issuer]] sends the [[ref:Credential Offer]] to the [[ref:holder]] (step 2), who then can process the [[ref: Credential Offer]] (step 3). In order to figure out, which kind of credential (which [[ref: Credential Definition]] and attributes) are offered to the [[ref:holder]], the [[ref:holder]] needs to fetch the underlying [[ref:Schema]] from the [[ref:Verifiable Data Registry]] by using the `schema_id` as provided in the received [[ref:Credential Offer]], since the referenced [[ref:Schema]] contains all attribute names of the offered credential (step 4 + 5).
+What is the purpose of the Nonce and the key correctness proof?
 
-In case the credential respectively its attributes is of interest for the [[ref:holder]], the [[ref:holder]] can reply to the issuer`s [[ref:Credential Offer]] with a [[ref:Credential Request]] in order to ask the issuer for issuance of the offered credential and its attributes.
+:::
 
-:::todo
+* `schema_id`: The ID of the [[ref: Schema]] on which the [[ref: Public Credential Definition]] for the offered [[ref: Credential]] is based.
+* `cred_def_id`: The ID of the [[ref: Public Credential Definition]] on which the [[ref: Credential]] to be issued will be based.
+* `nonce`: A random number generated for one time use by the [[ref: issuer]] for preventing replay attacks and authentication between protocol steps. The `nonce` must be present in the subsequent [[ref: Credential Request]] from the [[ref: holder]].
+* `key_correctness_proof`: A commitment to the data to be put into into the credential by the issuer. *TO BE ADDED: the purpose of the proof*
 
-- Add info to key_correctness_proof
-  :::
-
-### Credential Request
-
-A [[ref:Credential Request]] is a formal request from a [[ref:holder]] to an [[ref:issuer]] to get a [[ref:credential]] based on a concrete [[ref: Credential Definition]] issued by the [[ref:issuer]] to the [[ref:holder]].
-
-In order to be able as a [[ref:holder]] to express within a [[ref:Credential Request]] to the [[ref:issuer]] which kind of credential the [[ref:issuer]] shall issue to the [[ref:holder]], the [[ref:holder]] requires the [[ref:Credential Definition]] from the [[ref:Verifiable Data Registry]] if not already available in local storage (step 6 + 7). The [[ref:Credential Request]] has to reference the same [[ref:Credential Definition]] and [[ref:nonce]] as given in the preceding [[ref:Credential Offer]]. Besides the [[ref:Credential Definition]], the [[ref:holder]] also requires his [[ref:link secret]] in a blinded form, as well as the corresponding [[ref:Blinded Secrets Correctness Proof]] of his [[ref:link secret]]. The [[ref: holder]] has now all relevant data for creating the [[ref:Credential Request]] (step 8).
-
-The blinding process requires the target [[ref: Credential Definition]] to construct the blinded secret and the [[ref: Blinded Secrets Correctness Proof]].
-The [[ref:holder]] should ensure that the blinded secret is unique per request by producing unique [[ref:blinding factor]] every time.
-
-#### Check Credential Key Correctness Proof
-
-It is important to ensure that[[ref:Public Credential Definition]] used in the blinding process is the intended public key,
-otherwise, the received signature from the [[ref:issuer]] will not be valid when generating presentation.
-
-Therefore, the [[ref:holder]] first checks if the [[ref:Credential Key Correctness Proof]] matches the [[ref:Credential Definition]] retrievable from the [[ref: Credential Offer]].
-The [[ref: Credential Key Correctness Proof]] is prepared by the [[ref: issuer]] when creating the [[ref: Credential Definition]].
-
-The proof has the following format:
+The JSON content of the `key_correctness_proof` is:
 
 ```json
-{
-    "c": BigNumber,
-    "xz_cap": BigNumber,
-    "xr_cap": Vec<(String, BigNumber)>,
+"key_correctness_proof": {
+    "c": "103...961",
+    "xz_cap": "563...205",
+    "xr_cap": [
+        [
+            "<attribute 1>",
+            "821...452"
+        ],
+        [
+            "master_secret",
+            "156...104"
+        ],
+        [
+            "<attribute 1>",
+            "196...694"
+        ]
+    ]
 }
 ```
 
-where:
+The values in the proof are generated as follows:
 
-- `c` can be viewed as the committed value derived from the hash of the concatenated byte values in the process of [creating the Credential Definition](#Issuer-Create-and-Publish-Credential-Definition-Object).
+* `c` (a [[ref: BigNumber]]) can be viewed as the committed value derived from the hash of the concatenated byte values in the process of [creating the Credential Definition](#Issuer-Create-and-Publish-Credential-Definition-Object).
 
   $c = H(z || {r_i}  || \~{z} ||\~{r_i})$
 
   where
+  * $z = s ^ {x_z}\ Mod\ n$ where `z`, `s` and `n` are values in the [[ref: Public Credential Definition]]
+  * $r_i$ are the values in the `r` map in [[ref: Public Credential Definition]], individual attribute public keys
+  * $\~z$ is similar to $z$ which equal to $s^{\~{x_z}}$, where $\~{x_z}$ is a randomly selected integer between `2` and `p'q'-1`
+  * $r_i$ are the values in the `r` map in [[ref: Public Credential Definition]]
+  * $\~{r_i}$ is similar to $r$, which equal to $s^{\~{x_i}}\ mod\ n$, where $\~{x_i}$ are randomly selected integers between `2` and `p'q'-1`
 
-  - $z$ is $z = s ^ {x_z}\ Mod\ n$ where `z`, `s` and `n` are values in [[ref: Public Credential Definition]]
-  - $r_i$ are the values in the `r` map in [[ref: Public Credential Definition]], individual attribute public key
-  - $\~z$ is similar to $z$ which equal to $s^{\~{x_z}}$, where $\~{x_z}$ is a randomly selected integer between `2` and `p'q'-1`
-  - $r_i$ are the values in the `r` map in [[ref: Public Credential Definition]]
-  - $\~{r_i}$ is similar to $r$, which equal to $s^{\~{x_i}}\ mod\ n$, where $\~{x_i}$ are randomly selected integer between `2` and `p'q'-1`
+* `xz_cap`: $\hat{x_z} = c x_z + \~{x_z}$
+* `xr_cap`: Vec<(attribute_name_i, $cr_i + \~{r_i}$)>
 
-- `xz_cap`: $\hat{x_z} = c x_z + \~{x_z}$
-- `xr_cap`: Vec<(attribute_name_i, $cr_i + \~{r_i}$)>
+Both  'xz_cap` and the second element of the `xr_cap` vector
+are [[ref: BigNumbers]].
 
-The check is done as follows:
+The [[ref: issuer]] sends the [[ref: Credential Offer]] to the [[ref: holder]].
 
-1. checks that all attributes (except the [[ref: link secret]]) in [[ref:Public Credential Definition]] are included in `xr_cap`
-1. Compute $c'$
-1. If $c' == c$, proof is accepted
+### Credential Request
+
+A [[ref: Credential Request]] is a formal request from a [[ref: holder]] to an
+[[ref: issuer]] to get a [[ref: credential]] based on the [[ref: Credential
+Offer]] (and the referenced [[ref: Public Credential Definition]]) sent by the
+[[ref: issuer]] to the [[ref: holder]].
+
+On receipt of the [[ref: Credential Offer]], the [[ref: holder]] retrieves the
+referenced [[ref: Public Credential Definition]] from a [[ref: Verifiable Data
+Registry]]. The holder MAY want to retrieve the [[ref: Schema]] referenced in
+the [[ref: Credential Offer]] and verify the consistency between the list of
+attributes in the [[ref: Schema]] and in the [[ref: Public Credential
+Definition]].
+
+In addition, the [[ref: holder]] also requires access to their [[ref: link
+secret]].
+
+#### Verifying the Key Correctness Proof
+
+The [[ref: holder]] must first verify the `key_correctness_proof` in the [[ref:
+Credential Offer]] using data from the referenced [[ref: Public Credential Definition]]. The
+`key_correctness_proof` data is described in the [previous
+section](#credential-offer) about the [[ref: Credential Offer]].
+
+The `key_correctness_proof` verification is as follows:
+
+1. Check that all attributes in [[ref: Public Credential Definition]] and `master_secret` (an
+   attribute that will be related to the [[ref: link_secret]]) are included in
+   `xr_cap`.
+1. Compute $c'$ (below).
+1. If $c' == c$, the proof is accepted
 
 $$c' = H(z || {r_i}  || \hat{z'} ||\hat{r_i'})$$
 
@@ -129,110 +151,212 @@ $$= z^{-c} z^{c} s^{\~{x_z}}\ (Mod\ n)$$
 
 $$ \hat{z'} = \~z$$
 
-Therefore $c'$ is equivalent to $c$ if the proof matches the [[ref:Public Credential Definition]] by simply using the multiplicative inverse of $z$ and $r_i$.
-Since the process is same for both, we have demonstrated for $z$ only.
+::: todo
 
-#### Blinding Link Secret
+What is the "both" referenced in the phrase below?
 
-The [[ref:link secret]] is a default hidden attribute.
-Whilst it is cryptographically possible to have multiple hidden attributes,
-in AnonCreds,
-only [[ref:link secret]] is used.
+:::
 
-A [[ref:blinding factor]] is used as a secret held by the [[ref:holder]] for blinding the [[ref:link secret]] before sending it to issuer and to unblind the signed values in the signature received from the issuer.
+Therefore $c'$ is equivalent to $c$ if the proof matches the [[ref: Public Credential Definition]]
+by simply using the multiplicative inverse of $z$ and $r_i$. Since the process
+is same for both, we have demonstrated for $z$ only.
 
-The process of blinding uses the [[ref:issuer]]'s `CredentialPrimaryPublicKey`, $P$,
-which is included in the [[ref:Public Credential Definition]] containing
-`z`, `r`, `s` and `n`.
+#### Constructing the Credential Request
 
-`r` contains the public keys to all attributes, the one of interest in this process is $r_{link secret}$
+The [[ref: holder]] constructs the following [[ref: Credential Request]] JSON structure:
 
-The [[ref:link secret]], $A_l$ is blinded by
+```json
+{
+    "prover_did": "BZpdQDGp2ifid3u3Up17MG",
+    "cred_def_id": "GvLGiRogTJubmj5B36qhYz:3:CL:8:faber.agent.degree_schema",
+    "blinded_ms": {
+        # Structure detailed below
+    },
+    "blinded_ms_correctness_proof": {
+        # Structure detailed below
+    },
+    "nonce": "604812518357657692681285"
+}
+```
+
+::: todo
+
+Complete the data element descriptions in the following list.
+
+:::
+
+* `prover_did`: *To Be Added*
+* `cred_def_id`: The ID of the [[ref: Public Credential Definition]] on which the [[ref: Credential]] to be issued will be based.
+* `blinded_ms`: The [[ref: link secret]] in its blinded form. Described in detail in the section [Blinding the Link Secret](#blinding-the-link-secret) (below).
+* `blinded_ms_correctness_proof`: The [[ref: Blinded Secrets Correctness Proof]] of the blinded [[ref: link secret]]. Described in detail in the section [The Blinded Link Secret Correctness Proof](#the-blinded-link-secret-correctness-proof) (below).
+* `nonce`: Used for preventing replay attacks and authentication between protocol steps. *Generation Process to be added*
+
+Once constructed, the [[ref: holder]] sends the [[ref: Credential Request]] to the [[ref: issuer]], who then can reply to the [[ref: holder]] by sending an issued credential.
+
+#### Blinding the Link Secret
+
+The `blinded_ms` ([[ref: blinded link secret]]) in the `Credential Request` is a
+cryptographic commitment by the [[ref: holder]] to the link secret. The
+`blinded_ms` will be signed by the [[ref issuer]], placed in the credential, and
+during presentations, is proven by the [[ref holder]] to be associated with the
+[[ref: link_secret]] using a proof of knowledge, without revealing the [[ref:
+link_secret]] itself. This is the capability that enables the binding of the
+credential to the holder without revealing a correlatable identifier.
+
+::: todo
+
+Confirm purpose of the blinding factor and add how it is generated.
+
+:::
+
+The [[ref: blinding factor]] is a secret held by the [[ref: holder]] for blinding
+the [[ref: link secret]] before sending it to the [[ref: issuer]], and used later
+when generating the proof of knowledge that the [[ref: link secret]] was used in
+the signature received from the [[ref: issuer]]. The [[ref: blinding factor]],
+$v$ is created by... *TO BE ADDED*
+
+The process of blinding the link secret uses the [[ref: issuer]]'s
+`CredentialPrimaryPublicKey`, $P$, which is included in the [[ref: Public Credential Definition]],
+and contains `z`, `r`, `s` and `n` (described
+[here](#generating-a-cred_def-without-revocation-support)). While `r` contains
+the public keys for all of the attributes to be signed, the only one of interest
+in this process is $r_{link secret}$
+
+The [[ref: link secret]], $A_l$ is blinded by
 
 $A_{bl} = r_{link_secret}^{A_l}\ Mod\ n$
 
-$A_{bl}$ is multiplied by the [[ref:blinding factor]], $v$,
+$A_{bl}$ is multiplied by the [[ref: blinding factor]], $v$,
 
 $(s^v \times A_{bl})\ Mod\ n$
 
-#### Creating Blinded Secrets Correctness Proof
-
-::: todo
-\*- How does it work with correctness proof?
-:::
-
-The resulting JSON for a created [[ref:Credential Request]] is shown here:
+The resulting blinded link secret data structure inserted into the [[ref: Credential Offer]] is defined as follows:
 
 ```json
-{
-  "prover_did" : string,
-  "cred_def_id" : string,
-  // Fields below can depend on Cred Def type
-  "blinded_ms" : string,
-  "blinded_ms_correctness_proof" : string,
-  "nonce": string
+"blinded_ms": {
+    "u": "331...544",
+    "ur": null,  # Populated when the credential definition supports revoation
+    "hidden_attributes": [
+        "master_secret"
+    ],
+    "committed_attributes": {}
 }
 ```
 
-:::todo
-is the `prover_did` the peer DID of the holder?
+::: todo
+
+Add in the missing details for the items in the list below.
+
 :::
 
-- `prover_did`: The [[ref:DID]] of the [[ref:holder]].
-- `cred_def_id`: The ID of the [[ref: Credential Definition]] on which the [[ref:Credential]] to be issued shall be based.
-- `blinded_ms`: The [[ref:link secret]] in its blinded form.
-- `blinded_ms_correctness_proof`: The [[ref: Blinded Secrets Correctness Proof]] of the blinded [[ref:link secret]].
-- `nonce`: Used for preventing replay attacks and authentication between protocol steps. Reused from the initially received [[ref:Credential Offer]].
+Where:
 
-The [[ref:issuer]] sends the [[ref:Credential Request]] to the [[ref:issuer]] (step 9), who then can reply to the [[ref:holder]] by sending an issued credential.
+* `u`: *TO BE ADDED*
+* `ur`: is `null` if revocation is not active for the [[ref: Public Credential Definition], and if revocation is active is *TO BE ADDED*
+* `hidden_attributes`: is an array of hidden attributes from the list of [[ref: Public Credential Definition]. For AnonCreds v1.0, it is always a single entry of `master_secret`.
+  * The [[ref: holder]]'s blinded [[ref: link secret]] is a default hidden attribute in AnonCreds, meaning it is not explicitly defined in the [[ref: Schema]] list of attributes but is included in both the [[ref: Public Credential Definition]] and all issued [[ref: credentials]]. Whilst it is cryptographically possible to have multiple hidden attributes, in this version of AnonCreds, only [[ref: link secret]] is used.
+* `committed_attributes`: An empty list of attributes in this version of AnonCreds.
+
+#### The Blinded Link Secret Correctness Proof
+
+In addition to creating the blinded link secret, the [[ref: holder]] also creates a blinded link secret correctness proof and inserts it into the [[ref: Credential Request]]. The data structure for the blinded link secret correctness proof is as follows:
+
+```json
+"blinded_ms_correctness_proof": {
+    "c": "702...737",
+    "v_dash_cap": "202...924",
+    "m_caps": {
+        "master_secret": "907...913"
+    },
+    "r_caps": {}
+}
+```
+
+Where:
+
+::: todo
+
+Add in the missing details for the items in the list below.
+
+:::
+
+* `c`: is *TO BE ADDED*.
+* `v_dash_cap`: is *TO BE ADDED*.
+* `m_caps`: is *TO BE ADDED*.
+* `r_caps`: is an empty structure in this version of AnonCreds. It is *TO BE ADDED*.
 
 ### Issue Credential
 
-After the [[ref:issuer]] received the [[ref:Credential Request]] from the [[ref:holder]], the [[ref:issuer]] processes the [[ref:Credential Request]] and decides whether to issue the credential as requested in the [[ref:Credential Request]] to the [[ref:holder]].
+After the [[ref: issuer]] receives the [[ref: Credential Request]] from the [[ref: holder]], the [[ref: issuer]] processes the [[ref: Credential Request]] and decides whether to issue the credential as requested in the [[ref: Credential Request]] to the [[ref: holder]]. In this section, we'll cover issuing a credential that cannot be revoked, and then cover the additional steps/data elements in issuing a credential that can be revoked.
 
-In case the [[ref:issuer]] decides to issue the requested credential to the [[ref:holder]], the following steps have to be executed by the [[ref:issuer]]:
+#### Verifying the Credential Request
 
-:::todo
+Before deciding to issue the credential, the [[ref: issuer]] must first verify the [[ref: Credential Request]] from the [[ref: holder]] by checking first the nonce, and then the blinded link secret correctness proof.
 
-- check nonce?
-- check link secret and blinded secrets correctness proof?
-  :::
+::: todo
 
-1. The [[ref:issuer]] has to fetch the [[ref: Credential Definition]] for the `cred_def_id` given in the received [[ref:Credential Request]] either from the ledger or local storage (if already available).
-2. Every raw attribute value for each attribute in the fetched [[ref: Credential Definition]] (respectively its [[ref:Schema]]), which the [[ref:issuer]] intends to issue to the [[ref:holder]], needs to be set.
-3. Every raw attribute value, which cannot successfully be parsed into an integer (e.g. "Alice"), must be encoded as integer. The same rule applies to the blinded [[ref:link secret]].
-4. Every raw attribute value, which can successfully be parsed into an integer (e.g. "2015"), shall not be encoded explicitely. In this case it is required to use the raw (integer) value also as the encoded one. The intermediate result of raw and encoded credential attribute values is as follows (cred_values_json):
+Add in the details about the nonce and the blinded link secret correctness proof.
 
-```json
-{
-  "first_name": {
-    "raw": "Alice",
-    "encoded": "1139481716457488690172217916278103335"
-  },
-  "last_name": {
-    "raw": "Garcia",
-    "encoded": "5321642780241790123587902456789123452"
-  },
-  "degree": {
-    "raw": "Bachelor of Science, Marketing",
-    "encoded": "12434523576212321"
-  },
-  "status": { "raw": "graduated", "encoded": "2213454313412354" },
-  "ssn": { "raw": "123-45-6789", "encoded": "3124141231422543541" },
-  "year": { "raw": "2015", "encoded": "2015" },
-  "average": { "raw": "5", "encoded": "5" }
-}
-```
+:::
 
-6. The [[ref:issuer]] has to fetch the [[ref:holder]]`s blinded [[ref:link secret]] from the received [[ref:Credential Request]]. The blinded [[ref:link secret]] is available in the received [[ref:Credential Request]] at `blinded_ms`.
-7. The [[ref:issuer]] has to sign each attribute value and the the blinded [[ref:link secret]] by using the corresponding private key for each attribute as defined in the private part of the [[ref: Credential Definition]] earlier.
+The nonce is checked by *TO BE ADDED*.
 
-:::todo
+The blinded link secret correctness proof is verified by *TO BE ADDED*.
 
-- check how exactly the signing happens for the whole credential
-  :::
+Once the Credential Request is verified and if the [[ref issuer]] decides to proceed with issuing the credential, the credential creation process is performed.
 
-The [[ref:issuer]] has to transmit the whole credential data to the [[ref:holder]] as follows:
+#### Encoding Attribute Data
+
+The Anoncreds signature is not applied on the data attributes themselves, but rather on 32-byte integers encoded from the data attribute values. In the current version of AnonCreds, the process of encoding the attributes (also known as canonicalization) is
+a task performed by the [[ref: issuer]], who should do the encoding in a manner understood by *all* potential [[ref: verifiers]] such that any verifier can confirm that the revealed `raw` attributes in the presentation produce
+the encoded value signed by the [[ref: issuer]]. To enable the broadest possible interoperability, the [Hyperledger Aries](https://www.hyperledger.org/projects/aries) community formalized the [following encoding rules](https://github.com/hyperledger/aries-rfcs/tree/main/features/0592-indy-attachments#encoding-claims) for the `raw` attribute values in an AnonCreds credential, and those rules are adopted into this specification, as follows:
+
+* keep any integer as is
+* convert any string integer (e.g. "1234") to be an integer (e.g. 1234)
+* for data of any other type:
+  * convert to string (use string "None" for null)
+  * encode via utf-8 to bytes
+  * apply SHA-256 to digest the bytes
+  * convert the resulting digest bytes, big-endian, to integer
+  * stringify the integer as a decimal.
+
+An example implementation in Python of these rules can be found [here](https://github.com/hyperledger/aries-cloudagent-python/blob/0000f924a50b6ac5e6342bff90e64864672ee935/aries_cloudagent/messaging/util.py#L106).
+
+A gist of test value pairs can be found [here](https://github.com/hyperledger/aries-cloudagent-python/blob/0000f924a50b6ac5e6342bff90e64864672ee935/aries_cloudagent/messaging/util.py#L106).
+
+::: note
+
+To enable broad interoperability, and to improve the security of AnonCreds by
+eliminating the risk of malicious [[ref: holders]] altering the `raw` data
+values in hopes that the [[ref: verifier]] will not check the encoding as part
+of the overall presentation verification, future versions of AnonCreds
+credentials will not include [[ref: issuer]]-created encoded values in the AnonCreds [[ref: credentials]], and will instead
+require the encoding of the `raw` data values on as needed basis.
+
+Implementations of AnonCreds **MAY**
+
+* Verify the encoded values provided by the issuer and reject the credential input if the encoding
+  does not follow the encoding rules in this specification.
+* Ignore the [[ref: issuer]]-provided encoded values and calculate the encoded
+  values before generating signatures based on the encoding rules above.
+* Ignore the encoded values placed in credentials and/or presentations and
+  generate the encoded values "on-the-fly" based on the encoding rules above.
+
+:::
+
+#### Constructing a Credential
+
+To construct a non-revocable [[ref: credential]], the [[ref: issuer]] must have available:
+
+* The identifiers for the [[ref: schema]] and [[ref: Public Credential Definition]].
+* The [[ref: Private Credential Definition]] data to be used in signing the credential.
+* The `raw` value for each attribute to be included in the credential.
+* The `encoded` value derived from each `raw` value using the [encoding attribute data](#encoding-attribute-data) rules (above).
+* The blinded link secret from the [[ref: holder]]'s [[ref: Credential Request]].
+
+Additional data is needed for issuing a revocable credential, as described in the section [Supporting Revocation in a Credential](#supporting-revocation-in-a-credential).
+
+The JSON of a generated AnonCreds credential is as follows:
 
 ```json
 {
@@ -242,71 +366,189 @@ The [[ref:issuer]] has to transmit the whole credential data to the [[ref:holder
     "values": {
         "first_name": {
             "raw": "Alice",
-            "encoded": "1139481716457488690172217916278103335"
+            "encoded": "113...335"
         },
         "last_name": {
             "raw": "Garcia",
-            "encoded": "5321642780241790123587902456789123452"
+            "encoded": "532...452"
         },
-        "degree": {
-            "raw": "Bachelor of Science, Marketing",
-            "encoded": "12434523576212321"
-        },
-        "status": {
-            "raw": "graduated",
-            "encoded": "2213454313412354"
-        },
-        "ssn": {
-            "raw": "123-45-6789",
-            "encoded": "3124141231422543541"
-        },
-        "year": {
-            "raw": "2015",
-            "encoded": "2015"
-        },
-        "average": {
-            "raw": "5",
-            "encoded": "5"
+        "birthdate_dateint": {
+            "raw": "19981119",
+            "encoded": "19981119"
         }
     },
     "signature": {
         "p_credential": {
-            "m_2": "99219524012997799443220800218760023447537107640621419137185629243278403921312",
-            "a": "548556525746779881166502363060885...94013062295153997068252",
-            "e": "25934472305506205990702549148069757193...84639129199",
-            "v": "97742322561796582616103087460253...25643543159082080893049915977209167597"
+            "m_2": "992...312",
+            "a": "548...252",
+            "e": "259...199",
+            "v": "977...597"
         },
         "r_credential": null
     },
     "signature_correctness_proof": {
-        "se": "898650024692810554511924969312...143339518371824496555067302935",
-        "c": "93582993140981799598406702841334282100000866001274710165299804498679784215598"
+        "se": "898...935",
+        "c": "935...598"
     },
     "rev_reg": null,
     "witness": null
 }
 ```
 
-:::todo
+* `schema_id`: is the ID of the [[ref: Schema]] upon which the [[ref: Public Credential Definition]] was generated.
+* `cred_def_id`: is the ID for the [[ref:Public Credential Definition]] on which the [[ref:Credential]] issued is based.
+* `rev_reg_id` is `null` if the credential is not revocable. A description of the element when the credential is revocable is in the section [Supporting Revocation in a Credential](#supporting-revocation-in-a-credential).
+* `values` is the list of attributes in the credential, including for each:
+  * the name of the attribute (in this case `first_name`, `last_name`, and `birth_dateint`),
+  * the `raw` data for the attribute, and
+  * the `encoded` data for the attribute, derived from the `raw` value has defined in the [encoding attribute data rules](#encoding-attribute-data).
+* `signature` is the cryptographic signature generated for the credential.
+  * A description of the `p_signature` elements and generation process are in the section [The Credential Signature](#the-credential-signature).
+  * `r_credential` is `null` if the credential is not revocable. A description of the `r_signature` elements and generation process when the credential is revocable are in the section [Supporting Revocation in a Credential](#supporting-revocation-in-a-credential).
+* `signature_correctness_proof` is the [[ref: Signature Correctness Proof]] generated for the credential. A description of the elements and generation process are in the section [The Credential Signature Correctness Proof](#the-credential-signature).
+* `rev_reg` is `null` if the credential is not revocable. A description of the element and generation process when the credential is revocable are in the section [Supporting Revocation in a Credential](#supporting-revocation-in-a-credential).
+* `witness` is `null` if the credential is not revocable. A description of the element and generation process when the credential is revocable are in the section [Supporting Revocation in a Credential](#supporting-revocation-in-a-credential).
 
-- what is the naming scheme for the CL signatures in p_credential? Since the shown JSON is the result of two mixed examples, the signatures for more than the three presented attributes are missung. m_2 is the link secret...
-  :::
+Once constructed, the [[ref issuer]] sends the credential to the [[ref: holder]] for verification and storage.
 
-* `schema_id`: The ID of the [[ref:Schema]] on which the [[ref:Public Credential Definition]] for the offered [[ref:Credential]] is based.
-* `cred_def_id`: The ID of the [[ref:Public Credential Definition]] on which the [[ref:Credential]] issued is based.
-* `values`: The raw and encoded credential attribute values as JSON (cred_values_json).
-* `signature`: The signatures of the separately signed attributes
-* `signature_correctness_proof`: The [[ref: Signature Correctness Proof]] of the signature for the whole credential data.
-* `rev_reg`: The revocation registry ID of the revocation registry, the issued credentials is assigned.
-* `witness`: Witness information. (See Revocation)
+::: note
 
-:::todo
+Please note the data attribute "birth_dateint" in the example above. The convention of
+putting a `_dateint` suffix on a credential attribute name is used to indicate
+that the field contains a date in the form of an integer, such as "2022.11.21"
+as the integer "20221121" (the number 20,221,121). By putting the date in that
+form, AnonCreds predicates can be applied to the data, such as proving "older
+than 21" based on date of birth without sharing the date of birth. This
+convention was initially defined
+[here](https://github.com/hyperledger/aries-rfcs/tree/main/concepts/0441-present-proof-best-practices#dates-and-predicates)
+by the [Hyperledger Aries](https://www.hyperledger.org/projects/aries)
+community.
 
-- Add description for remaining keys of json shown above
-- What kind of encoding algorithm for strings is used? Seems like this is not defined explicitely (https://jira.hyperledger.org/browse/IS-786)
-- Go deeper into signing with CL?
-- Encoding the raw blinded link secret value and using it as encoded one is correct?
-- consider revocation data in case of revocation
-  :::
+:::
 
-After the [[ref:issuer]] sent the credential data to the [[ref:holder]] (step 12), the [[ref:holder]] can accept and store the credential within his wallet (step 13). The credential issuance flow is completed at this point.
+#### The Credential Signature
+
+The credential signature elements are constructed as follows:
+
+::: todo
+
+Add the details about the credential signature data elements
+
+:::
+
+* `m_2` is the *TO BE ADDED*. It is constructed as follows:
+  * *TO BE ADDED*
+* `a` is the *TO BE ADDED*. It is constructed as follows:
+  * *TO BE ADDED*
+* `e` is the *TO BE ADDED*. It is constructed as follows:
+  * *TO BE ADDED*
+* `v` is the *TO BE ADDED*. It is constructed as follows:
+  * *TO BE ADDED*
+
+#### The Credential Signature Correctness Proof
+
+The credential signature correction proof elements are constructed as follows:
+
+::: todo
+
+Add the details about the credential signature correctness proof data elements
+
+:::
+
+* `se` is the *TO BE ADDED*. It is constructed as follows:
+  * *TO BE ADDED*
+* `c` is the *TO BE ADDED*. It is constructed as follows:
+  * *TO BE ADDED*
+
+#### Supporting Revocation in a Credential
+
+When a credential is revocable, in addition to the listed inputs needed for [constructing a credential](#constructing-a-credential),
+the [[ref: issuer]] also needs the ID and private [[ref: Revocation Registry]] data. Using the inputs, the revocation-related fields in the [credential JSON](#constructing-a-credential) are populated. The
+following describes the elements and how they are produced.
+
+`rev_reg_id` is the ID of the [[ref: Revocation Registry Definition]] published on a [[ref: Verifiable Data Registry]] that is to be used by the [[ref: holder]] when trying to generate a Non-Revocation Proof for this credential as part of an AnonCreds presentation.
+
+`r_credential` is the following JSON data structure:
+
+```json
+"r_credential": {
+    "sigma": "1 14C...8A8",
+    "c": "12A...BB6",
+    "vr_prime_prime": "0F3...FC4",
+    "witness_signature": {
+        "sigma_i": "1 1D72...000",
+        "u_i": "1 0B3...000",
+        "g_i": "1 10D...8A8"
+    },
+    "g_i": "1 10D7...8A8",
+    "i": 1,
+    "m2": "FDC...283"
+}
+```
+
+The items in the data structure are:
+
+::: todo
+
+Add the details about the revocation signature, rev_reg and witness data elements
+
+:::
+
+
+* `sigma`: is *TO BE ADDED*
+* `c`: is *TO BE ADDED*
+* `vr_prime_prime`: is *TO BE ADDED*
+* `witness_signature`:
+  * `sigma_i`: is *TO BE ADDED*
+  * `u_i`: is *TO BE ADDED*
+  * `g_i`: is *TO BE ADDED*
+* `g_i`: is *TO BE ADDED*
+* `i`: is *TO BE ADDED*
+* `m2`: is *TO BE ADDED*
+
+`rev_reg` is the following JSON data structure:
+
+```json
+"rev_reg": {
+    "accum": "21 118...1FB"
+}
+```
+
+The item in the data structure is:
+
+* `accum`: is *TO BE ADDED*
+
+`witness` is the following JSON data structure:
+
+```json
+"witness": {
+    "omega": "21 124...AC8"
+}
+```
+
+The item in the data structure is:
+
+* `omega`: is *TO BE ADDED*
+
+### Receiving a Credential
+
+On receipt of a credential from an [[ref: issuer]], the [[ref: holder]] must
+verify the credential and, if verified, will likely store the credential in a
+secure location.
+
+To verify the `signature_correctness_proof`, the [[ref: holder]] does the following:
+
+::: todo
+
+Add the details about the verifying the credential signature correctness proof data elements and process.
+
+:::
+
+The verifying and securely storing of the credential by the [[ref: holder]]
+completes the AnonCreds issuance process.
+
+An AnonCreds credential is expected to be retained by the [[ref: holder]] that
+participated in the issuance process. The [[ref: holder]] should not transfer
+the credential to others for their use, and should only use the credential to
+generate an AnonCreds verifiable presentation, as outlined in the
+[AnonCreds Presentation](#anoncreds-presentation-data-flow) section of this specification.
