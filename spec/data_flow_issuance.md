@@ -109,12 +109,20 @@ The [[ref: issuer]] sends the [[ref: Credential Offer]] to the [[ref: holder]].
 
 ### Credential Request
 
-A [[ref: Credential Request]] is a formal request from a [[ref: holder]] to an [[ref: issuer]] to get a [[ref: credential]] based on the [[ref: Credential Offer]] (and the referenced [[ref: Public Credential Definition]]) sent by the [[ref: issuer]] to the [[ref: holder]].
+A [[ref: Credential Request]] is a formal request from a [[ref: holder]] to an
+[[ref: issuer]] to get a [[ref: credential]] based on the [[ref: Credential
+Offer]] (and the referenced [[ref: Public Credential Definition]]) sent by the
+[[ref: issuer]] to the [[ref: holder]].
 
-On receipt of the [[ref: Credential Offer]], the [[ref: holder]] retrieves the referenced [[ref: Public Credential Definition]] from a [[ref: Verifiable Data Registry]]. The holder MAY want to retrieve the [[ref: Schema]] referenced in the [[ref: Credential Offer]]
-and verify the consistency between the [[ref: Schema]] and [[ref: Public Credential Definition]].
+On receipt of the [[ref: Credential Offer]], the [[ref: holder]] retrieves the
+referenced [[ref: Public Credential Definition]] from a [[ref: Verifiable Data
+Registry]]. The holder MAY want to retrieve the [[ref: Schema]] referenced in
+the [[ref: Credential Offer]] and verify the consistency between the list of
+attributes in the [[ref: Schema]] and in the [[ref: Public Credential
+Definition]].
 
-In addition, the [[ref: holder]] also requires access to their [[ref: link secret]].
+In addition, the [[ref: holder]] also requires access to their [[ref: link
+secret]].
 
 #### Verifying the Key Correctness Proof
 
