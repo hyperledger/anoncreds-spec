@@ -1,24 +1,60 @@
 {
-  "name": "anoncreds-spec",
-  "description": "AnonCreds Verifiable Credential Specification",
-  "version": "0.1.0",
-  "homepage": "https://wiki.hyperledger.org/display/ANONCREDS/AnonCreds+Specification+Working+Group",
-  "license": "Apache 2",
+  "name": "spec-up",
+  "version": "0.10.6",
+  "description": "Technical specification drafting tool that generates rich specification documents from markdown.",
+  "main": "./index",
   "repository": {
     "type": "git",
-    "url": "git://github.com/hyperledger/anoncreds-spec"
-  },
-  "dependencies": {
-    "spec-up": "^0.10.6"
-  },
-  "devDependencies": {
-    "ace-custom-element": "1.6.5",
-    "ajv": "^6.12.5",
-    "mocha": "^8.1.3"
+    "url": "git+https://github.com/decentralized-identity/spec-up.git"
   },
   "scripts": {
-    "render": "node -e \"require('spec-up')({ nowatch: true })\"",
-    "edit": "node -e \"require('spec-up')()\"",
-    "test": "mocha 'test/**/*.js'"
+    "edit": "node -e \"require('./index')()\"",
+    "render": "node -e \"require('./index')({ nowatch: true })\"",
+    "dev": "node -e \"require('./index')({ dev: true })\""
+  },
+  "keywords": [
+    "spec",
+    "specs",
+    "markdown",
+    "editor",
+    "standards"
+  ],
+  "author": "Daniel Buchner",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/decentralized-identity/spec-up/issues"
+  },
+  "homepage": "https://github.com/decentralized-identity/spec-up#readme",
+  "dependencies": {
+    "@traptitech/markdown-it-katex": "3.3.0",
+    "axios": "0.21.2",
+    "find-pkg-dir": "2.0.0",
+    "fs-extra": "8.1.0",
+    "gulp": "4.0.2",
+    "gulp-clean-css": "4.3.0",
+    "gulp-concat": "2.6.1",
+    "gulp-terser": "1.2.0",
+    "markdown-it": "13.0.1",
+    "markdown-it-anchor": "5.2.5",
+    "markdown-it-attrs": "4.1.4",
+    "markdown-it-chart": "^0.2.0",
+    "markdown-it-container": "^2.0.0",
+    "markdown-it-deflist": "^2.1.0",
+    "markdown-it-icons": "^0.4.1",
+    "markdown-it-ins": "^2.0.0",
+    "markdown-it-mark": "^2.0.0",
+    "markdown-it-modify-token": "1.0.2",
+    "markdown-it-multimd-table": "^4.1.3",
+    "markdown-it-prism": "^2.2.0",
+    "markdown-it-references": "1.0.0-alpha.10",
+    "markdown-it-sub": "^1.0.0",
+    "markdown-it-sup": "^1.0.0",
+    "markdown-it-task-lists": "2.1.1",
+    "markdown-it-textual-uml": "0.1.3",
+    "markdown-it-toc-and-anchor": "4.2.0",
+    "merge-stream": "2.0.0",
+    "pkg-dir": "4.2.0",
+    "prismjs": ">=1.24.0",
+    "yargs": "16.2.0"
   }
 }
