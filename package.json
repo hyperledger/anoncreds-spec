@@ -9,7 +9,7 @@
     "url": "git://github.com/hyperledger/anoncreds-spec"
   },
   "dependencies": {
-    "spec-up": "git+https://github.com/decentralized-identity/spec-up.git"
+    "spec-up": "git+https://github.com/andrewwhitehead/spec-up.git#fix-katex-path"
   },
   "devDependencies": {
     "ace-custom-element": "1.6.5",
