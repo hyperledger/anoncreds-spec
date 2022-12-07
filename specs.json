@@ -31,6 +31,7 @@
       ],
       "logo": "https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/spec/images/logo/hl_anoncreds_colour.svg",
       "logo_link": "https://github.com/hyperledger/anoncreds-spec",
+      "katex": true,
       "source": {
         "host": "github",
         "account": "hyperledger",
