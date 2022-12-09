@@ -14,7 +14,7 @@
   "devDependencies": {
     "ace-custom-element": "1.6.5",
     "ajv": "^6.12.5",
-    "mocha": "^8.1.3"
+    "mocha": "^10.1.0"
   },
   "scripts": {
     "render": "node -e \"require('spec-up')({ nowatch: true })\"",
