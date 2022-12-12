@@ -55,7 +55,7 @@ The AnonCreds issuance process begins with the [[ref: issuer]] constructing and 
 * `schema_id`: The ID of the [[ref: Schema]] on which the [[ref: Public Credential Definition]] for the offered [[ref: Credential]] is based.
 * `cred_def_id`: The ID of the [[ref: Public Credential Definition]] on which the [[ref: Credential]] to be issued will be based.
 * `nonce`: A random number generated for one time use by the [[ref: issuer]] for preventing replay attacks and authentication between protocol steps. The `nonce` must be present in the subsequent [[ref: Credential Request]] from the [[ref: holder]].
-* `key_correctness_proof`: The Fiat-Shamir transformation challenge value in the non-interactive mode of [Schnorr Protocol](https://d-nb.info/1156214580/34). It is calculated by the [[ref: issuer]] as the proof of knowledge of the private key used to create the [[ref: Credential Definition]]. This is verified by the [[ref: prover]] during the creation of [[ref: Credential Request]].
+* `key_correctness_proof`: The Fiat-Shamir transformation challenge value in the non-interactive mode of [Schnorr Protocol](https://d-nb.info/1156214580/34). It is calculated by the [[ref: issuer]] as the proof of knowledge of the private key used to create the [[ref: Credential Definition]]. This is verified by the [[ref: holder]] during the creation of [[ref: Credential Request]].
 
 The JSON content of the `key_correctness_proof` is:
 
