@@ -52,16 +52,10 @@ The AnonCreds issuance process begins with the [[ref: issuer]] constructing and 
 }
 ```
 
-::: todo
-
-What is the purpose of the Nonce and the key correctness proof?
-
-:::
-
 * `schema_id`: The ID of the [[ref: Schema]] on which the [[ref: Public Credential Definition]] for the offered [[ref: Credential]] is based.
 * `cred_def_id`: The ID of the [[ref: Public Credential Definition]] on which the [[ref: Credential]] to be issued will be based.
 * `nonce`: A random number generated for one time use by the [[ref: issuer]] for preventing replay attacks and authentication between protocol steps. The `nonce` must be present in the subsequent [[ref: Credential Request]] from the [[ref: holder]].
-* `key_correctness_proof`: A commitment to the data to be put into into the credential by the issuer. *TO BE ADDED: the purpose of the proof*
+* `key_correctness_proof`: The Fiat-Shamir transformation challenge value in the non-interactive mode of [Schnorr Protocol](https://d-nb.info/1156214580/34). It is calculated by the [[ref: issuer]] as the proof of knowledge of the private key used to create the [[ref: Credential Definition]]. This is verified by the [[ref: prover]] during the creation of [[ref: Credential Request]].
 
 The JSON content of the `key_correctness_proof` is:
 
@@ -88,21 +82,24 @@ The JSON content of the `key_correctness_proof` is:
 
 The values in the proof are generated as follows:
 
-* `c` (a [[ref: BigNumber]]) can be viewed as the committed value derived from the hash of the concatenated byte values in the process of [creating the Credential Definition](#Issuer-Create-and-Publish-Credential-Definition-Object).
+* `c`: (a [[ref: BigNumber]]) can be viewed as the committed value derived from the hash of the concatenated byte values in the process of [creating the Credential Definition].
 
-  $c = H(z || {r_i}  || \~{z} ||\~{r_i})$
+[creating the Credential Definition]: #generating-a-credential-definition-without-revocation-support
+
+  $$c = H(z || {r_i}  || \tilde{z} ||\tilde{r_i})$$
 
   where
-  * $z = s ^ {x_z}\ Mod\ n$ where `z`, `s` and `n` are values in the [[ref: Public Credential Definition]]
-  * $r_i$ are the values in the `r` map in [[ref: Public Credential Definition]], individual attribute public keys
-  * $\~z$ is similar to $z$ which equal to $s^{\~{x_z}}$, where $\~{x_z}$ is a randomly selected integer between `2` and `p'q'-1`
-  * $r_i$ are the values in the `r` map in [[ref: Public Credential Definition]]
-  * $\~{r_i}$ is similar to $r$, which equal to $s^{\~{x_i}}\ mod\ n$, where $\~{x_i}$ are randomly selected integers between `2` and `p'q'-1`
 
-* `xz_cap`: $\hat{x_z} = c x_z + \~{x_z}$
-* `xr_cap`: Vec<(attribute_name_i, $cr_i + \~{r_i}$)>
+  * $z = s ^ {x_z}\ Mod\ n$ where $z$, $s$ and $n$ are values in the [[ref: Public Credential Definition]]
+  * $r_i$ are the values in the $r$ map in [[ref: Public Credential Definition]], individual attribute public keys
+  * $\tilde{z}$ is similar to $z$ which equals to $s^{\tilde{x_z}}$, where $\tilde{x_z}$ is a randomly selected integer between $2$ and $p'q'-1$
+  * $r_i$ are the values in the $r$ map in [[ref: Public Credential Definition]]
+  * $\tilde{r_i}$ is similar to $r$, which equal to $s^{\tilde{x_i}}\ mod\ n$, where $\tilde{x_i}$ are randomly selected integers between $2$ and $p'q'-1$
 
-Both  'xz_cap` and the second element of the `xr_cap` vector
+* `xz_cap`: $\hat{x_z} = c x_z + \tilde{x_z}$
+* `xr_cap`: $\{ (attribute_i, cr_i + \tilde{r_i}) \}_{1 < i < L}$ for $L$ attributes
+
+Both  `xz_cap` and the second element in the tuple of the `xr_cap` vector
 are [[ref: BigNumbers]].
 
 The [[ref: issuer]] sends the [[ref: Credential Offer]] to the [[ref: holder]].
@@ -136,30 +133,19 @@ The `key_correctness_proof` verification is as follows:
 1. Check that all attributes in [[ref: Public Credential Definition]] and `master_secret` (an
    attribute that will be related to the [[ref: link_secret]]) are included in
    `xr_cap`.
-1. Compute $c'$ (below).
-1. If $c' == c$, the proof is accepted
+1. Compute $c'$, where  $c' = H(z || {r_i}  || \hat{z'} ||\hat{r_i'})$.
+1. If $\hat{z'} == \tilde{z}$ and $\hat{r_i'} == \tilde{r_i}$, then $c' == c$. The proof is accepted.
 
-$$c' = H(z || {r_i}  || \hat{z'} ||\hat{r_i'})$$
-
-where we first find the inverse of $z$
+For $\hat{z'}$, we first find the multiplicative inverse of $z$
 $$ z^{-1}z = 1\ (Mod\ n) $$
 
 Then
 $$ \hat{z'} = z^{-c} s^{\hat{x_z}} \ (Mod\ n)$$
-$$= z^{-c} s^{cx_z + \~{x_z}}\ (Mod\ n)$$
-$$= z^{-c} z^{c} s^{\~{x_z}}\ (Mod\ n)$$
+$$= z^{-c} s^{cx_z + \tilde{x_z}}\ (Mod\ n)$$
+$$= z^{-c} z^{c} s^{\tilde{x_z}}\ (Mod\ n)$$
+$$ \hat{z'} = \tilde{z}$$
 
-$$ \hat{z'} = \~z$$
-
-::: todo
-
-What is the "both" referenced in the phrase below?
-
-:::
-
-Therefore $c'$ is equivalent to $c$ if the proof matches the [[ref: Public Credential Definition]]
-by simply using the multiplicative inverse of $z$ and $r_i$. Since the process
-is same for both, we have demonstrated for $z$ only.
+The same can be derived for all $\hat{r_i'}$  by finding the multiplicative inverse of $r_i$, where {1 < i < L} for $L$ attributes.
 
 #### Constructing the Credential Request
 
