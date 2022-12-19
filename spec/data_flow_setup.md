@@ -109,7 +109,7 @@ the Sovrin MainNet instance of Hyperledger Indy. The `schemaId` for that object
 is: `Y6LRXGU3ZCpm7yzjVRSaGu:2:BasicIdentity:1.0.0`.
 
 The identifier for the [[ref: schema]] is dependent on where the [[ref: Schema]]
-is published and the AnonCreds method used.
+is published and the [[ref: AnonCreds method]] used.
 
 ### Issuer Create and Publish Credential Definition Object
 
@@ -249,7 +249,7 @@ All integers within the above [[ref: Credential Definition]] example json are sh
     - `z` is equal to `s^(xz)`, where `xz` is a randomly selected integer between `2` and `p'q'-1`. This makes up part of the CL-RSA public key, independent of the message blocks being signed.
 
 The identifier for the [[ref: Credential Definition]] is dependent on where the
-[[ref: Credential Definition]] is published and the AnonCreds method used.
+[[ref: Credential Definition]] is published and the [[ref: AnonCreds method]] used.
 
 #### Generating a Credential Definition With Revocation Support
 
@@ -472,7 +472,7 @@ the [next section](#tails-file-and-tails-file-generation) on [[ref: TAILS_FILE]]
 generation.
 
 The identifier for the [[ref: Revocation Registry]] is dependent on where the
-[[ref: Revocation Registry]] is published and the AnonCreds method used.
+[[ref: Revocation Registry]] is published and the [[ref: AnonCreds method]] used.
 
 ##### Tails File and Tails File Generation
 
