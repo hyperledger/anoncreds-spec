@@ -364,25 +364,24 @@ Flow</a> sequence diagram.</p>
 containing the list of attributes (claims) that will be included in each
 AnonCreds credential of this type. The following is an example <a class="term-reference" href="#term:schema">Schema</a>:</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-  <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"https://www.did.example/schema.json"</span><span class="token punctuation">,</span>
   <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Example schema"</span><span class="token punctuation">,</span>
   <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"0.0.1"</span><span class="token punctuation">,</span>
   <span class="token property">"attr_names"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"name"</span><span class="token punctuation">,</span> <span class="token string">"age"</span><span class="token punctuation">,</span> <span class="token string">"vmax"</span><span class="token punctuation">]</span>
 <span class="token punctuation">}</span>
 </code></pre>
 <ul>
-<li><code>id</code> - (string) The identifier of the <a class="term-reference" href="#term:schema">Schema</a>. The format of the identifier is dependent on the <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a> used in publishing the <a class="term-reference" href="#term:schema">Schema</a>.</li>
 <li><code>name</code> (string) - the name of the schema</li>
 <li><code>version</code> (string) - the schema version</li>
 <li><code>attr_names</code> (str[]) - an array of strings with each string being the name of an attribute of the schema</li>
 </ul>
 <p>Once constructed, the <a class="term-reference" href="#term:schema">Schema</a> is published to a Verifiable Data Registry
 (VDR) using the Schema Publishers selected <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a>.
-The <code>schemaId</code> identifier for the <a class="term-reference" href="#term:schema">schema</a> is dependent on where the
-<a class="term-reference" href="#term:schema">Schema</a> is published. For example, see <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="73904"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/73904" >this
+For example, see <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="73904"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/73904" >this
 Schema</a> that is published on
 the Sovrin MainNet instance of Hyperledger Indy. The <code>schemaId</code> for that object
-is: <code>Y6LRXGU3ZCpm7yzjVRSaGu:2:BasicIdentity:1.0.0</code></p>
+is: <code>Y6LRXGU3ZCpm7yzjVRSaGu:2:BasicIdentity:1.0.0</code>.</p>
+<p>The identifier for the <a class="term-reference" href="#term:schema">schema</a> is dependent on where the <a class="term-reference" href="#term:schema">Schema</a>
+is published and the <a class="term-reference" href="#term:anoncreds-method">AnonCreds method</a> used.</p>
 <h3 id="issuer-create-and-publish-credential-definition-object"><a class="toc-anchor" href="#issuer-create-and-publish-credential-definition-object" >§</a> Issuer Create and Publish Credential Definition Object</h3>
 <p>Each Issuer of credentials of a given type (e.g. based on a specific <a class="term-reference" href="#term:schema">Schema</a>) must
 create a <a class="term-reference" href="#term:credential-definition">Credential Definition</a> for that credential type. The flow of operations to create and
@@ -418,7 +417,7 @@ must be on the same <a class="term-reference" href="#term:vdr">VDR</a>.</p>
 <p>The <a class="term-reference" href="#term:credential-definition">Credential Definition</a> is a JSON structure that is generated using cryptographic primitives
 (described below) given the following inputs.</p>
 <ul>
-<li>A <a class="term-reference" href="#term:schema">Schema</a> for the credential type.</li>
+<li>A <a class="term-reference" href="#term:schema">Schema</a> and identifier for the <a class="term-reference" href="#term:schema">schema</a> for the credential type.</li>
 <li>A <code>tag</code>, an arbitrary string defined by the Issuer, enabling an Issuer to
 create multiple <a class="term-reference" href="#term:credential-definition">Credential Definition</a>s for the same <a class="term-reference" href="#term:schema">Schema</a>.</li>
 <li>An optional flag <code>support_revocation</code> (default <code>false</code>) which if true
@@ -451,7 +450,6 @@ generated for the <a class="term-reference" href="#term:credential-definition">C
 Credential Definition</a> on the Sovrin
 MainNet):</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-  <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ/anoncreds/v0/CLAIM_DEF/54177/latest"</span><span class="token punctuation">,</span>
   <span class="token property">"schema_id"</span><span class="token operator">:</span> <span class="token string">"did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ/anoncreds/v0/SCHEMA/MemberPass/1.0"</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"CL"</span><span class="token punctuation">,</span>
   <span class="token property">"tag"</span><span class="token operator">:</span> <span class="token string">"latest"</span><span class="token punctuation">,</span>
@@ -488,7 +486,6 @@ is blindly contributed to the credential during issuance and used to bind the
 issued credential to the entity to which it was issued.</p>
 <p>All integers within the above <a class="term-reference" href="#term:credential-definition">Credential Definition</a> example json are shown with ellipses (e.g. <code>123...789</code>). They are 2048-bit integers represented as <code>617</code> decimal digits. These integers belong to an RSA-2048 group characterised by the <code>n</code> defined in the <a class="term-reference" href="#term:credential-definition">Credential Definition</a>.</p>
 <ul>
-<li><code>id</code> - (string) The identifier of the <a class="term-reference" href="#term:credential-definition">Credential Definition</a>. The format of the identifier is dependent on the <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a> used in publishing the <a class="term-reference" href="#term:credential-definition">Credential Definition</a>.</li>
 <li><code>schema_id</code> - (string) The identifier of the <a class="term-reference" href="#term:schema">Schema</a> on which the <a class="term-reference" href="#term:credential-definition">Credential Definition</a> is based. The format of the identifier is dependent on the <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a> used in publishing the <a class="term-reference" href="#term:schema">Schema</a>.</li>
 <li><code>type</code> - (string) The signature type of the <a class="term-reference" href="#term:credential-definition">Credential Definition</a>. For this version of AnonCreds the value is always <code>CL</code>.</li>
 <li><code>tag</code> (string) - the tag value passed in by the <a class="term-reference" href="#term:issuer">Issuer</a> to an AnonCred’s <a class="term-reference" href="#term:credential-definition">Credential Definition</a> create and store implementation.</li>
@@ -512,7 +509,8 @@ issued credential to the entity to which it was issued.</p>
 </ul>
 </li>
 </ul>
-<p>The <code>id</code> identifier for the <a class="term-reference" href="#term:credential-definition">Credential Definition</a> is dependent on the <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a> used in publishing the <a class="term-reference" href="#term:schema">Schema</a>.</p>
+<p>The identifier for the <a class="term-reference" href="#term:credential-definition">Credential Definition</a> is dependent on where the
+<a class="term-reference" href="#term:credential-definition">Credential Definition</a> is published and the <a class="term-reference" href="#term:anoncreds-method">AnonCreds method</a> used.</p>
 <h4 id="generating-a-credential-definition-with-revocation-support"><a class="toc-anchor" href="#generating-a-credential-definition-with-revocation-support" >§</a> Generating a Credential Definition With Revocation Support</h4>
 <p>The issuer enables the ability to revoke credentials produced from a <a class="term-reference" href="#term:credential-definition">Credential Definition</a> by
 passing to the <a class="term-reference" href="#term:credential-definition">Credential Definition</a> generation process the flag <code>support_revocation</code> as
@@ -557,7 +555,6 @@ example Credential Definition</a> on the
 Sovrin MainNet). In this, the details of the <code>primary</code> element are hidden, as
 they are the same as was covered above.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-  <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"did:indy:sovrin:QvYERhq7gmh6EeCC7K46UG/anoncreds/v0/CLAIM_DEF/54753/state_license"</span><span class="token punctuation">,</span>
   <span class="token property">"schema_id"</span><span class="token operator">:</span> <span class="token string">"did:indy:sovrin:F72i3Y3Q4i466efjYJYCHM/anoncreds/v0/SCHEMA/state_license/4.2.0"</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"CL"</span><span class="token punctuation">,</span>
   <span class="token property">"tag"</span><span class="token operator">:</span> <span class="token string">"latest"</span><span class="token punctuation">,</span>
@@ -665,7 +662,6 @@ Sovrin MainNet and instance of Hyperledger Indy.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"CL_ACCUM"</span><span class="token punctuation">,</span>
   <span class="token property">"credDefId"</span><span class="token operator">:</span> <span class="token string">"Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc"</span><span class="token punctuation">,</span>
-  <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc:CL_ACCUM:1-1024"</span><span class="token punctuation">,</span>
   <span class="token property">"tag"</span><span class="token operator">:</span> <span class="token string">"MyCustomCredentialDefinition"</span><span class="token punctuation">,</span>
   <span class="token property">"publicKeys"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
     <span class="token property">"accumKey"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
@@ -682,7 +678,6 @@ Sovrin MainNet and instance of Hyperledger Indy.</p>
 </div>
 <ul>
 <li><code>type</code> - the type of revocation registry (This is currently always <code>CL_ACCUM</code>)</li>
-<li><code>id</code> - the identifier of the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a>. The format of the identifier is dependent on the <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a> is to publish the object.</li>
 <li><code>credDefId</code> - The id of the <a class="term-reference" href="#term:credential-definition">Credential Definition</a> on which the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> is based.</li>
 <li><code>tag</code> - the tag of the credential definition</li>
 <li><code>public_keys</code> - Public keys data for signing the accumulator; the public key of a private/public key pair
@@ -705,6 +700,8 @@ public key is discussed in the Credential Issuance section, when the publication
 of revocations is described. The calculation of the tailsHash is described in
 the <a href="#tails-file-and-tails-file-generation" >next section</a> on <a class="term-reference" href="#term:tails_file">TAILS_FILE</a>
 generation.</p>
+<p>The identifier for the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> is dependent on where the
+<a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> is published and the <a class="term-reference" href="#term:anoncreds-method">AnonCreds method</a> used.</p>
 <h5 id="tails-file-and-tails-file-generation"><a class="toc-anchor" href="#tails-file-and-tails-file-generation" >§</a> Tails File and Tails File Generation</h5>
 <p>The second of the outcomes from creating of a <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> is a <a class="term-reference" href="#term:tails_file">TAILS_FILE</a>. The contents of a <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> is an array of calculated
 prime integers, one for each credential in the registry. Thus, if the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> has a capacity (<code>maxCredNum</code>) of 1000, the <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> holds
