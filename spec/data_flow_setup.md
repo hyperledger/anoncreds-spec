@@ -91,25 +91,25 @@ AnonCreds credential of this type. The following is an example [[ref: Schema]]:
 
 ```json
 {
-  "id": "https://www.did.example/schema.json",
   "name": "Example schema",
   "version": "0.0.1",
   "attr_names": ["name", "age", "vmax"]
 }
 ```
 
-- `id` - (string) The identifier of the [[ref: Schema]]. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] used in publishing the [[ref: Schema]].
 - `name` (string) - the name of the schema
 - `version` (string) - the schema version
 - `attr_names` (str[]) - an array of strings with each string being the name of an attribute of the schema
 
 Once constructed, the [[ref: Schema]] is published to a Verifiable Data Registry
 (VDR) using the Schema Publishers selected [[ref: AnonCreds Objects Method]].
-The `schemaId` identifier for the [[ref: schema]] is dependent on where the
-[[ref: Schema]] is published. For example, see [this
+For example, see [this
 Schema](https://indyscan.io/tx/SOVRIN_MAINNET/domain/73904) that is published on
 the Sovrin MainNet instance of Hyperledger Indy. The `schemaId` for that object
-is: `Y6LRXGU3ZCpm7yzjVRSaGu:2:BasicIdentity:1.0.0`
+is: `Y6LRXGU3ZCpm7yzjVRSaGu:2:BasicIdentity:1.0.0`.
+
+The identifier for the [[ref: schema]] is dependent on where the [[ref: Schema]]
+is published and the [[ref: AnonCreds method]] used.
 
 ### Issuer Create and Publish Credential Definition Object
 
@@ -153,7 +153,7 @@ must be on the same [[ref: VDR]].
 The [[ref: Credential Definition]] is a JSON structure that is generated using cryptographic primitives
 (described below) given the following inputs.
 
-- A [[ref: Schema]] for the credential type.
+- A [[ref: Schema]] and identifier for the [[ref: schema]] for the credential type.
 - A `tag`, an arbitrary string defined by the Issuer, enabling an Issuer to
   create multiple [[ref: Credential Definition]]s for the same [[ref: Schema]].
 - An optional flag `support_revocation` (default `false`) which if true
@@ -195,7 +195,6 @@ MainNet):
 
 ```json
 {
-  "id": "did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ/anoncreds/v0/CLAIM_DEF/54177/latest",
   "schema_id": "did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ/anoncreds/v0/SCHEMA/MemberPass/1.0",
   "type": "CL",
   "tag": "latest",
@@ -235,7 +234,6 @@ issued credential to the entity to which it was issued.
 
 All integers within the above [[ref: Credential Definition]] example json are shown with ellipses (e.g. `123...789`). They are 2048-bit integers represented as `617` decimal digits. These integers belong to an RSA-2048 group characterised by the `n` defined in the [[ref: Credential Definition]].
 
-- `id` - (string) The identifier of the [[ref: Credential Definition]]. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] used in publishing the [[ref: Credential Definition]].
 - `schema_id` - (string) The identifier of the [[ref: Schema]] on which the [[ref: Credential Definition]] is based. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] used in publishing the [[ref: Schema]].
 - `type` - (string) The signature type of the [[ref: Credential Definition]]. For this version of AnonCreds the value is always `CL`.
 - `tag` (string) - the tag value passed in by the [[ref: Issuer]] to an AnonCred’s [[ref: Credential Definition]] create and store implementation.
@@ -250,8 +248,8 @@ All integers within the above [[ref: Credential Definition]] example json are sh
     - `s` is a randomly selected quadratic residue of `n`. This makes up part of the CL-RSA public key, independent of the message blocks being signed.
     - `z` is equal to `s^(xz)`, where `xz` is a randomly selected integer between `2` and `p'q'-1`. This makes up part of the CL-RSA public key, independent of the message blocks being signed.
 
-The `id` identifier for the [[ref: Credential Definition]] is dependent on the [[ref:
-AnonCreds Objects Method]] used in publishing the [[ref: Schema]].
+The identifier for the [[ref: Credential Definition]] is dependent on where the
+[[ref: Credential Definition]] is published and the [[ref: AnonCreds method]] used.
 
 #### Generating a Credential Definition With Revocation Support
 
@@ -307,7 +305,6 @@ they are the same as was covered above.
 
 ```json
 {
-  "id": "did:indy:sovrin:QvYERhq7gmh6EeCC7K46UG/anoncreds/v0/CLAIM_DEF/54753/state_license",
   "schema_id": "did:indy:sovrin:F72i3Y3Q4i466efjYJYCHM/anoncreds/v0/SCHEMA/state_license/4.2.0",
   "type": "CL",
   "tag": "latest",
@@ -438,7 +435,6 @@ Sovrin MainNet and instance of Hyperledger Indy.
 {
   "type": "CL_ACCUM",
   "credDefId": "Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc",
-  "id": "Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc:CL_ACCUM:1-1024",
   "tag": "MyCustomCredentialDefinition",
   "publicKeys": {
     "accumKey": {
@@ -458,7 +454,6 @@ Update this to be the inputs for generating a Revocation Registry vs. the alread
 :::
 
 - `type` - the type of revocation registry (This is currently always `CL_ACCUM`)
-- `id` - the identifier of the [[ref: Revocation Registry]]. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] is to publish the object.
 - `credDefId` - The id of the [[ref: Credential Definition]] on which the [[ref: Revocation Registry]] is based.
 - `tag` - the tag of the credential definition
 - `public_keys` - Public keys data for signing the accumulator; the public key of a private/public key pair
@@ -475,6 +470,9 @@ public key is discussed in the Credential Issuance section, when the publication
 of revocations is described. The calculation of the tailsHash is described in
 the [next section](#tails-file-and-tails-file-generation) on [[ref: TAILS_FILE]]
 generation.
+
+The identifier for the [[ref: Revocation Registry]] is dependent on where the
+[[ref: Revocation Registry]] is published and the [[ref: AnonCreds method]] used.
 
 ##### Tails File and Tails File Generation
 
