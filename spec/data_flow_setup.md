@@ -308,7 +308,7 @@ they are the same as was covered above.
   "schema_id": "did:indy:sovrin:F72i3Y3Q4i466efjYJYCHM/anoncreds/v0/SCHEMA/state_license/4.2.0",
   "type": "CL",
   "tag": "latest",
-  "data": {
+  "value": {
     "primary": {...},
     "revocation": {
       "g": "1 154...813 1 11C...D0D 2 095..8A8",
