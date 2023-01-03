@@ -38,7 +38,7 @@ this is the [Hyperledger Indy Legacy AnonCreds Method](https://hyperledger.githu
 
 ### Issuer Identifiers
 
-All AnonCreds objects ([ref: Schema], [ref: Credential Definition], [ref: Revocation Registry Definition], and [ref: Revocation Status List]) contain an `issuerId` reference. This identifier references the creator ([ref: issuer]) of the specific AnonCreds object.
+All AnonCreds objects that are published to a [[ref: Verifiable Data Registry]] ([[ref: Schema]], [[ref: Credential Definition]], [[ref: Revocation Registry Definition]], and [[ref: Revocation Status List]]) contain an `issuerId` reference. This identifier references the creator ([[ref: issuer]]) of the specific AnonCreds object.
 
 AnonCreds identifiers MUST be a Uniform Resource Identifier (URI)
 conformant with [RFC3986](https://www.rfc-editor.org/rfc/rfc3986), although
