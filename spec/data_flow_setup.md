@@ -44,8 +44,8 @@ step would be for the [[ref: issuer]] to publish a DID. However, in AnonCreds,
 DIDs are not used in the processing of credentials, and notably, the public keys
 used in AnonCreds signatures come not from DIDs, but rather from [[ref:
 Credential Definition]] objects. DIDs may be used to identify the entity publishing the
-objects that are then used in the processing of credentials -- the [[def:
-SCEHMA]], [[def: CRED_DEF]], [[def: Revocation Registry Definition]] and [[def: Revocation Registry Entry]]
+objects that are then used in the processing of credentials -- the [[ref:
+Schema]], [[ref: Credential Definition]], [[ref: Revocation Registry Definition]] and [[ref: Revocation Status List]]
 objects. There is an enforced relationship between an identifier (such as a DID)
 for the entity publishing the AnonCred objects, and the objects themselves. For
 example, in the Hyperledger Indy implementation of AnonCreds, for a credential
@@ -360,10 +360,10 @@ Method]] can describe how to resolve the contents stored on the ledger into the 
 
 Once the [[ref: issuer]] has created a [[ref: Credential Definition]] with revocation
 enabled, the [[ref: issuer]] must also create and publish a [[ref: Revocation Registry Definition]] and
-create and publish the first [[ref: Revocation Registry Entry]] for the registry.
+create and publish the first [[ref: Revocation Status List]] for the registry.
 
 In this section, we'll cover the create and publish steps for each
-of the [[ref: Revocation Registry Definition]] and [[ref: Revocation Registry Entry]] objects. The creation and
+of the [[ref: Revocation Registry Definition]] and [[ref: Revocation Status List]] objects. The creation and
 publishing of the [[ref: Revocation Registry Definition]] includes creating and publishing the
 [[ref: TAILS_FILE]] for the [[ref: Revocation Registry]].
 
@@ -504,7 +504,7 @@ or revocation events. Once generated, the SHA256 (TO BE VERIFIED) hash of the
 array of primes is calculated and returned to be inserted into the `tailsHash`
 item of the [[ref: Revocation Registry]] object (as described in the [previous
 section](#revocation-registry-definition-object-generation)). Typically, the array is streamed into a
-file (hence, the term "Tails File") and published to a [[def: URL]] indicated by
+file (hence, the term "Tails File") and published to a [[ref: URL]] indicated by
 the `tailsLocation` input parameter provided by the [[ref: issuer]].
 
 The format of a [[ref: TAILS_FILE]] is as follows:
@@ -546,54 +546,48 @@ on the Sovrin MainNet instance of Hyperledger Indy. The binary [[ref:
 TAILS_FILE]] associated with the [[ref: Revocation Registry]] can be downloaded from the
 `tailsLocation` in the [[ref: Revocation Registry]] object.
 
-#### Creating the Initial Revocation Registry Entry Object
+#### Creating the Initial Revocation Status List Object
 
-Published [[ref: Revocation Registry Entry]] objects contain the state of the [[ref:
+Published [[ref: Revocation Status List]] objects contain the state of the [[ref:
 Revocation Registry]] at a given point in time such that [[ref: holders]] can generate a
 proof of non-revocation (or not) about their specific credential and [[ref:
-verifiers]] can verify that proof. An initial [[ref: Revocation Registry Entry]] is
+verifiers]] can verify that proof. An initial [[ref: Revocation Status List]] is
 generated and published immediately on creation of the [[ref: Revocation Registry]] so that
 it can be used immediately by [[ref: holders]]. Over time, additional [[ref:
-Revocation Registry Entry]] objects are generated and published as the revocation status of
+Revocation Status List]] objects are generated and published as the revocation status of
 one or more credentials within the [[ref: Revocation Registry]] change.
 
-A secure process must be run to create the initial [[ref: Revocation Registry Entry]] object,
+A secure process must be run to create the initial [[ref: Revocation Status List]] object,
 taking the following input parameters.
 
-- `type`: the type of revocation registry being created. For Hyperledger Indy
-  this is always "CL_ACCUM."
-- `rev_reg_id`: the ID of the [[ref: Revocation Registry]] for which the initial [[ref:
-Revocation Registry Entry]] is to be generated.
+- `revRegId`: the ID of the [[ref: Revocation Registry]] for which the initial [[ref:
+Revocation Status List]] is to be generated.
   - The process uses this identifier to find the associated [[ref:
 Private Revocation Registry]] to access the information within that object.
+- `revocationList` - A bit array of length `maxCredNum` that indicates whether a credential
+  is initially revoked or not. The value of `1` indicates the credential is
+  initially revoked, the value of `0` indicates the credential is initially unrevoked.
 
 The process collects from the identified [[ref: Private Revocation Registry]] information to
 calculate the cryptographic accumulator value for the initial [[ref:
-Revocation Registry Entry]], including:
+Revocation Status List]], including:
 
-- `issuanceType`: an enumerated value that defines the initial state of
-  credentials in the [[ref: Revocation Registry]]: revoked ("ISSUANCE_ON_DEMAND") or
-  non-revoked ("ISSUANCE_BY_DEFAULT"). See the [warning and recommendation
-  against the use of
-  `ISSUANCE_ON_DEMAND`](#recommend-not-using-issuanceondemand).
+- `revocDefType`: the type of revocation registry. This is currently always `CL_ACCUM`
 - `maxCredNum`: The capacity of the [[ref: Revocation Registry]], a count of the number of
   credentials that can be issued using the [[ref: Revocation Registry]].
 - `tailsArray`: The contents of the [[ref: TAILS_FILE]], the array of primes,
   one for each credential to be issued from the [[ref: Revocation Registry]].
-- `private_key`: The accumulator private key for the [[ref: Revocation Registry]].
+- `privateKey`: The accumulator private key for the [[ref: Revocation Registry]].
 
-With the collected information, the process the initial cryptographic
-accumulator for the [[ref: Revocation Registry]]. The format of the identifier for the
-[[ref: Revocation Registry Entry]] is dependent on the [[ref: AnonCreds Objects Method]]
+With the collected information, the initial cryptographic accumulator for the [[ref: Revocation Registry]] can be created. The format of the identifier for the
+[[ref: Revocation Status List]] is dependent on the [[ref: AnonCreds Objects Method]]
 used by the issuer.
 
 In simple terms, the cryptographic accumulator at any given point in time is the
 (modulo) product of the primes for each non-revoked credential in the [[ref:
-Revocation Registry]]. Based on the value of `issuanceType`, all of the
-credentials are initially either revoked, or unrevoked. If all of the credentials are
-initially revoked, the accumulator value is `0`, if all are unrevoked, the
-accumulator value has contributions from all of the entries in the array of
-primes.
+Revocation Registry]].
+
+If all of the credentials are initially revoked (`revocationList` only contains `1` values), the accumulator value is `0`.
 
 The accumulator is calculated using the following steps:
 
@@ -601,41 +595,33 @@ The accumulator is calculated using the following steps:
 To Do: Adding the algorithm for calculating the accumulator
 :::
 
-THe following is an example of an initial, published [[ref: Revocation Registry Entry]] object:
+THe following is an example of an initial, published [[ref: Revocation Status List]] object:
 
 ```json
 {
-  "revocDefType": "CL_ACCUM",
-  "revocRegDefId": "Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140389:mctc:CL_ACCUM:1-1024",
-  "value": {
-    "accum": "21 10B...33D"
-  }
+  "revRegId": "4xE68b6S5VRFrKMMG1U95M:4:4xE68b6S5VRFrKMMG1U95M:3:CL:59232:default:CL_ACCUM:4ae1cc6c-f6bd-486c-8057-88f2ce74e960",
+  "revocationList": [0, 1, 1, 0],
+  "currentAccumulator": "21 124C594B6B20E41B681E92B2C43FD165EA9E68BC3C9D63A82C8893124983CAE94 21 124C5341937827427B0A3A32113BD5E64FB7AB39BD3E5ABDD7970874501CA4897 6 5438CB6F442E2F807812FD9DC0C39AFF4A86B1E6766DBB5359E86A4D70401B0F 4 39D1CA5C4716FFC4FE0853C4FF7F081DFD8DF8D2C2CA79705211680AC77BF3A1 6 70504A5493F89C97C225B68310811A41AD9CD889301F238E93C95AD085E84191 4 39582252194D756D5D86D0EED02BF1B95CE12AED2FA5CD3C53260747D891993C",
+  "timestamp": 1669640864487
 }
 ```
 
 The items in the data model are:
 
-- `revocDefType`: the input parameter `type`
-- `revocRegDefId`: the identifier of the associated [[ref: Revocation Registry Definition]]. The
+- `revRegId`: the identifier of the associated [[ref: Revocation Registry Definition]]. The
   format of the identifier is dependent on the [[ref: AnonCreds Objects Method]]
   used by the issuer.
+- `revocationList`: Bit array defining the status of the credential in the [ref: Revocation Registry]. A value of `1` means the credential is revoked, a value of `0` means the credential is not revoked.
+- `currentAccumulator`: the calculated cryptographic accumulator reflecting the initial state of the [[ref: Revocation Registry]]
+- `timestamp`: the timestamp at which the accumulator value is valid
 
-* `accum`: the calculated cryptographic accumulator reflecting the initial state
-  of the [[ref: Revocation Registry]]
+#### Publishing the Initial Initial Revocation Status List Object
 
-To see what [[ref: Revocation Registry Entry]] transactions look like on a [[ref: VDR]], this is [a
-link](https://indyscan.io/tx/SOVRIN_MAINNET/domain/55326) to an initial [[ref:
-Revocation Registry Entry]] where the credentials are initially all revoked, while this is
-[a link](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140392) to an initial
-[[ref: Revocation Registry Entry]] where all of the credentials are unrevoked.
-
-#### Publishing the Initial Initial Revocation Registry Entry Object
-
-Once constructed, the initial [[ref: Revocation Registry Entry]] is published by the [[ref:
+Once constructed, the initial [[ref: Revocation Status List]] is published by the [[ref:
 issuer]] in a [[ref: Verifiable Data Registry]] using their selected [[ref:
-AnonCreds Objects Method]]. For example, see [this
-Revocation Registry Entry](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140392) that is
-published on the Sovrin MainNet instance of Hyperledger Indy.
+AnonCreds Objects Method]].
+
+It is not required for the [[ref: Verifiable Data Registry]] to store the revocation list as defined in this model. For example, the Indy ledger uses deltas ([Revocation Registry Entries](https://github.com/hyperledger/indy-node/blob/main/docs/source/transactions.md#revoc_reg_entry)) to store the change in revoked/un-revoked indices instead of storing the entire revocation list. It is also possible to compress the `revocationList` entry using e.g. GZIP to reduce the size on the ledger.
 
 ### Holder Create and Store Link Secret
 

@@ -18,7 +18,7 @@ Add security considerations related to cryptographic accumulators and AnonCreds 
 It is recommended to use a [[ref: Verifiable Data Registry]] that complies with the state of the art security features and best practices.
 
 #### Permission Management
-The VDR for storing [[ref: SCHEMA]]s, [[ref: Credential Definition]]s, [[ref: Revocation Registry Definition]]s, and [[ref: Revocation Registry Entry]]s shall ensure that only the owner or from the owner permitted entities can write, edit, or revoke those AnonCreds objects. Furthermore, public AnonCreds objects shall be readable by any entity that can access the VDR.
+The VDR for storing [[ref: Schema]]s, [[ref: Credential Definition]]s, [[ref: Revocation Registry Definition]]s, and [[ref: Revocation Status List]]s shall ensure that only the owner or from the owner permitted entities can write, edit, or revoke those AnonCreds objects. Furthermore, public AnonCreds objects shall be readable by any entity that can access the VDR.
 
 #### Authentication of Issuer
 The VDR shall allow only permitted entities to issue AnonCreds based on AnonCreds objects related to it.  
