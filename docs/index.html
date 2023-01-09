@@ -366,13 +366,13 @@ AnonCreds credential of this type. The following is an example <a class="term-re
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Example schema"</span><span class="token punctuation">,</span>
   <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"0.0.1"</span><span class="token punctuation">,</span>
-  <span class="token property">"attr_names"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"name"</span><span class="token punctuation">,</span> <span class="token string">"age"</span><span class="token punctuation">,</span> <span class="token string">"vmax"</span><span class="token punctuation">]</span>
+  <span class="token property">"attrNames"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"name"</span><span class="token punctuation">,</span> <span class="token string">"age"</span><span class="token punctuation">,</span> <span class="token string">"vmax"</span><span class="token punctuation">]</span>
 <span class="token punctuation">}</span>
 </code></pre>
 <ul>
 <li><code>name</code> (string) - the name of the schema</li>
 <li><code>version</code> (string) - the schema version</li>
-<li><code>attr_names</code> (str[]) - an array of strings with each string being the name of an attribute of the schema</li>
+<li><code>attrNames</code> (str[]) - an array of strings with each string being the name of an attribute of the schema</li>
 </ul>
 <p>Once constructed, the <a class="term-reference" href="#term:schema">Schema</a> is published to a Verifiable Data Registry
 (VDR) using the Schema Publishers selected <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a>.
