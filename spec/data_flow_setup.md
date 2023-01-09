@@ -93,13 +93,13 @@ AnonCreds credential of this type. The following is an example [[ref: Schema]]:
 {
   "name": "Example schema",
   "version": "0.0.1",
-  "attr_names": ["name", "age", "vmax"]
+  "attrNames": ["name", "age", "vmax"]
 }
 ```
 
 - `name` (string) - the name of the schema
 - `version` (string) - the schema version
-- `attr_names` (str[]) - an array of strings with each string being the name of an attribute of the schema
+- `attrNames` (str[]) - an array of strings with each string being the name of an attribute of the schema
 
 Once constructed, the [[ref: Schema]] is published to a Verifiable Data Registry
 (VDR) using the Schema Publishers selected [[ref: AnonCreds Objects Method]].
@@ -195,7 +195,7 @@ MainNet):
 
 ```json
 {
-  "schema_id": "did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ/anoncreds/v0/SCHEMA/MemberPass/1.0",
+  "schemaId": "did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ/anoncreds/v0/SCHEMA/MemberPass/1.0",
   "type": "CL",
   "tag": "latest",
   "value": {
@@ -234,7 +234,7 @@ issued credential to the entity to which it was issued.
 
 All integers within the above [[ref: Credential Definition]] example json are shown with ellipses (e.g. `123...789`). They are 2048-bit integers represented as `617` decimal digits. These integers belong to an RSA-2048 group characterised by the `n` defined in the [[ref: Credential Definition]].
 
-- `schema_id` - (string) The identifier of the [[ref: Schema]] on which the [[ref: Credential Definition]] is based. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] used in publishing the [[ref: Schema]].
+- `schemaId` - (string) The identifier of the [[ref: Schema]] on which the [[ref: Credential Definition]] is based. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] used in publishing the [[ref: Schema]].
 - `type` - (string) The signature type of the [[ref: Credential Definition]]. For this version of AnonCreds the value is always `CL`.
 - `tag` (string) - the tag value passed in by the [[ref: Issuer]] to an AnonCred’s [[ref: Credential Definition]] create and store implementation.
 - `value` - (object) an Ursa native object with the `primary` and `revocation` fields.
@@ -305,7 +305,7 @@ they are the same as was covered above.
 
 ```json
 {
-  "schema_id": "did:indy:sovrin:F72i3Y3Q4i466efjYJYCHM/anoncreds/v0/SCHEMA/state_license/4.2.0",
+  "schemaId": "did:indy:sovrin:F72i3Y3Q4i466efjYJYCHM/anoncreds/v0/SCHEMA/state_license/4.2.0",
   "type": "CL",
   "tag": "latest",
   "value": {
