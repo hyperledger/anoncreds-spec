@@ -450,7 +450,7 @@ generated for the <a class="term-reference" href="#term:credential-definition">C
 Credential Definition</a> on the Sovrin
 MainNet):</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-  <span class="token property">"schema_id"</span><span class="token operator">:</span> <span class="token string">"did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ/anoncreds/v0/SCHEMA/MemberPass/1.0"</span><span class="token punctuation">,</span>
+  <span class="token property">"schemaId"</span><span class="token operator">:</span> <span class="token string">"did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ/anoncreds/v0/SCHEMA/MemberPass/1.0"</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"CL"</span><span class="token punctuation">,</span>
   <span class="token property">"tag"</span><span class="token operator">:</span> <span class="token string">"latest"</span><span class="token punctuation">,</span>
   <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
@@ -486,7 +486,7 @@ is blindly contributed to the credential during issuance and used to bind the
 issued credential to the entity to which it was issued.</p>
 <p>All integers within the above <a class="term-reference" href="#term:credential-definition">Credential Definition</a> example json are shown with ellipses (e.g. <code>123...789</code>). They are 2048-bit integers represented as <code>617</code> decimal digits. These integers belong to an RSA-2048 group characterised by the <code>n</code> defined in the <a class="term-reference" href="#term:credential-definition">Credential Definition</a>.</p>
 <ul>
-<li><code>schema_id</code> - (string) The identifier of the <a class="term-reference" href="#term:schema">Schema</a> on which the <a class="term-reference" href="#term:credential-definition">Credential Definition</a> is based. The format of the identifier is dependent on the <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a> used in publishing the <a class="term-reference" href="#term:schema">Schema</a>.</li>
+<li><code>schemaId</code> - (string) The identifier of the <a class="term-reference" href="#term:schema">Schema</a> on which the <a class="term-reference" href="#term:credential-definition">Credential Definition</a> is based. The format of the identifier is dependent on the <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a> used in publishing the <a class="term-reference" href="#term:schema">Schema</a>.</li>
 <li><code>type</code> - (string) The signature type of the <a class="term-reference" href="#term:credential-definition">Credential Definition</a>. For this version of AnonCreds the value is always <code>CL</code>.</li>
 <li><code>tag</code> (string) - the tag value passed in by the <a class="term-reference" href="#term:issuer">Issuer</a> to an AnonCred’s <a class="term-reference" href="#term:credential-definition">Credential Definition</a> create and store implementation.</li>
 <li><code>value</code> - (object) an Ursa native object with the <code>primary</code> and <code>revocation</code> fields.
@@ -555,7 +555,7 @@ example Credential Definition</a> on the
 Sovrin MainNet). In this, the details of the <code>primary</code> element are hidden, as
 they are the same as was covered above.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-  <span class="token property">"schema_id"</span><span class="token operator">:</span> <span class="token string">"did:indy:sovrin:F72i3Y3Q4i466efjYJYCHM/anoncreds/v0/SCHEMA/state_license/4.2.0"</span><span class="token punctuation">,</span>
+  <span class="token property">"schemaId"</span><span class="token operator">:</span> <span class="token string">"did:indy:sovrin:F72i3Y3Q4i466efjYJYCHM/anoncreds/v0/SCHEMA/state_license/4.2.0"</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"CL"</span><span class="token punctuation">,</span>
   <span class="token property">"tag"</span><span class="token operator">:</span> <span class="token string">"latest"</span><span class="token punctuation">,</span>
   <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
