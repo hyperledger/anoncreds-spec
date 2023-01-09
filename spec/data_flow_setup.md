@@ -93,13 +93,13 @@ AnonCreds credential of this type. The following is an example [[ref: Schema]]:
 {
   "name": "Example schema",
   "version": "0.0.1",
-  "attr_names": ["name", "age", "vmax"]
+  "attrNames": ["name", "age", "vmax"]
 }
 ```
 
 - `name` (string) - the name of the schema
 - `version` (string) - the schema version
-- `attr_names` (str[]) - an array of strings with each string being the name of an attribute of the schema
+- `attrNames` (str[]) - an array of strings with each string being the name of an attribute of the schema
 
 Once constructed, the [[ref: Schema]] is published to a Verifiable Data Registry
 (VDR) using the Schema Publishers selected [[ref: AnonCreds Objects Method]].
