@@ -14,6 +14,12 @@ includes verifications that the presentation satisfies the request. The [[ref:
 verifier]] SHOULD validate that the presentation satisfies the business
 requirements for which the presentation was provided.
 
+In reading this section, the term `attribute` is used in two ways, and readers
+should be aware of the context of each use. A presentation request has **requested
+attributes that are to be included in the presentation provided from the [[ref:
+holder]]. Those requested attributes in turn reference **attribute names and
+values** from source verifiable credentials held by the [[ref: holder]].
+
 The [[ref: presentation request]] is created by the [[ref: verifier]] in JSON format, as follows:
 
 ```json
@@ -40,7 +46,7 @@ The [[ref: presentation request]] is created by the [[ref: verifier]] in JSON fo
   SHOULD be unique per [[ref: presentation request]]. The nonce is included in the request
   to prevent replay attacks through its use in creating and verifying the presentation.
 * `requested_attributes` specify the set of requested attributes
-  * `attr_referent` is a verifier-defined identifier for the requested attribute(s).
+  * `attr_referent` is a verifier-defined identifier for the requested attribute(s) to be revealed.
   * `attr_info` describes a requested attribute. See [attr_info](#attr_info)
 * `requested_predicates` specify the set of requested predicates
   * `predicate_referent` is a verifier-defined identifier for the requested predicate.
@@ -66,13 +72,12 @@ The [[ref: presentation request]] is created by the [[ref: verifier]] in JSON fo
 
 All of the items are optional, but one of `name` or `names` MUST be included, and not both.
 
-* `name` is a string, the names of an attribute from a source credential, case
-  insensitive and ignore spaces.
+* `name` is a string, the name of an attribute from a source credential.
   * The name is case insensitive with spaces ignored.
 * `names` is a array of strings, the names of attributes from a source
   credential
   * The names are case insensitive with spaces ignored.
-  * The attributes MUST be sourced from a single credential.
+  * The attribute names MUST be sourced from a single credential.
 * `restrictions` is a condition on the source credential that can be used to
   satisfy this attribute request.
   * See [restrictions](#restrictions) for details about supported restrictions.
@@ -102,12 +107,12 @@ All of the items are optional, but one of `name` or `names` MUST be included, an
 }
 ```
 
-* `name` (required) is a string, the name of the attribute from a source
+* `name` (required) is a string, the name of an attribute from a source
   credential to use in the predicate expression.
   * The name is case insensitive and spaces are ignored.
   * To be useful, the attribute in the source credential MUST be an integer, but
-    that cannot be enforced. The [[ref: verifier]] MUST understand how the attribute is
-    set by the issuer(s) of the expected source credentials.
+    that requirement cannot be enforced. The [[ref: verifier]] MUST understand how the attribute value is
+    set by the issuer(s) in the expected source credentials.
 * `p_type` is a string, the type of the predicate. Possible type values are
   [">=", ">", "<=", "<"].
 * `p_value` is an integer value.
@@ -118,7 +123,7 @@ All of the items are optional, but one of `name` or `names` MUST be included, an
   satisfy this predicate request.
   * See [restrictions](#restrictions) for details about supported restrictions.
   * If omitted, the only restriction on the requested predicate is that the
-    `name` matches the name in the source credential used to satisfy the
+    `name` matches the attribute name in the source credential used to satisfy the
     predicate.
 * `non_revoked` specifies a non-revocation interval `non_revoc_interval` for
   this predicate attribute.
@@ -132,8 +137,9 @@ source verifiable credential. The [[ref: holder]] must use source verifiable
 credentials that satisfy the `restrictions` expression for each
 attribute/predicate entry. Each element of the logic expression is a property of
 source credentials and a value to be matched for that property. The following
-properties can be specified in the JSON. Each is specified with a string that
-must match the property:
+properties can be specified in the JSON. All except the `marker` property is
+specified with a value that must match the property. For the `marker` property,
+the value is always `1`.
 
 * `schema_id` - the identifier of the schema upon which the source credential is
   based.
@@ -150,15 +156,15 @@ must match the property:
 * `attr::<attribute-name>::marker` - an attribute `<attribute-name>`
   must exist in the source credential.
   * When used, the value of the JSON item must be "1".
-* `attr::<attribute-name>::<value>` - the value of an attribute `<attribute-name>`
-  must be found in the source credential.
+* `attr::<attribute-name>::<attribute-value>` - the attribute `<attribute-name>`
+  must be found in the source credential with a value of `<attribute-value>`.
   * When this property is used, the [[ref: verifer]] MUST request that the
   `<attribute-name>` be revealed as otherwise there is no way to be sure the
   restriction has been satisfied.
 
-The logic expression is formed by ORing and ANDing the source credential
+A boolean expression is formed by ORing and ANDing the source credential
 properties. The following JSON is an example. Any of the source credential
-properties can be used:
+properties listed above can be used in the expression components:
 
 
 ``` json
@@ -184,8 +190,8 @@ The attributes must come from a source verifiable credential such that:
      schema_id = <id>
    AND
    cred_def_id = <id>" OR
-      the credential must contain an attribute "color" OR
-      the credential must contain an attribute "color" with the value "red"
+      the credential must contain an attribute name "color" OR
+      the credential must contain an attribute name "color" with the attribute value "red"
 ```
 
 #### Request Non-Revocation Proofs
@@ -208,10 +214,10 @@ attribute(s) / predicate(s), as follows:
 
 As noted in the [[ref: presentation request]] specification above, a `non-revoked` item
 be may at the outer level of the [[ref: presentation request]] such that it applies to
-all attributes and predicates, and/or at the attribute/predicate level, applying
-only to specific attributes and/or predicates and overriding the outer layer item.
+all requested attributes and predicates, and/or at the attribute/predicate level, applying
+only to specific requested attributes and/or predicates and overriding the outer layer item.
 
-The `non-revoked` items apply only to attributes/predicates in a presentation
+The `non-revoked` items apply only to requested attributes/predicates in a presentation
 that derive from revocable credentials. No proof of non-revocation is needed (or
 possible) from credentials that cannot be revoked. Verifiers should be aware
 that different issuers of the same credential type (same `schemaId`) may or may
@@ -245,8 +251,8 @@ when the accident occurred."
 #### Presentation Request Example
 
 The following is an example of a full [[ref: presentation request]] for a presentation
-from a single source credential (attributes and a predicate) and a self-attested
-attribute.
+for a set of revealed attribute names from a single source credential, a self-attested
+attribute, and a predicate.
 
 ```json
 {
