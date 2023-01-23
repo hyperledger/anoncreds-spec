@@ -91,7 +91,7 @@ AnonCreds credential of this type. The following is an example [[ref: Schema]]:
 
 ```json
 {
-  "issuerId": "https://example.org",
+  "issuerId": "https://example.org/issuers/74acabe2-0edc-415e-ad3d-c259bac04c15",
   "name": "Example schema",
   "version": "0.0.1",
   "attr_names": ["name", "age", "vmax"]
@@ -438,9 +438,9 @@ Sovrin MainNet and instance of Hyperledger Indy.
 
 ```json
 {
-  "issuerId": "Gs6cQcvrtWoZKsbBhD3dQJ",
+  "issuerId": "did:web:example.org",
   "type": "CL_ACCUM",
-  "credDefId": "Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc",
+  "credDefId": "did:web:example.org/resources/b8c99b41-9c64-45c5-aa16-87a7344e2e04",
   "tag": "MyCustomCredentialDefinition",
   "publicKeys": {
     "accumKey": {

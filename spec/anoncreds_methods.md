@@ -46,7 +46,7 @@ one notable exception is permitted. The exception is that for backwards
 compatibility, the Indy DIDs used in the early (pre `did:indy`) open source
 Hyperledger Indy implementation are permitted.
 
-It is not required for an issuer identifier to be resolvable, however AnonCreds methods MUST define what an issuer identifier must look like, and how it can be verified that the creator of AnonCreds objects are the controller of the issuer identifier. It MUST NOT be possible to publish an AnonCreds object with an issuer identifier that the publisher is not authorized to use.
+An AnonCreds object issuer identifier MAY be publicly resolvable. AnonCreds methods MUST define the format of the issuer identifier, and MUST verify that the publisher of the AnonCreds object controls the issuer identifier before publishing the object.
 
 ### Revocation Support
 
