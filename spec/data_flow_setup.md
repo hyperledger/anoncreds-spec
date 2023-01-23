@@ -372,58 +372,14 @@ publishing of the [[ref: Revocation Registry Definition]] includes creating and 
 A secure process must be run to create the revocation registry object, taking
 the following input parameters.
 
-- `type`: the type of revocation registry being created. For Hyperledger Indy
-  this is always "CL_ACCUM."
-- `cred_def_id`: the ID of the [[ref: Credential Definition]] to which the [[ref: Revocation Registry]]
-  is to be associated
-- `tag`: an [[ref: issuer]]-defined tag that is included in the identifier for
-  the [[ref: Revocation Registry]]
-- `issuanceType`: an enumerated value that defines the initial state of
-  credentials in the [[ref: Revocation Registry]]: revoked ("ISSUANCE_ON_DEMAND") or
-  non-revoked ("ISSUANCE_BY_DEFAULT"). See the [warning and recommendation
-  against the use of
-  `ISSUANCE_ON_DEMAND`](#recommend-not-using-issuanceondemand).
+- `revocDefType`: the type of revocation registry being created. This is always `CL_ACCUM`
+- `credDefId`: the ID of the [[ref: Credential Definition]] to which the [[ref: Revocation Registry]] is to be associated
+- `tag`: an arbitrary string defined by the [ref: issuer], enabling an [ref: issuer] to create multiple [[ref: Revocation Registry Definition]]s for the same [[ref: Credential Definition]].
 - `maxCredNum`: The capacity of the [[ref: Revocation Registry]], a count of the number of
   credentials that can be issued using the [[ref: Revocation Registry]].
-- `tailsLocation`: A URL indicating where the [[ref: TAILS_FILE]] for the [[ref
-Revocation Registry]] will be available to all [[ref: holders]] of credential issued using
-  this revocation registry.
+- `tailsLocation`: A URL indicating where the [[ref: TAILS_FILE]] for the [[ref Revocation Registry]] will be available to all [[ref: holders]] of credential issued using this revocation registry.
 
-Three outputs are generated from the process to generate the [[ref; Revocation Registry]]:
-the [[ref: Revocation Registry]] object itself, the [[ref: TAILS_FILE]] content, and the
-[[ref: Private Revocation Registry]] object.
-
-##### Recommend Not Using ISSUANCE_ON_DEMAND
-
-::: warning
-
-Based on the experience of the AnonCreds community in the use of revocable
-credentials, it is highly recommended the `ISSUANCE_ON_DEMAND` approach **NOT** be
-used unless absolutely required by your use case.
-
-The reason this approach is not recommended is that if the [[ref: issuer]]
-creates the [[ref: Revocation Registry]] with the `issuanceType` item set to
-`ISSUANCE_ON_DEMAND`, the [[ref:issuer]] must publish a [[ref: RevRegEntry]] (as
-described in the [revocation
-section](#anoncreds-credential-activationrevocation-and-publication)) as each
-credential is issued resulting in many [[ref: RevRegEntry]] transactions being
-performed, one per credential issued. Of course, with either `issueanceType`, there must
-still be one transaction for each batch of (1 or more) credentials revoked.
-
-Further, if a credential contains some kind of "Issue Date" attribute in the
-credential and it is shared with verifiers, those verifiers can use that value
-to find the [[ref: RevRegEntry]] transaction that activated the credential at
-the same time to learn the index of the holder's credential within the [[ref:
-RevReg]], giving the verifiers both a correlatable identifier (RevRegId+index)
-for the holder's credential and a way to monitor if that credential is ever
-revoked in the future.
-
-For these reasons we anticipate the deprecation or removal of the
-`ISSUANCE_ON_DEMAND` approach in the next version of AnonCreds specification.
-Feedback from the community on this would be appreciated. We are particularly
-interested in understanding what use cases there are for `ISSUANCE_ON_DEMAND`.
-
-:::
+Three outputs are generated from the process to generate the [[ref: Revocation Registry]]: the [[ref: Revocation Registry]] object itself, the [[ref: TAILS_FILE]] content, and the [[ref: Private Revocation Registry]] object.
 
 ##### Revocation Registry Definition Object Generation
 
@@ -433,17 +389,19 @@ Sovrin MainNet and instance of Hyperledger Indy.
 
 ```json
 {
-  "type": "CL_ACCUM",
+  "revocDefType": "CL_ACCUM",
   "credDefId": "Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc",
   "tag": "MyCustomCredentialDefinition",
-  "publicKeys": {
-    "accumKey": {
-      "z": "1 0BB...386"
-    }
-  },
-  "maxCredNum": 666,
-  "tailsLocation": "https://my.revocations.tails/tailsfile.txt",
-  "tailsHash": "91zvq2cFmBZmHCcLqFyzv7bfehHH5rMhdAG5wTjqy2PE"
+  "value": {
+    "publicKeys": {
+      "accumKey": {
+        "z": "1 0BB...386"
+      }
+    },
+    "maxCredNum": 666,
+    "tailsLocation": "https://my.revocations.tails/tailsfile.txt",
+    "tailsHash": "91zvq2cFmBZmHCcLqFyzv7bfehHH5rMhdAG5wTjqy2PE"
+  }
 }
 ```
 
@@ -453,15 +411,16 @@ The items within the data model are as follows:
 Update this to be the inputs for generating a Revocation Registry vs. the already published object
 :::
 
-- `type` - the type of revocation registry (This is currently always `CL_ACCUM`)
+- `revocDefType` - the type of revocation registry (This is currently always `CL_ACCUM`)
 - `credDefId` - The id of the [[ref: Credential Definition]] on which the [[ref: Revocation Registry]] is based.
-- `tag` - the tag of the credential definition
-- `public_keys` - Public keys data for signing the accumulator; the public key of a private/public key pair
-  - `accumKey` - Accumulator key for signing the accumulator
-    - `z` - a public key used to sign the accumulator (described further below)
-- `maxCredNumber` - The maximum amount of Credentials that can be revoked in the Revocation Registry before a new one needs to be started
-- `tailsLocation` - The URL pointing to the related tails file
-- `tailsHash` - The hash of the tails file [[ref: TAILS_FILE]] (see also: [next section](#tails-file-and-tails-file-generation)) resulting from hashing the tails file version prepended to the tails file as SHA256 and then encoded to base58.
+- `tag` - an arbitrary string defined by the [ref: issuer], enabling an [ref: issuer] to create multiple [[ref: Revocation Registry Definition]]s for the same [[ref: Credential Definition]].
+- `value` - The value of the revocation registry definition
+  - `publicKeys` - Public keys data for signing the accumulator; the public key of a private/public key pair
+    - `accumKey` - Accumulator key for signing the accumulator
+      - `z` - a public key used to sign the accumulator (described further below)
+  - `maxCredNum` - The maximum amount of Credentials that can be revoked in the Revocation Registry before a new one needs to be started
+  - `tailsLocation` - The URL pointing to the related tails file
+  - `tailsHash` - The hash of the tails file [[ref: TAILS_FILE]] (see also: [next section](#tails-file-and-tails-file-generation)) resulting from hashing the tails file version prepended to the tails file as SHA256 and then encoded to base58.
 
 As noted, most of the items come directly from the input parameters provided by
 the [[ref: issuer]]. The `z` [[ref: Revocation Registry]] accumulator public key is
