@@ -180,6 +180,10 @@ specification.</p>
 <dd>
 <p>An issuer is one of the three entities that interact with each other within the domain of digital identities. It can assert <a class="term-reference" href="#term:claims">claims</a> about a <a class="term-reference" href="#term:subject">subject</a> in the form of a tamper-proof credential whose origins are cryptographically verifiable.</p>
 </dd>
+<dt><span id="term:issuer-identifiers"><span id="term:issuer-identifier">Issuer Identifier</span></span></dt>
+<dd>
+<p>An issuer identifier is a unique identifier for an <a class="term-reference" href="#term:issuer">issuer</a>. It is used to identify the <a class="term-reference" href="#term:issuer">issuer</a> of AnonCreds objects published to a <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> . See <a href="#issuer-identifiers" >Issuer Identifiers</a> for details.</p>
+</dd>
 <dt><span id="term:link-secret">link secret</span></dt>
 <dd>
 <p>One of the most significant differences between the AnonCreds and W3C <a path-0="www.w3.org"path-1="TR"path-2="vc-data-model"path-3=""href="https://www.w3.org/TR/vc-data-model/" >Verifiable Credentials</a> is how a credential is bound to the <a class="term-reference" href="#term:holder">holder</a>. With the Verifiable Credential, the holder binding happens without additional interactions between the <a class="term-reference" href="#term:holder">holder</a> and <a class="term-reference" href="#term:issuer">issuer</a>. However, this approach comes with a lack of privacy for the <a class="term-reference" href="#term:holder">holder</a>.
@@ -361,12 +365,14 @@ Flow</a> sequence diagram.</p>
 containing the list of attributes (claims) that will be included in each
 AnonCreds credential of this type. The following is an example <a class="term-reference" href="#term:schema">Schema</a>:</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"issuerId"</span><span class="token operator">:</span> <span class="token string">"https://example.org/issuers/74acabe2-0edc-415e-ad3d-c259bac04c15"</span><span class="token punctuation">,</span>
   <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Example schema"</span><span class="token punctuation">,</span>
   <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"0.0.1"</span><span class="token punctuation">,</span>
   <span class="token property">"attrNames"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"name"</span><span class="token punctuation">,</span> <span class="token string">"age"</span><span class="token punctuation">,</span> <span class="token string">"vmax"</span><span class="token punctuation">]</span>
 <span class="token punctuation">}</span>
 </code></pre>
 <ul>
+<li><code>issuerId</code> - the <a class="term-reference" href="#term:issuer-identifier">Issuer Identifier</a> of the schema. MUST adhere to <a href="#issuer-identifiers" >Issuer Identifiers</a> rules.</li>
 <li><code>name</code> (string) - the name of the schema</li>
 <li><code>version</code> (string) - the schema version</li>
 <li><code>attrNames</code> (str[]) - an array of strings with each string being the name of an attribute of the schema</li>
@@ -447,6 +453,7 @@ generated for the <a class="term-reference" href="#term:credential-definition">C
 Credential Definition</a> on the Sovrin
 MainNet):</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"issuerId"</span><span class="token operator">:</span> <span class="token string">"did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ"</span><span class="token punctuation">,</span>
   <span class="token property">"schemaId"</span><span class="token operator">:</span> <span class="token string">"did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ/anoncreds/v0/SCHEMA/MemberPass/1.0"</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"CL"</span><span class="token punctuation">,</span>
   <span class="token property">"tag"</span><span class="token operator">:</span> <span class="token string">"latest"</span><span class="token punctuation">,</span>
@@ -483,6 +490,7 @@ is blindly contributed to the credential during issuance and used to bind the
 issued credential to the entity to which it was issued.</p>
 <p>All integers within the above <a class="term-reference" href="#term:credential-definition">Credential Definition</a> example json are shown with ellipses (e.g. <code>123...789</code>). They are 2048-bit integers represented as <code>617</code> decimal digits. These integers belong to an RSA-2048 group characterised by the <code>n</code> defined in the <a class="term-reference" href="#term:credential-definition">Credential Definition</a>.</p>
 <ul>
+<li><code>issuerId</code> - the <a class="term-reference" href="#term:issuer-identifier">Issuer Identifier</a> of the credential definition. MUST adhere to <a href="#issuer-identifiers" >Issuer Identifiers</a> rules.</li>
 <li><code>schemaId</code> - (string) The identifier of the <a class="term-reference" href="#term:schema">Schema</a> on which the <a class="term-reference" href="#term:credential-definition">Credential Definition</a> is based. The format of the identifier is dependent on the <a class="term-reference" href="#term:anoncreds-objects-method">AnonCreds Objects Method</a> used in publishing the <a class="term-reference" href="#term:schema">Schema</a>.</li>
 <li><code>type</code> - (string) The signature type of the <a class="term-reference" href="#term:credential-definition">Credential Definition</a>. For this version of AnonCreds the value is always <code>CL</code>.</li>
 <li><code>tag</code> (string) - the tag value passed in by the <a class="term-reference" href="#term:issuer">Issuer</a> to an AnonCred’s <a class="term-reference" href="#term:credential-definition">Credential Definition</a> create and store implementation.</li>
@@ -552,6 +560,7 @@ example Credential Definition</a> on the
 Sovrin MainNet). In this, the details of the <code>primary</code> element are hidden, as
 they are the same as was covered above.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"issuerId"</span><span class="token operator">:</span> <span class="token string">"did:indy:sovrin:F72i3Y3Q4i466efjYJYCHM"</span><span class="token punctuation">,</span>
   <span class="token property">"schemaId"</span><span class="token operator">:</span> <span class="token string">"did:indy:sovrin:F72i3Y3Q4i466efjYJYCHM/anoncreds/v0/SCHEMA/state_license/4.2.0"</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"CL"</span><span class="token punctuation">,</span>
   <span class="token property">"tag"</span><span class="token operator">:</span> <span class="token string">"latest"</span><span class="token punctuation">,</span>
@@ -623,6 +632,7 @@ credentials that can be issued using the <a class="term-reference" href="#term:r
 <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="140386"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/140386" >this transaction</a> on the
 Sovrin MainNet and instance of Hyperledger Indy.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"issuerId"</span><span class="token operator">:</span> <span class="token string">"did:web:example.org"</span><span class="token punctuation">,</span>
   <span class="token property">"revocDefType"</span><span class="token operator">:</span> <span class="token string">"CL_ACCUM"</span><span class="token punctuation">,</span>
   <span class="token property">"credDefId"</span><span class="token operator">:</span> <span class="token string">"Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc"</span><span class="token punctuation">,</span>
   <span class="token property">"tag"</span><span class="token operator">:</span> <span class="token string">"MyCustomCredentialDefinition"</span><span class="token punctuation">,</span>
@@ -642,6 +652,7 @@ Sovrin MainNet and instance of Hyperledger Indy.</p>
 <div id="todo-5" class="notice todo"><a class="notice-link" href="#todo-5">TODO</a><p>Update this to be the inputs for generating a Revocation Registry vs. the already published object</p>
 </div>
 <ul>
+<li><code>issuerId</code> - the <a class="term-reference" href="#term:issuer-identifier">Issuer Identifier</a> of the revocation registry. MUST adhere to <a href="#issuer-identifiers" >Issuer Identifiers</a> rules and MUST be the same <code>issuerId</code> as the <a class="term-reference" href="#term:credential-definition">Credential Definition</a> on which the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> is based.</li>
 <li><code>revocDefType</code> - the type of revocation registry (This is currently always <code>CL_ACCUM</code>)</li>
 <li><code>credDefId</code> - The id of the <a class="term-reference" href="#term:credential-definition">Credential Definition</a> on which the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> is based.</li>
 <li><code>tag</code> - an arbitrary string defined by the [ref: issuer], enabling an [ref: issuer] to create multiple <a class="term-reference" href="#term:revocation-registry-definition">Revocation Registry Definition</a>s for the same <a class="term-reference" href="#term:credential-definition">Credential Definition</a>.</li>
@@ -2470,13 +2481,21 @@ the set of AnonCreds resolvers they will require based on the issuers and types
 of credentials they want to support. As with DIDs, an external Universal
 AnonCreds Resolver is possible, as is a Universal AnonCreds Registrar.</p>
 <h3 id="anoncreds-identifiers"><a class="toc-anchor" href="#anoncreds-identifiers" >§</a> AnonCreds Identifiers</h3>
-<p>AnonCreds identifiers SHOULD be a Uniform Resource Identifier (URI)
-conformant with <a path-0="www.w3.org"path-1="TR"path-2="did-core"path-3="#bib-rfc3986"href="https://www.w3.org/TR/did-core/#bib-rfc3986" >RFC3986</a>, although
+<p>AnonCreds identifiers MUST be a Uniform Resource Identifier (URI)
+conformant with <a path-0="www.rfc-editor.org"path-1="rfc"path-2="rfc3986"href="https://www.rfc-editor.org/rfc/rfc3986" >RFC3986</a>, although
 one notable exception is permitted. The exception is that for backwards
 compatibility, the AnonCreds identifiers used in the early (pre
 <code>did:indy</code>) open source Hyperledger Indy AnonCreds implementation are permitted.
 In the <a href="#anoncreds-method-registry" >AnonCreds Method Registry</a>,
 this is the <a path-0="hyperledger.github.io"path-1="anoncreds-methods-registry"path-2="#hyperledger-indy-legacy-anoncreds-method"href="https://hyperledger.github.io/anoncreds-methods-registry/#hyperledger-indy-legacy-anoncreds-method" >Hyperledger Indy Legacy AnonCreds Method</a>.</p>
+<h3 id="issuer-identifiers"><a class="toc-anchor" href="#issuer-identifiers" >§</a> Issuer Identifiers</h3>
+<p>All AnonCreds objects that are published to a <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> (<a class="term-reference" href="#term:schema">Schema</a>, <a class="term-reference" href="#term:credential-definition">Credential Definition</a>, <a class="term-reference" href="#term:revocation-registry-definition">Revocation Registry Definition</a>, and <a class="term-reference" href="#term:revocation-status-list">Revocation Status List</a>) contain an <code>issuerId</code> reference. This identifier references the creator (<a class="term-reference" href="#term:issuer">issuer</a>) of the specific AnonCreds object.</p>
+<p>AnonCreds identifiers MUST be a Uniform Resource Identifier (URI)
+conformant with <a path-0="www.rfc-editor.org"path-1="rfc"path-2="rfc3986"href="https://www.rfc-editor.org/rfc/rfc3986" >RFC3986</a>, although
+one notable exception is permitted. The exception is that for backwards
+compatibility, the Indy DIDs used in the early (pre <code>did:indy</code>) open source
+Hyperledger Indy implementation are permitted.</p>
+<p>An AnonCreds object issuer identifier MAY be publicly resolvable. AnonCreds methods MUST define the format of the issuer identifier, and MUST verify that the publisher of the AnonCreds object controls the issuer identifier before publishing the object.</p>
 <h3 id="revocation-support"><a class="toc-anchor" href="#revocation-support" >§</a> Revocation Support</h3>
 <p>Implementers only familiar with the “deltas”-style data format of Hyperledger Indy
 <a class="term-reference" href="#term:revregentries">RevRegEntries</a> may not be aware that other VDRs may
@@ -2880,6 +2899,7 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li><a href="#anoncreds-methods" >AnonCreds Methods</a>
 <ul>
 <li><a href="#anoncreds-identifiers" >AnonCreds Identifiers</a></li>
+<li><a href="#issuer-identifiers" >Issuer Identifiers</a></li>
 <li><a href="#revocation-support" >Revocation Support</a></li>
 <li><a href="#anoncreds-method-registry" >AnonCreds Method Registry</a></li>
 </ul>
