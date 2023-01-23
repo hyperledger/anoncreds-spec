@@ -29,7 +29,7 @@ The details of [[ref: issuer]] setting up revokable credential types are covered
 in the [issuer setup](#issuer-create-and-publish-revocation-registry-objects)
 section of this specification. Note the [warning and recommendation against the
 use of `ISSUANCE_ON_DEMAND`](#recommend-not-using-issuanceondemand) in that part
-  of the specification.
+of the specification.
 
 ### AnonCreds Issuance with Revocation
 
@@ -56,14 +56,14 @@ accumulator value, every [[ref: RevRegEntry]] contains lists of indices of
 credential factors which have been either revoked or (re)activated within the
 [[ref: RevRegEntry]]. This list of factor indices is a so called [[ref: Witness
 Delta]] and enables the [[ref: Holder]] to successfully generate a proof of non
-revocation. 
+revocation.
 
 An example of the
 data in the [[ref: RevRegEntry]] is shown in the following example of a [[ref:
 RevRegEntry]], pulled from [this transaction on the Sovrin
 MainNet](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140326).
 
-``` json
+```json
 "data": {
     "revocDefType": "CL_ACCUM",
     "revocRegDefId": "4xE68b6S5VRFrKMMG1U95M:4:4xE68b6S5VRFrKMMG1U95M:3:CL:59232:default:CL_ACCUM:4ae1cc6c-f6bd-486c-8057-88f2ce74e960",
@@ -117,7 +117,7 @@ credentials within a [[ref: RevReg]] so that it can both calculate the correct
 accumulator and send to the [[ref: VDR]] accurate lists (`issued` and `revoked`)
 of the indices of the credentials whose status has changed since the last [[ref:
 RevRegEntry]] was published. If the list and accumulator published to [[ref: VDR]] get out of
-sync  a [[ref: holder]] will not be able to generate a valid NRP.
+sync a [[ref: holder]] will not be able to generate a valid NRP.
 
 A [[ref: VDR]] publishing a [[ref: RevReg]] MAY perform its own calculation of
 the accumulator based on the list updates received in a [[ref: RevRegEntry]]
