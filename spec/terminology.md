@@ -8,7 +8,7 @@
 ~ A claim is a part of digital identity related to a [[ref: subject]]. A claim can be attested by the identity subject itself, or it can be asserted by another entity.
 
 [[def: Credential Key Correctness Proof]]
-~ This is produced during the creation of the [[ref: Credential Definition]] and is included in the [[ref: Credential Offer]] so that the [[ref:holder]] can verify that the [[ref::Public Credential Definition]] used in the blinding process belongs to the [[ref:issuer]].
+~ This is produced during the creation of the [[ref: Credential Definition]] and is included in the [[ref: Credential Offer]] so that the [[ref:holder]] can verify that the [[ref: Public Credential Definition]] used in the blinding process belongs to the [[ref:issuer]].
 
 ::: todo
 [[def: Signature Correctness Proof]]
@@ -70,17 +70,15 @@ The correlatability of credentials due to the necessity of revealing a persisten
 [[def: NRP]]
 ~ TODO Non Revocation Proof
 
-[[def: Revocation Registry Definition]]
+[[def: Revocation Registry Definition, Revocation Registry]]
 ~ A Revocation Registry Definition object contains information required for [[ref: verifiers]] in order to enable them to verify whether a revokable verifiable credential has been revoked by the issuer since issuance.
 
 ~ Revocation Registry Definitions are only needed for revokable verifiable credentials and are most commonly [written](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#claim-def) to a public location (e.g. an indy ledger) by the owner of a [[ref: Credential Definition]] immediatly after the [[ref: Credential Definition]] has been written. They can be [read](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-attrib) from a Hyperledger Indy Node by any client and are updated in case of the revocation of a credential, which is based on the used [[ref: Credential Definition]].
 
 ~ Further details about Hyperledger Indy's revocation process can be found [here](https://hyperledger-indy.readthedocs.io/projects/hipe/en/latest/text/0011-cred-revocation/README.html).
 
-[[def: Revocation Registry Entry]]
-~ A Revocation Registry Entry object (short for "revocation registry entry") marks the current status ("revoked" or "not revoked") of one or more revokable verifiable credentials in the ledger in a privacy preserving manner. A Revocation Registry Entry is [written](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#revoc-reg-entry) by the owner of a [[ref: Revocation Registry Definition]] respectively the issuer of the credential(s) based on a [[ref: Credential Definition]] and its [[ref: Revocation Registry Definition]]. Any Revocation Registry Entry condensed with further required information can be [read](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-revoc-reg-delta) by any Hyperledger Indy client.
-
-~ Further details about Hyperledger Indy's revocation process can be found [here](https://hyperledger-indy.readthedocs.io/projects/hipe/en/latest/text/0011-cred-revocation/README.html).
+[[def: Revocation Status List]]
+~ A Revocation Status List object marks the current status ("revoked" or "not revoked") of all credentials in a [[ref: Revocation Registry Definition]]. A Revocation Status List is written by the owner of a [[ref: Revocation Registry Definition]], respectively the issuer of the credential(s) based on a [[ref: Credential Definition]] and its [[ref: Revocation Registry Definition]].
 
 [[def: Schema, Schemas]]
 ~ A Schema object is a template that defines a set of attributes (also known as attribute names or [[ref: claims]]) which are going to be used by [[ref: issuers]] for issuance of [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) within a Hyperledger Indy network. Schemas have a name, version and can be [written](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/transactions.html#schema) to the ledger by any entity with proper permissions. Schemas can be [read](https://hyperledger-indy.readthedocs.io/projects/node/en/latest/requests.html#get-schema) from a Hyperledger Indy Node by any client.
@@ -107,14 +105,14 @@ The correlatability of credentials due to the necessity of revealing a persisten
 [[def: Verifiable Presentation]]
 ~ TODO
 
-~ In the case of Hyperledger Indy a distributed ledger is used as Verifiable Data Registry. Besides [[ref: DIDs]] and DID documents an instance of a Hyperledger Indy network stores additional data on the ledger, which is required for issuance (e.g. [[ref: Schema]] and [[ref: Credential Definition]]), verification (e.g. [[ref: Revocation Registry Definition]])) and revocation (e.g [[ref: Revocation Registry Entry]]) of credentials.
+~ In the case of Hyperledger Indy a distributed ledger is used as Verifiable Data Registry. Besides [[ref: DIDs]] and DID documents an instance of a Hyperledger Indy network stores additional data on the ledger, which is required for issuance (e.g. [[ref: Schema]] and [[ref: Credential Definition]]), verification (e.g. [[ref: Revocation Registry Definition]])) and revocation (e.g [[ref: Revocation Status List]]) of credentials.
 
 ~ A verifier is an entity that validates identity information from a [[ref: holder]] to grant access to goods and services.
 
 [[def: Witness Delta]]
 ~ The witness delta is an update by the issuer of the list of revoked
 credentials at the time an updated accumulator is published with a [[ref:
-Revocation Registry Entry]]. The delta tells [[ref: holders]] generating a Non-Revocation
+Revocation Status List]]. The delta tells [[ref: holders]] generating a Non-Revocation
 Proof (NRP) how to adjust their witness (referencing other indexes in the public
 tails file) to bring it back into harmony with the current value of the
 accumulator, such that the updated witness times the private factor of the credential once again equals the accumulator value.
