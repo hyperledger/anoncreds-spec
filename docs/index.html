@@ -610,74 +610,44 @@ publishing of the <a class="term-reference" href="#term:revocation-registry-defi
 <p>A secure process must be run to create the revocation registry object, taking
 the following input parameters.</p>
 <ul>
-<li><code>type</code>: the type of revocation registry being created. For Hyperledger Indy
-this is always “CL_ACCUM.”</li>
-<li><code>cred_def_id</code>: the ID of the <a class="term-reference" href="#term:credential-definition">Credential Definition</a> to which the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a>
-is to be associated</li>
-<li><code>tag</code>: an <a class="term-reference" href="#term:issuer">issuer</a>-defined tag that is included in the identifier for
-the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a></li>
-<li><code>issuanceType</code>: an enumerated value that defines the initial state of
-credentials in the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a>: revoked (“ISSUANCE_ON_DEMAND”) or
-non-revoked (“ISSUANCE_BY_DEFAULT”). See the <a href="#recommend-not-using-issuanceondemand" >warning and recommendation
-against the use of
-<code>ISSUANCE_ON_DEMAND</code></a>.</li>
+<li><code>revocDefType</code>: the type of revocation registry being created. This is always <code>CL_ACCUM</code></li>
+<li><code>credDefId</code>: the ID of the <a class="term-reference" href="#term:credential-definition">Credential Definition</a> to which the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> is to be associated</li>
+<li><code>tag</code>: an arbitrary string defined by the [ref: issuer], enabling an [ref: issuer] to create multiple <a class="term-reference" href="#term:revocation-registry-definition">Revocation Registry Definition</a>s for the same <a class="term-reference" href="#term:credential-definition">Credential Definition</a>.</li>
 <li><code>maxCredNum</code>: The capacity of the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a>, a count of the number of
 credentials that can be issued using the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a>.</li>
-<li><code>tailsLocation</code>: A URL indicating where the <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> for the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> will be available to all <a class="term-reference" href="#term:holders">holders</a> of credential issued using
-this revocation registry.</li>
+<li><code>tailsLocation</code>: A URL indicating where the <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> for the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> will be available to all <a class="term-reference" href="#term:holders">holders</a> of credential issued using this revocation registry.</li>
 </ul>
-<p>Three outputs are generated from the process to generate the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a>:
-the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> object itself, the <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> content, and the
-<a class="term-reference" href="#term:private-revocation-registry">Private Revocation Registry</a> object.</p>
-<h5 id="recommend-not-using-issuance_on_demand"><a class="toc-anchor" href="#recommend-not-using-issuance_on_demand" >§</a> Recommend Not Using ISSUANCE_ON_DEMAND</h5>
-<div id="warning-1" class="notice warning"><a class="notice-link" href="#warning-1">WARNING</a><p>Based on the experience of the AnonCreds community in the use of revocable
-credentials, it is highly recommended the <code>ISSUANCE_ON_DEMAND</code> approach <strong>NOT</strong> be
-used unless absolutely required by your use case.</p>
-<p>The reason this approach is not recommended is that if the <a class="term-reference" href="#term:issuer">issuer</a>
-creates the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> with the <code>issuanceType</code> item set to
-<code>ISSUANCE_ON_DEMAND</code>, the <a class="term-reference" href="#term:issuer">issuer</a> must publish a <a class="term-reference" href="#term:revregentry">RevRegEntry</a> (as
-described in the <a href="#anoncreds-credential-activationrevocation-and-publication" >revocation
-section</a>) as each
-credential is issued resulting in many <a class="term-reference" href="#term:revregentry">RevRegEntry</a> transactions being
-performed, one per credential issued. Of course, with either <code>issueanceType</code>, there must
-still be one transaction for each batch of (1 or more) credentials revoked.</p>
-<p>Further, if a credential contains some kind of “Issue Date” attribute in the
-credential and it is shared with verifiers, those verifiers can use that value
-to find the <a class="term-reference" href="#term:revregentry">RevRegEntry</a> transaction that activated the credential at
-the same time to learn the index of the holder’s credential within the <a class="term-reference" href="#term:revreg">RevReg</a>, giving the verifiers both a correlatable identifier (RevRegId+index)
-for the holder’s credential and a way to monitor if that credential is ever
-revoked in the future.</p>
-<p>For these reasons we anticipate the deprecation or removal of the
-<code>ISSUANCE_ON_DEMAND</code> approach in the next version of AnonCreds specification.
-Feedback from the community on this would be appreciated. We are particularly
-interested in understanding what use cases there are for <code>ISSUANCE_ON_DEMAND</code>.</p>
-</div>
+<p>Three outputs are generated from the process to generate the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a>: the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> object itself, the <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> content, and the <a class="term-reference" href="#term:private-revocation-registry">Private Revocation Registry</a> object.</p>
 <h5 id="revocation-registry-definition-object-generation"><a class="toc-anchor" href="#revocation-registry-definition-object-generation" >§</a> Revocation Registry Definition Object Generation</h5>
 <p>The <a class="term-reference" href="#term:revocation-registry-definition">Revocation Registry Definition</a> object has the following data model. This example is from
 <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="140386"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/140386" >this transaction</a> on the
 Sovrin MainNet and instance of Hyperledger Indy.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-  <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"CL_ACCUM"</span><span class="token punctuation">,</span>
+  <span class="token property">"revocDefType"</span><span class="token operator">:</span> <span class="token string">"CL_ACCUM"</span><span class="token punctuation">,</span>
   <span class="token property">"credDefId"</span><span class="token operator">:</span> <span class="token string">"Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc"</span><span class="token punctuation">,</span>
   <span class="token property">"tag"</span><span class="token operator">:</span> <span class="token string">"MyCustomCredentialDefinition"</span><span class="token punctuation">,</span>
-  <span class="token property">"publicKeys"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-    <span class="token property">"accumKey"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-      <span class="token property">"z"</span><span class="token operator">:</span> <span class="token string">"1 0BB...386"</span>
-    <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token property">"maxCredNum"</span><span class="token operator">:</span> <span class="token number">666</span><span class="token punctuation">,</span>
-  <span class="token property">"tailsLocation"</span><span class="token operator">:</span> <span class="token string">"https://my.revocations.tails/tailsfile.txt"</span><span class="token punctuation">,</span>
-  <span class="token property">"tailsHash"</span><span class="token operator">:</span> <span class="token string">"91zvq2cFmBZmHCcLqFyzv7bfehHH5rMhdAG5wTjqy2PE"</span>
+  <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"publicKeys"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"accumKey"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"z"</span><span class="token operator">:</span> <span class="token string">"1 0BB...386"</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"maxCredNum"</span><span class="token operator">:</span> <span class="token number">666</span><span class="token punctuation">,</span>
+    <span class="token property">"tailsLocation"</span><span class="token operator">:</span> <span class="token string">"https://my.revocations.tails/tailsfile.txt"</span><span class="token punctuation">,</span>
+    <span class="token property">"tailsHash"</span><span class="token operator">:</span> <span class="token string">"91zvq2cFmBZmHCcLqFyzv7bfehHH5rMhdAG5wTjqy2PE"</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 </code></pre>
 <p>The items within the data model are as follows:</p>
 <div id="todo-5" class="notice todo"><a class="notice-link" href="#todo-5">TODO</a><p>Update this to be the inputs for generating a Revocation Registry vs. the already published object</p>
 </div>
 <ul>
-<li><code>type</code> - the type of revocation registry (This is currently always <code>CL_ACCUM</code>)</li>
+<li><code>revocDefType</code> - the type of revocation registry (This is currently always <code>CL_ACCUM</code>)</li>
 <li><code>credDefId</code> - The id of the <a class="term-reference" href="#term:credential-definition">Credential Definition</a> on which the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> is based.</li>
-<li><code>tag</code> - the tag of the credential definition</li>
-<li><code>public_keys</code> - Public keys data for signing the accumulator; the public key of a private/public key pair
+<li><code>tag</code> - an arbitrary string defined by the [ref: issuer], enabling an [ref: issuer] to create multiple <a class="term-reference" href="#term:revocation-registry-definition">Revocation Registry Definition</a>s for the same <a class="term-reference" href="#term:credential-definition">Credential Definition</a>.</li>
+<li><code>value</code> - The value of the revocation registry definition
+<ul>
+<li><code>publicKeys</code> - Public keys data for signing the accumulator; the public key of a private/public key pair
 <ul>
 <li><code>accumKey</code> - Accumulator key for signing the accumulator
 <ul>
@@ -686,9 +656,11 @@ Sovrin MainNet and instance of Hyperledger Indy.</p>
 </li>
 </ul>
 </li>
-<li><code>maxCredNumber</code> - The maximum amount of Credentials that can be revoked in the Revocation Registry before a new one needs to be started</li>
+<li><code>maxCredNum</code> - The maximum amount of Credentials that can be revoked in the Revocation Registry before a new one needs to be started</li>
 <li><code>tailsLocation</code> - The URL pointing to the related tails file</li>
 <li><code>tailsHash</code> - The hash of the tails file <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> (see also: <a href="#tails-file-and-tails-file-generation" >next section</a>) resulting from hashing the tails file version prepended to the tails file as SHA256 and then encoded to base58.</li>
+</ul>
+</li>
 </ul>
 <p>As noted, most of the items come directly from the input parameters provided by
 the <a class="term-reference" href="#term:issuer">issuer</a>. The <code>z</code> <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> accumulator public key is
@@ -2372,7 +2344,7 @@ non-revoked credential in the <a class="term-reference" href="#term:revocation-r
 credentials within a <a class="term-reference" href="#term:revreg">RevReg</a> so that it can both calculate the correct
 accumulator and send to the <a class="term-reference" href="#term:vdr">VDR</a> accurate lists (<code>issued</code> and <code>revoked</code>)
 of the indices of the credentials whose status has changed since the last <a class="term-reference" href="#term:revregentry">RevRegEntry</a> was published. If the list and accumulator published to <a class="term-reference" href="#term:vdr">VDR</a> get out of
-sync  a <a class="term-reference" href="#term:holder">holder</a> will not be able to generate a valid NRP.</p>
+sync a <a class="term-reference" href="#term:holder">holder</a> will not be able to generate a valid NRP.</p>
 <p>A <a class="term-reference" href="#term:vdr">VDR</a> publishing a <a class="term-reference" href="#term:revreg">RevReg</a> MAY perform its own calculation of
 the accumulator based on the list updates received in a <a class="term-reference" href="#term:revregentry">RevRegEntry</a>
 transaction to ensure that the calculation of the accumulator after all of the
