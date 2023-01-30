@@ -50,6 +50,9 @@ specification.
 [[def: issuer, issuers]]
 ~ An issuer is one of the three entities that interact with each other within the domain of digital identities. It can assert [[ref: claims]] about a [[ref: subject]] in the form of a tamper-proof credential whose origins are cryptographically verifiable.
 
+[[def: Issuer Identifier, Issuer Identifiers]]
+~ An issuer identifier is a unique identifier for an [[ref: issuer]]. It is used to identify the [[ref: issuer]] of AnonCreds objects published to a [[ref: Verifiable Data Registry]] . See [Issuer Identifiers](#issuer-identifiers) for details.
+
 [[def: link secret]]
 ~ One of the most significant differences between the AnonCreds and W3C [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) is how a credential is bound to the [[ref: holder]]. With the Verifiable Credential, the holder binding happens without additional interactions between the [[ref: holder]] and [[ref: issuer]]. However, this approach comes with a lack of privacy for the [[ref: holder]].
 The correlatability of credentials due to the necessity of revealing a persistent identifier related to the [[ref: holder]] is one such privacy issue.
