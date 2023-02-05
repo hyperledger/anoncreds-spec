@@ -172,20 +172,24 @@ Complete the data element descriptions in the following list.
 :::
 
 * `prover_did`: is a deprecated, optional string that MUST NOT be provided when using other
-  than legacy Indy AnonCreds Methods. Specifically, `prover_did` MUST NOT be
-  provided if the [[ref: Credential Definition]] identifier and the [[ref:
-  Credential Definition]] Issuer identifier are URIs.
-  * The `prover_did` serves only as a string in the credential signing process to add entropy.
-  * If not provided, a 22-character random alphanumeric string is generated in its place by the [[ref: issuer]].
+  than [legacy Indy AnonCreds Method].
+  * If not provided, the [[ref: issuer]] generates a random alphanumeric string in its place.
+  * The `prover_did` is used during  credential signing to add entropy to the process.
+  * The `prover_did` is combined with the credential's revocation index (if
+  present) and the result hashed to produce the `credential_context`. The
+  `credential context` is used during credential signing and shared with the
+  [[ref: holder]] in the issued credential as the value `m2`. 
   * Historically, in Aries agent implementations, the `prover_did` was populated by
-  the [[ref: holder]] with a [[ref: DID]] they hold, such as the DIDComm
+  the [[ref: holder]] with a [[ref: DID]] they hold, usually the DIDComm
   peer-to-peer DID shared with the [[ref: issuer]] by the [[ref: holder]].
   However, the item is not verified by the [[ref: issuer]] as a DID nor as an identifier
-  for the [[ref: holder]]. It is not needed after credential signing.
+  for the [[ref: holder]]. The value is not used after credential signing.
 * `cred_def_id`: The ID of the [[ref: Public Credential Definition]] on which the [[ref: Credential]] to be issued will be based.
 * `blinded_ms`: The [[ref: link secret]] in its blinded form. Described in detail in the section [Blinding the Link Secret](#blinding-the-link-secret) (below).
 * `blinded_ms_correctness_proof`: The [[ref: Blinded Secrets Correctness Proof]] of the blinded [[ref: link secret]]. Described in detail in the section [The Blinded Link Secret Correctness Proof](#the-blinded-link-secret-correctness-proof) (below).
 * `nonce`: Used for preventing replay attacks and authentication between protocol steps. *Generation Process to be added*
+
+[legacy Indy AnonCreds Method]: https://hyperledger.github.io/anoncreds-methods-registry/#hyperledger-indy-legacy-anoncreds-method
 
 Once constructed, the [[ref: holder]] sends the [[ref: Credential Request]] to the [[ref: issuer]], who then can reply to the [[ref: holder]] by sending an issued credential.
 
