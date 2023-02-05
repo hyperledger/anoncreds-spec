@@ -92,8 +92,7 @@ The values in the proof are generated as follows:
 
   * $z = s ^ {x_z}\ Mod\ n$ where $z$, $s$ and $n$ are values in the [[ref: Public Credential Definition]]
   * $r_i$ are the values in the $r$ map in [[ref: Public Credential Definition]], individual attribute public keys
-  * $\tilde{z}$ is similar to $z$ which equals to $s^{\tilde{x_z}}$, where $\tilde{x_z}$ is a randomly selected integer between $2$ and $p'q'-1$
-  * $r_i$ are the values in the $r$ map in [[ref: Public Credential Definition]]
+  * $\tilde{z}$ is similar to $z$ which equals to $s^{\tilde{x_z}}\ mod\ n$, where $\tilde{x_z}$ is a randomly selected integer between $2$ and $p'q'-1$
   * $\tilde{r_i}$ is similar to $r$, which equal to $s^{\tilde{x_i}}\ mod\ n$, where $\tilde{x_i}$ are randomly selected integers between $2$ and $p'q'-1$
 
 * `xz_cap`: $\hat{x_z} = c x_z + \tilde{x_z}$
