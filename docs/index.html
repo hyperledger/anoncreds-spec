@@ -249,15 +249,15 @@ The correlatability of credentials due to the necessity of revealing a persisten
 <p><a class="term-reference" href="#term:dids">DIDs</a> and DID documents have to be stored on some kind of system, which is available (to the public, in most cases). Such a system can be a distributed ledger, a (decentralized) file system, database and others. Such an anchor for [[ref: DID]s] and DID documents is called Verifiable Data Registry.</p>
 </dd>
 <dd>
-<p>In the case of Hyperledger Indy a distributed ledger is used as Verifiable Data Registry. Besides <a class="term-reference" href="#term:dids">DIDs</a> and DID documents an instance of a Hyperledger Indy network stores additional data on the ledger, which is required for issuance (e.g. <a class="term-reference" href="#term:schema">Schema</a> and <a class="term-reference" href="#term:credential-definition">Credential Definition</a>), verification (e.g. <a class="term-reference" href="#term:rev_reg_def">REV_REG_DEF</a>)) and revocation (e.g <a class="term-reference" href="#term:rev_reg_entry">REV_REG_ENTRY</a>) of credentials.</p>
+<p>In the case of Hyperledger Indy a distributed ledger is used as Verifiable Data Registry. Besides <a class="term-reference" href="#term:dids">DIDs</a> and DID documents an instance of a Hyperledger Indy network stores additional data on the ledger, which is required for issuance (e.g. <a class="term-reference" href="#term:schema">Schema</a> and <a class="term-reference" href="#term:credential-definition">Credential Definition</a>), verification (e.g. <a class="term-reference" href="#term:revocation-registry-definition">Revocation Registry Definition</a>)) and revocation (e.g <a class="term-reference" href="#term:revocation-status-list">Revocation Status List</a>) of credentials.</p>
 </dd>
 <dt><span id="term:verifiable-presentation">Verifiable Presentation</span></dt>
 <dd>
-<p>TODO</p>
+<p>Usually, a VP is a collection of claims obtained from one or more VCs with added proof. Contrary to VCs, VPs are built so that the owner of the data (holder) is cryptographically verifiable. 
+More often than not, the data included in a presentation is just about the subject of a VC, although that’s not mandatory.
+The AnonCreds enable the holder to prove it holds a claim from a VC without revealing the VC itself. The value in the VP has to be derived in such a way that guarantees (in the form of a cryptographic assertion) any given verifier that they can trust the claimed assertion.</p>
 </dd>
-<dd>
-<p>In the case of Hyperledger Indy a distributed ledger is used as Verifiable Data Registry. Besides <a class="term-reference" href="#term:dids">DIDs</a> and DID documents an instance of a Hyperledger Indy network stores additional data on the ledger, which is required for issuance (e.g. <a class="term-reference" href="#term:schema">Schema</a> and <a class="term-reference" href="#term:credential-definition">Credential Definition</a>), verification (e.g. <a class="term-reference" href="#term:revocation-registry-definition">Revocation Registry Definition</a>)) and revocation (e.g <a class="term-reference" href="#term:revocation-status-list">Revocation Status List</a>) of credentials.</p>
-</dd>
+<dt><span id="term:verifier">Verifier</span></dt>
 <dd>
 <p>A verifier is an entity that validates identity information from a <a class="term-reference" href="#term:holder">holder</a> to grant access to goods and services.</p>
 </dd>
