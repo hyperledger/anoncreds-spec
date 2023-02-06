@@ -100,13 +100,14 @@ The correlatability of credentials due to the necessity of revealing a persisten
 [[def: Verifiable Data Registry, VDR]]
 ~ [[ref: DIDs]] and DID documents have to be stored on some kind of system, which is available (to the public, in most cases). Such a system can be a distributed ledger, a (decentralized) file system, database and others. Such an anchor for [[ref: DID]s] and DID documents is called Verifiable Data Registry.
 
-~ In the case of Hyperledger Indy a distributed ledger is used as Verifiable Data Registry. Besides [[ref: DIDs]] and DID documents an instance of a Hyperledger Indy network stores additional data on the ledger, which is required for issuance (e.g. [[ref: Schema]] and [[ref: Credential Definition]]), verification (e.g. [[ref: REV_REG_DEF]])) and revocation (e.g [[ref: REV_REG_ENTRY]]) of credentials.
-
-[[def: Verifiable Presentation]]
-~ TODO
-
 ~ In the case of Hyperledger Indy a distributed ledger is used as Verifiable Data Registry. Besides [[ref: DIDs]] and DID documents an instance of a Hyperledger Indy network stores additional data on the ledger, which is required for issuance (e.g. [[ref: Schema]] and [[ref: Credential Definition]]), verification (e.g. [[ref: Revocation Registry Definition]])) and revocation (e.g [[ref: Revocation Status List]]) of credentials.
 
+[[def: Verifiable Presentation]]
+~ Usually, a VP is a collection of claims obtained from one or more VCs with added proof. Contrary to VCs, VPs are built so that the owner of the data (holder) is cryptographically verifiable. 
+More often than not, the data included in a presentation is just about the subject of a VC, although that's not mandatory.
+The AnonCreds enable the holder to prove it holds a claim from a VC without revealing the VC itself. The value in the VP has to be derived in such a way that guarantees (in the form of a cryptographic assertion) any given verifier that they can trust the claimed assertion.
+
+[[def: Verifier]]
 ~ A verifier is an entity that validates identity information from a [[ref: holder]] to grant access to goods and services.
 
 [[def: Witness Delta]]
