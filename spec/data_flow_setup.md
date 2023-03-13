@@ -44,8 +44,8 @@ step would be for the [[ref: issuer]] to publish a DID. However, in AnonCreds,
 DIDs are not used in the processing of credentials, and notably, the public keys
 used in AnonCreds signatures come not from DIDs, but rather from [[ref:
 Credential Definition]] objects. DIDs may be used to identify the entity publishing the
-objects that are then used in the processing of credentials -- the [[def:
-SCEHMA]], [[def: CRED_DEF]], [[def: Revocation Registry Definition]] and [[def: Revocation Registry Entry]]
+objects that are then used in the processing of credentials -- the [[ref:
+Schema]], [[ref: Credential Definition]], [[ref: Revocation Registry Definition]] and [[ref: Revocation Status List]]
 objects. There is an enforced relationship between an identifier (such as a DID)
 for the entity publishing the AnonCred objects, and the objects themselves. For
 example, in the Hyperledger Indy implementation of AnonCreds, for a credential
@@ -91,15 +91,17 @@ AnonCreds credential of this type. The following is an example [[ref: Schema]]:
 
 ```json
 {
+  "issuerId": "https://example.org/issuers/74acabe2-0edc-415e-ad3d-c259bac04c15",
   "name": "Example schema",
   "version": "0.0.1",
-  "attr_names": ["name", "age", "vmax"]
+  "attrNames": ["name", "age", "vmax"]
 }
 ```
 
+- `issuerId` - the [[ref: Issuer Identifier]] of the schema. MUST adhere to [Issuer Identifiers](#issuer-identifiers) rules.
 - `name` (string) - the name of the schema
 - `version` (string) - the schema version as a documentation string that it's not validated. The format is up to each implementor or publisher. For example, Indy uses [Semantic Versioning](https://semver.org)  
-- `attr_names` (str[]) - an array of strings with each string being the name of an attribute of the schema
+- `attrNames` (str[]) - an array of strings with each string being the name of an attribute of the schema
 
 Once constructed, the [[ref: Schema]] is published to a Verifiable Data Registry
 (VDR) using the Schema Publishers selected [[ref: AnonCreds Objects Method]].
@@ -195,7 +197,8 @@ MainNet):
 
 ```json
 {
-  "schema_id": "did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ/anoncreds/v0/SCHEMA/MemberPass/1.0",
+  "issuerId": "did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ",
+  "schemaId": "did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ/anoncreds/v0/SCHEMA/MemberPass/1.0",
   "type": "CL",
   "tag": "latest",
   "value": {
@@ -234,7 +237,8 @@ issued credential to the entity to which it was issued.
 
 All integers within the above [[ref: Credential Definition]] example json are shown with ellipses (e.g. `123...789`). They are 2048-bit integers represented as `617` decimal digits. These integers belong to an RSA-2048 group characterised by the `n` defined in the [[ref: Credential Definition]].
 
-- `schema_id` - (string) The identifier of the [[ref: Schema]] on which the [[ref: Credential Definition]] is based. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] used in publishing the [[ref: Schema]].
+- `issuerId` - the [[ref: Issuer Identifier]] of the credential definition. MUST adhere to [Issuer Identifiers](#issuer-identifiers) rules.
+- `schemaId` - (string) The identifier of the [[ref: Schema]] on which the [[ref: Credential Definition]] is based. The format of the identifier is dependent on the [[ref: AnonCreds Objects Method]] used in publishing the [[ref: Schema]].
 - `type` - (string) The signature type of the [[ref: Credential Definition]]. For this version of AnonCreds the value is always `CL`.
 - `tag` (string) - the tag value passed in by the [[ref: Issuer]] to an AnonCred’s [[ref: Credential Definition]] create and store implementation.
 - `value` - (object) an Ursa native object with the `primary` and `revocation` fields.
@@ -305,10 +309,11 @@ they are the same as was covered above.
 
 ```json
 {
-  "schema_id": "did:indy:sovrin:F72i3Y3Q4i466efjYJYCHM/anoncreds/v0/SCHEMA/state_license/4.2.0",
+  "issuerId": "did:indy:sovrin:F72i3Y3Q4i466efjYJYCHM",
+  "schemaId": "did:indy:sovrin:F72i3Y3Q4i466efjYJYCHM/anoncreds/v0/SCHEMA/state_license/4.2.0",
   "type": "CL",
   "tag": "latest",
-  "data": {
+  "value": {
     "primary": {...},
     "revocation": {
       "g": "1 154...813 1 11C...D0D 2 095..8A8",
@@ -360,10 +365,10 @@ Method]] can describe how to resolve the contents stored on the ledger into the 
 
 Once the [[ref: issuer]] has created a [[ref: Credential Definition]] with revocation
 enabled, the [[ref: issuer]] must also create and publish a [[ref: Revocation Registry Definition]] and
-create and publish the first [[ref: Revocation Registry Entry]] for the registry.
+create and publish the first [[ref: Revocation Status List]] for the registry.
 
 In this section, we'll cover the create and publish steps for each
-of the [[ref: Revocation Registry Definition]] and [[ref: Revocation Registry Entry]] objects. The creation and
+of the [[ref: Revocation Registry Definition]] and [[ref: Revocation Status List]] objects. The creation and
 publishing of the [[ref: Revocation Registry Definition]] includes creating and publishing the
 [[ref: TAILS_FILE]] for the [[ref: Revocation Registry]].
 
@@ -372,58 +377,14 @@ publishing of the [[ref: Revocation Registry Definition]] includes creating and 
 A secure process must be run to create the revocation registry object, taking
 the following input parameters.
 
-- `type`: the type of revocation registry being created. For Hyperledger Indy
-  this is always "CL_ACCUM."
-- `cred_def_id`: the ID of the [[ref: Credential Definition]] to which the [[ref: Revocation Registry]]
-  is to be associated
-- `tag`: an [[ref: issuer]]-defined tag that is included in the identifier for
-  the [[ref: Revocation Registry]]
-- `issuanceType`: an enumerated value that defines the initial state of
-  credentials in the [[ref: Revocation Registry]]: revoked ("ISSUANCE_ON_DEMAND") or
-  non-revoked ("ISSUANCE_BY_DEFAULT"). See the [warning and recommendation
-  against the use of
-  `ISSUANCE_ON_DEMAND`](#recommend-not-using-issuanceondemand).
+- `revocDefType`: the type of revocation registry being created. This is always `CL_ACCUM`
+- `credDefId`: the ID of the [[ref: Credential Definition]] to which the [[ref: Revocation Registry]] is to be associated
+- `tag`: an arbitrary string defined by the [ref: issuer], enabling an [ref: issuer] to create multiple [[ref: Revocation Registry Definition]]s for the same [[ref: Credential Definition]].
 - `maxCredNum`: The capacity of the [[ref: Revocation Registry]], a count of the number of
   credentials that can be issued using the [[ref: Revocation Registry]].
-- `tailsLocation`: A URL indicating where the [[ref: TAILS_FILE]] for the [[ref
-Revocation Registry]] will be available to all [[ref: holders]] of credential issued using
-  this revocation registry.
+- `tailsLocation`: A URL indicating where the [[ref: TAILS_FILE]] for the [[ref Revocation Registry]] will be available to all [[ref: holders]] of credential issued using this revocation registry.
 
-Three outputs are generated from the process to generate the [[ref; Revocation Registry]]:
-the [[ref: Revocation Registry]] object itself, the [[ref: TAILS_FILE]] content, and the
-[[ref: Private Revocation Registry]] object.
-
-##### Recommend Not Using ISSUANCE_ON_DEMAND
-
-::: warning
-
-Based on the experience of the AnonCreds community in the use of revocable
-credentials, it is highly recommended the `ISSUANCE_ON_DEMAND` approach **NOT** be
-used unless absolutely required by your use case.
-
-The reason this approach is not recommended is that if the [[ref: issuer]]
-creates the [[ref: Revocation Registry]] with the `issuanceType` item set to
-`ISSUANCE_ON_DEMAND`, the [[ref:issuer]] must publish a [[ref: RevRegEntry]] (as
-described in the [revocation
-section](#anoncreds-credential-activationrevocation-and-publication)) as each
-credential is issued resulting in many [[ref: RevRegEntry]] transactions being
-performed, one per credential issued. Of course, with either `issueanceType`, there must
-still be one transaction for each batch of (1 or more) credentials revoked.
-
-Further, if a credential contains some kind of "Issue Date" attribute in the
-credential and it is shared with verifiers, those verifiers can use that value
-to find the [[ref: RevRegEntry]] transaction that activated the credential at
-the same time to learn the index of the holder's credential within the [[ref:
-RevReg]], giving the verifiers both a correlatable identifier (RevRegId+index)
-for the holder's credential and a way to monitor if that credential is ever
-revoked in the future.
-
-For these reasons we anticipate the deprecation or removal of the
-`ISSUANCE_ON_DEMAND` approach in the next version of AnonCreds specification.
-Feedback from the community on this would be appreciated. We are particularly
-interested in understanding what use cases there are for `ISSUANCE_ON_DEMAND`.
-
-:::
+Three outputs are generated from the process to generate the [[ref: Revocation Registry]]: the [[ref: Revocation Registry]] object itself, the [[ref: TAILS_FILE]] content, and the [[ref: Private Revocation Registry]] object.
 
 ##### Revocation Registry Definition Object Generation
 
@@ -433,17 +394,20 @@ Sovrin MainNet and instance of Hyperledger Indy.
 
 ```json
 {
-  "type": "CL_ACCUM",
+  "issuerId": "did:web:example.org",
+  "revocDefType": "CL_ACCUM",
   "credDefId": "Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc",
   "tag": "MyCustomCredentialDefinition",
-  "publicKeys": {
-    "accumKey": {
-      "z": "1 0BB...386"
-    }
-  },
-  "maxCredNum": 666,
-  "tailsLocation": "https://my.revocations.tails/tailsfile.txt",
-  "tailsHash": "91zvq2cFmBZmHCcLqFyzv7bfehHH5rMhdAG5wTjqy2PE"
+  "value": {
+    "publicKeys": {
+      "accumKey": {
+        "z": "1 0BB...386"
+      }
+    },
+    "maxCredNum": 666,
+    "tailsLocation": "https://my.revocations.tails/tailsfile.txt",
+    "tailsHash": "91zvq2cFmBZmHCcLqFyzv7bfehHH5rMhdAG5wTjqy2PE"
+  }
 }
 ```
 
@@ -453,15 +417,17 @@ The items within the data model are as follows:
 Update this to be the inputs for generating a Revocation Registry vs. the already published object
 :::
 
-- `type` - the type of revocation registry (This is currently always `CL_ACCUM`)
+- `issuerId` - the [[ref: Issuer Identifier]] of the revocation registry. MUST adhere to [Issuer Identifiers](#issuer-identifiers) rules and MUST be the same `issuerId` as the [[ref: Credential Definition]] on which the [[ref: Revocation Registry]] is based.
+- `revocDefType` - the type of revocation registry (This is currently always `CL_ACCUM`)
 - `credDefId` - The id of the [[ref: Credential Definition]] on which the [[ref: Revocation Registry]] is based.
-- `tag` - the tag of the credential definition
-- `public_keys` - Public keys data for signing the accumulator; the public key of a private/public key pair
-  - `accumKey` - Accumulator key for signing the accumulator
-    - `z` - a public key used to sign the accumulator (described further below)
-- `maxCredNumber` - The maximum amount of Credentials that can be revoked in the Revocation Registry before a new one needs to be started
-- `tailsLocation` - The URL pointing to the related tails file
-- `tailsHash` - The hash of the tails file [[ref: TAILS_FILE]] (see also: [next section](#tails-file-and-tails-file-generation)) resulting from hashing the tails file version prepended to the tails file as SHA256 and then encoded to base58.
+- `tag` - an arbitrary string defined by the [ref: issuer], enabling an [ref: issuer] to create multiple [[ref: Revocation Registry Definition]]s for the same [[ref: Credential Definition]].
+- `value` - The value of the revocation registry definition
+  - `publicKeys` - Public keys data for signing the accumulator; the public key of a private/public key pair
+    - `accumKey` - Accumulator key for signing the accumulator
+      - `z` - a public key used to sign the accumulator (described further below)
+  - `maxCredNum` - The maximum amount of Credentials that can be revoked in the Revocation Registry before a new one needs to be started
+  - `tailsLocation` - The URL pointing to the related tails file
+  - `tailsHash` - The hash of the tails file [[ref: TAILS_FILE]] (see also: [next section](#tails-file-and-tails-file-generation)) resulting from hashing the tails file version prepended to the tails file as SHA256 and then encoded to base58.
 
 As noted, most of the items come directly from the input parameters provided by
 the [[ref: issuer]]. The `z` [[ref: Revocation Registry]] accumulator public key is
@@ -504,7 +470,7 @@ or revocation events. Once generated, the SHA256 (TO BE VERIFIED) hash of the
 array of primes is calculated and returned to be inserted into the `tailsHash`
 item of the [[ref: Revocation Registry]] object (as described in the [previous
 section](#revocation-registry-definition-object-generation)). Typically, the array is streamed into a
-file (hence, the term "Tails File") and published to a [[def: URL]] indicated by
+file (hence, the term "Tails File") and published to a [[ref: URL]] indicated by
 the `tailsLocation` input parameter provided by the [[ref: issuer]].
 
 The format of a [[ref: TAILS_FILE]] is as follows:
@@ -546,54 +512,48 @@ on the Sovrin MainNet instance of Hyperledger Indy. The binary [[ref:
 TAILS_FILE]] associated with the [[ref: Revocation Registry]] can be downloaded from the
 `tailsLocation` in the [[ref: Revocation Registry]] object.
 
-#### Creating the Initial Revocation Registry Entry Object
+#### Creating the Initial Revocation Status List Object
 
-Published [[ref: Revocation Registry Entry]] objects contain the state of the [[ref:
+Published [[ref: Revocation Status List]] objects contain the state of the [[ref:
 Revocation Registry]] at a given point in time such that [[ref: holders]] can generate a
 proof of non-revocation (or not) about their specific credential and [[ref:
-verifiers]] can verify that proof. An initial [[ref: Revocation Registry Entry]] is
+verifiers]] can verify that proof. An initial [[ref: Revocation Status List]] is
 generated and published immediately on creation of the [[ref: Revocation Registry]] so that
 it can be used immediately by [[ref: holders]]. Over time, additional [[ref:
-Revocation Registry Entry]] objects are generated and published as the revocation status of
+Revocation Status List]] objects are generated and published as the revocation status of
 one or more credentials within the [[ref: Revocation Registry]] change.
 
-A secure process must be run to create the initial [[ref: Revocation Registry Entry]] object,
+A secure process must be run to create the initial [[ref: Revocation Status List]] object,
 taking the following input parameters.
 
-- `type`: the type of revocation registry being created. For Hyperledger Indy
-  this is always "CL_ACCUM."
-- `rev_reg_id`: the ID of the [[ref: Revocation Registry]] for which the initial [[ref:
-Revocation Registry Entry]] is to be generated.
+- `revRegId`: the ID of the [[ref: Revocation Registry]] for which the initial [[ref:
+Revocation Status List]] is to be generated.
   - The process uses this identifier to find the associated [[ref:
 Private Revocation Registry]] to access the information within that object.
+- `revocationList` - A bit array of length `maxCredNum` that indicates whether a credential
+  is initially revoked or not. The value of `1` indicates the credential is
+  initially revoked, the value of `0` indicates the credential is initially unrevoked.
 
 The process collects from the identified [[ref: Private Revocation Registry]] information to
 calculate the cryptographic accumulator value for the initial [[ref:
-Revocation Registry Entry]], including:
+Revocation Status List]], including:
 
-- `issuanceType`: an enumerated value that defines the initial state of
-  credentials in the [[ref: Revocation Registry]]: revoked ("ISSUANCE_ON_DEMAND") or
-  non-revoked ("ISSUANCE_BY_DEFAULT"). See the [warning and recommendation
-  against the use of
-  `ISSUANCE_ON_DEMAND`](#recommend-not-using-issuanceondemand).
+- `revocDefType`: the type of revocation registry. This is currently always `CL_ACCUM`
 - `maxCredNum`: The capacity of the [[ref: Revocation Registry]], a count of the number of
   credentials that can be issued using the [[ref: Revocation Registry]].
 - `tailsArray`: The contents of the [[ref: TAILS_FILE]], the array of primes,
   one for each credential to be issued from the [[ref: Revocation Registry]].
-- `private_key`: The accumulator private key for the [[ref: Revocation Registry]].
+- `privateKey`: The accumulator private key for the [[ref: Revocation Registry]].
 
-With the collected information, the process the initial cryptographic
-accumulator for the [[ref: Revocation Registry]]. The format of the identifier for the
-[[ref: Revocation Registry Entry]] is dependent on the [[ref: AnonCreds Objects Method]]
+With the collected information, the initial cryptographic accumulator for the [[ref: Revocation Registry]] can be created. The format of the identifier for the
+[[ref: Revocation Status List]] is dependent on the [[ref: AnonCreds Objects Method]]
 used by the issuer.
 
 In simple terms, the cryptographic accumulator at any given point in time is the
 (modulo) product of the primes for each non-revoked credential in the [[ref:
-Revocation Registry]]. Based on the value of `issuanceType`, all of the
-credentials are initially either revoked, or unrevoked. If all of the credentials are
-initially revoked, the accumulator value is `0`, if all are unrevoked, the
-accumulator value has contributions from all of the entries in the array of
-primes.
+Revocation Registry]].
+
+If all of the credentials are initially revoked (`revocationList` only contains `1` values), the accumulator value is `0`.
 
 The accumulator is calculated using the following steps:
 
@@ -601,41 +561,33 @@ The accumulator is calculated using the following steps:
 To Do: Adding the algorithm for calculating the accumulator
 :::
 
-THe following is an example of an initial, published [[ref: Revocation Registry Entry]] object:
+THe following is an example of an initial, published [[ref: Revocation Status List]] object:
 
 ```json
 {
-  "revocDefType": "CL_ACCUM",
-  "revocRegDefId": "Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140389:mctc:CL_ACCUM:1-1024",
-  "value": {
-    "accum": "21 10B...33D"
-  }
+  "revRegDefId": "4xE68b6S5VRFrKMMG1U95M:4:4xE68b6S5VRFrKMMG1U95M:3:CL:59232:default:CL_ACCUM:4ae1cc6c-f6bd-486c-8057-88f2ce74e960",
+  "revocationList": [0, 1, 1, 0],
+  "currentAccumulator": "21 124C594B6B20E41B681E92B2C43FD165EA9E68BC3C9D63A82C8893124983CAE94 21 124C5341937827427B0A3A32113BD5E64FB7AB39BD3E5ABDD7970874501CA4897 6 5438CB6F442E2F807812FD9DC0C39AFF4A86B1E6766DBB5359E86A4D70401B0F 4 39D1CA5C4716FFC4FE0853C4FF7F081DFD8DF8D2C2CA79705211680AC77BF3A1 6 70504A5493F89C97C225B68310811A41AD9CD889301F238E93C95AD085E84191 4 39582252194D756D5D86D0EED02BF1B95CE12AED2FA5CD3C53260747D891993C",
+  "timestamp": 1669640864487
 }
 ```
 
 The items in the data model are:
 
-- `revocDefType`: the input parameter `type`
-- `revocRegDefId`: the identifier of the associated [[ref: Revocation Registry Definition]]. The
+- `revRegDefId`: the identifier of the associated [[ref: Revocation Registry Definition]]. The
   format of the identifier is dependent on the [[ref: AnonCreds Objects Method]]
   used by the issuer.
+- `revocationList`: Bit array defining the status of the credential in the [ref: Revocation Registry]. A value of `1` means the credential is revoked, a value of `0` means the credential is not revoked.
+- `currentAccumulator`: the calculated cryptographic accumulator reflecting the initial state of the [[ref: Revocation Registry]]
+- `timestamp`: the timestamp at which the accumulator value is valid
 
-* `accum`: the calculated cryptographic accumulator reflecting the initial state
-  of the [[ref: Revocation Registry]]
+#### Publishing the Initial Initial Revocation Status List Object
 
-To see what [[ref: Revocation Registry Entry]] transactions look like on a [[ref: VDR]], this is [a
-link](https://indyscan.io/tx/SOVRIN_MAINNET/domain/55326) to an initial [[ref:
-Revocation Registry Entry]] where the credentials are initially all revoked, while this is
-[a link](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140392) to an initial
-[[ref: Revocation Registry Entry]] where all of the credentials are unrevoked.
-
-#### Publishing the Initial Initial Revocation Registry Entry Object
-
-Once constructed, the initial [[ref: Revocation Registry Entry]] is published by the [[ref:
+Once constructed, the initial [[ref: Revocation Status List]] is published by the [[ref:
 issuer]] in a [[ref: Verifiable Data Registry]] using their selected [[ref:
-AnonCreds Objects Method]]. For example, see [this
-Revocation Registry Entry](https://indyscan.io/tx/SOVRIN_MAINNET/domain/140392) that is
-published on the Sovrin MainNet instance of Hyperledger Indy.
+AnonCreds Objects Method]].
+
+It is not required for the [[ref: Verifiable Data Registry]] to store the revocation list as defined in this model. For example, the Indy ledger uses deltas ([Revocation Registry Entries](https://github.com/hyperledger/indy-node/blob/main/docs/source/transactions.md#revoc_reg_entry)) to store the change in revoked/un-revoked indices instead of storing the entire revocation list. It is also possible to compress the `revocationList` entry using e.g. GZIP to reduce the size on the ledger.
 
 ### Holder Create and Store Link Secret
 
