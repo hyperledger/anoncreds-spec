@@ -374,7 +374,7 @@ AnonCreds credential of this type. The following is an example <a class="term-re
 <ul>
 <li><code>issuerId</code> - the <a class="term-reference" href="#term:issuer-identifier">Issuer Identifier</a> of the schema. MUST adhere to <a href="#issuer-identifiers" >Issuer Identifiers</a> rules.</li>
 <li><code>name</code> (string) - the name of the schema</li>
-<li><code>version</code> (string) - the schema version</li>
+<li><code>version</code> (string) - the schema version as a documentation string that it’s not validated. The format is up to each implementor or publisher. For example, Indy uses <a path-0="semver.org"href="https://semver.org" >Semantic Versioning</a></li>
 <li><code>attrNames</code> (str[]) - an array of strings with each string being the name of an attribute of the schema</li>
 </ul>
 <p>Once constructed, the <a class="term-reference" href="#term:schema">Schema</a> is published to a Verifiable Data Registry
