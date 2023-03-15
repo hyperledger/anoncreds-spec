@@ -1520,14 +1520,14 @@ properties listed above can be used in the expression components:</p>
         <span class="token punctuation">}</span>
       <span class="token punctuation">]</span>
 </code></pre>
-<p>The properties in each list item are OR’d together, and the array elements are
-AND’d together. As such, the example above defines the logical expression:</p>
+<p>The properties in each list item are AND’d together, and the array elements are
+OR’d together. As such, the example above defines the logical expression:</p>
 <pre class="language-text"><code class="language-text">The attributes must come from a source verifiable credential such that:
-   issuer_did = &lt;did> OR
+   issuer_did = &lt;did> AND
      schema_id = &lt;id>
-   AND
-   cred_def_id = &lt;id>" OR
-      the credential must contain an attribute name "color" OR
+   OR
+   cred_def_id = &lt;id> AND
+      the credential must contain an attribute name "color" AND
       the credential must contain an attribute name "color" with the attribute value "red"
 </code></pre>
 <h4 id="request-non-revocation-proofs"><a class="toc-anchor" href="#request-non-revocation-proofs" >§</a> Request Non-Revocation Proofs</h4>
