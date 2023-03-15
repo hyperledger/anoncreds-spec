@@ -181,16 +181,16 @@ properties listed above can be used in the expression components:
       ]
 ```
 
-The properties in each list item are OR'd together, and the array elements are
-AND'd together. As such, the example above defines the logical expression:
+The properties in each list item are AND'd together, and the array elements are
+OR'd together. As such, the example above defines the logical expression:
 
 ```text
 The attributes must come from a source verifiable credential such that:
-   issuer_did = <did> OR
+   issuer_did = <did> AND
      schema_id = <id>
-   AND
-   cred_def_id = <id>" OR
-      the credential must contain an attribute name "color" OR
+   OR
+   cred_def_id = <id> AND
+      the credential must contain an attribute name "color" AND
       the credential must contain an attribute name "color" with the attribute value "red"
 ```
 
