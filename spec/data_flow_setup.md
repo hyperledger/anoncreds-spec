@@ -100,7 +100,7 @@ AnonCreds credential of this type. The following is an example [[ref: Schema]]:
 
 - `issuerId` - the [[ref: Issuer Identifier]] of the schema. MUST adhere to [Issuer Identifiers](#issuer-identifiers) rules.
 - `name` (string) - the name of the schema
-- `version` (string) - the schema version
+- `version` (string) - the schema version as a documentation string that it's not validated. The format is up to each implementor or publisher. For example, Indy uses [Semantic Versioning](https://semver.org)  
 - `attrNames` (str[]) - an array of strings with each string being the name of an attribute of the schema
 
 Once constructed, the [[ref: Schema]] is published to a Verifiable Data Registry
