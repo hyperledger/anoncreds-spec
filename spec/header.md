@@ -21,6 +21,6 @@ AnonCreds Specification
 
 ~ [GitHub repo](https://github.com/hyperledger/anoncreds-spec)
 ~ [Commit history](https://github.com/hyperledger/anoncreds-spec/commits/main)
-~ [Discord](https://discord.gg/hYmBNhTFY9)
+~ [Discord](https://discord.gg/hyperledger)
 
 ------------------------------------
