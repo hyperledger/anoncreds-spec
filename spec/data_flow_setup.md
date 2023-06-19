@@ -454,16 +454,26 @@ revocations within the [[ref: Revocation Registry]] and by the [[ref: holder]] t
 (if possible) a "proof of non-revocation" to show their issued credential has
 not been revoked.
 
+The process for hashing the [[ref: TAILS_FILE]] is as follows:
+
+- Use a hasher with any hashing algorithm(`SHA256` in [anoncreds-rs implementation](https://github.com/hyperledger/anoncreds-rs/blob/9c915bb77bc4e033cc6d28d45e330ee5bda26211/src/services/tails.rs#LL148C1-L148C37))
+- append the tails file version and all the prime bytes one by one into the hasher
+- Compute the hash digest
+
 The process of generating the primes that populate the [[ref: TAILS_FILE]] is as
 follows:
 
-::: todo
-To Do: Document hashing of the tails file ([see also](https://github.com/hyperledger/indy-shared-rs/blob/d22373265f7c4cf93d59dd3c111251ef96d6a63d/indy-credx/src/services/tails.rs#L151)).
-:::
+- Create and open the tails file.
+- To generate a tail prime for an attribute located at a specific index, follow the steps.
+- Convert index into an array of bytes(`u8`) using little endian ordering.
+- Create an element belonging to the finite field group from the `u8` array.
+- Calculate `pow` by doing modular exponentiation of revocation private key(`gamma`) with the finite field element previously calculated.
+- Multiply `pow` by `g_dash`, which is the generator of elliptic curve group `G2`, and this should be the required point of the prime.
+- Convert this tail point to an array of bytes(`u8`), and put them into the file as a slice buffer.
+- Repeat for all the attributes
+- Close the file buffer.
 
-::: todo
-To Do: Document the process for generating the primes.
-:::
+Relevant links: [Anoncreds-rs repository](https://github.com/hyperledger/anoncreds-rs/blob/9c915bb77bc4e033cc6d28d45e330ee5bda26211/src/services/tails.rs#LL148C1-L148C37), [Ursa repository](https://github.com/hyperledger-archives/ursa/blob/c29fdaa96bbe9ce3ea2beb4d5fbe98ed7c96f867/libursa/src/cl/mod.rs#L514)
 
 Once generated, the array of primes is static, regardless of credential issuance
 or revocation events. Once generated, the SHA256 (TO BE VERIFIED) hash of the
