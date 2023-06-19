@@ -470,7 +470,7 @@ follows:
 - Calculate `pow` by doing modular exponentiation of revocation private key(`gamma`) with the finite field element previously calculated.
 - Multiply `pow` by `g_dash`, which is the generator of elliptic curve group `G2`, and this should be the required point of the prime.
 - Convert this tail point to an array of bytes(`u8`), and put them into the file as a slice buffer.
-- Repeat for all the attributes.
+- Repeat for all the attributes
 - Close the file buffer.
 
 Relevant links: [Anoncreds-rs repository](https://github.com/hyperledger/anoncreds-rs/blob/9c915bb77bc4e033cc6d28d45e330ee5bda26211/src/services/tails.rs#LL148C1-L148C37), [Ursa repository](https://github.com/hyperledger-archives/ursa/blob/c29fdaa96bbe9ce3ea2beb4d5fbe98ed7c96f867/libursa/src/cl/mod.rs#L514)
