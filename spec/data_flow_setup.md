@@ -444,11 +444,11 @@ The identifier for the [[ref: Revocation Registry]] is dependent on where the
 
 The second of the outcomes from creating of a [[ref: Revocation Registry]] is a [[ref:
 TAILS_FILE]]. The contents of a [[ref: TAILS_FILE]] is an array of calculated
-prime integers, one for each credential in the registry. Thus, if the [[ref:
+points on curve `G2`, one for each credential in the registry. Thus, if the [[ref:
 Revocation Registry]] has a capacity (`maxCredNum`) of 1000, the [[ref: TAILS_FILE]] holds
-an array of 1000 primes. Each credential issued using the [[ref: Revocation Registry]] is
+an array of 1000 `G2` curve points. Each credential issued using the [[ref: Revocation Registry]] is
 given its own index (1 to the capacity of the [[ref: Revocation Registry]]) into the array,
-the index of the prime for that credential. The contents of the [[ref;
+the index of the point for that credential. The contents of the [[ref;
 TAILS_FILE]] is needed by the [[ref: issuer]] to publish the current state of
 revocations within the [[ref: Revocation Registry]] and by the [[ref: holder]] to produce
 (if possible) a "proof of non-revocation" to show their issued credential has
@@ -457,12 +457,13 @@ not been revoked.
 The process for hashing the [[ref: TAILS_FILE]] is as follows:
 
 - Use a hasher with any hashing algorithm(`SHA256` in [anoncreds-rs implementation](https://github.com/hyperledger/anoncreds-rs/blob/9c915bb77bc4e033cc6d28d45e330ee5bda26211/src/services/tails.rs#LL148C1-L148C37)).
-- append the tails file version and all the prime bytes one by one into the hasher.
+- append the tails file version and all the bytes of `G2` curve points one by one into the hasher.
 - Compute the hash digest.
 
-The process of generating the primes that populate the [[ref: TAILS_FILE]] is as
-follows:
+The process of generating the primes that populate the [[ref: TAILS_FILE]] are `tail[index] = g_dash * (gamma ** index)`
 
+::: note
+Detailed process for tails file generation:
 - Create and open the tails file.
 - To generate a tail prime for an attribute located at a specific index, follow the steps.
 - Convert index into an array of bytes(`u8`) using little endian ordering.
@@ -474,10 +475,11 @@ follows:
 - Close the file buffer.
 
 Relevant links: [Anoncreds-rs repository](https://github.com/hyperledger/anoncreds-rs/blob/9c915bb77bc4e033cc6d28d45e330ee5bda26211/src/services/tails.rs#LL148C1-L148C37), [Ursa repository](https://github.com/hyperledger-archives/ursa/blob/c29fdaa96bbe9ce3ea2beb4d5fbe98ed7c96f867/libursa/src/cl/mod.rs#L514)
+:::
 
-Once generated, the array of primes is static, regardless of credential issuance
+Once generated, the array of points is static, regardless of credential issuance
 or revocation events. Once generated, the SHA256 (TO BE VERIFIED) hash of the
-array of primes is calculated and returned to be inserted into the `tailsHash`
+array of points is calculated and returned to be inserted into the `tailsHash`
 item of the [[ref: Revocation Registry]] object (as described in the [previous
 section](#revocation-registry-definition-object-generation)). Typically, the array is streamed into a
 file (hence, the term "Tails File") and published to a [[ref: URL]] indicated by
