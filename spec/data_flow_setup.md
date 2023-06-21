@@ -468,7 +468,7 @@ Detailed process for tails file generation:
 - Repeat for all the attributes.
 - Close the file buffer.
 
-Relevant links: [Anoncreds-rs repository](https://github.com/hyperledger/anoncreds-rs/blob/9c915bb77bc4e033cc6d28d45e330ee5bda26211/src/services/tails.rs#LL148C1-L148C37), [Ursa repository](https://github.com/hyperledger-archives/ursa/blob/c29fdaa96bbe9ce3ea2beb4d5fbe98ed7c96f867/libursa/src/cl/mod.rs#L514)
+Relevant links: [Anoncreds-rs repository](https://github.com/hyperledger/anoncreds-rs/blob/9c915bb77bc4e033cc6d28d45e330ee5bda26211/src/services/tails.rs#LL148C1-L148C37), [Anoncreds-CLSignatures repository](https://github.com/hyperledger/anoncreds-clsignatures-rs/blob/f1ae666656054cd73fe765928c0dada64ef21d87/src/mod.rs#L517)
 :::
 
 The process for hashing the [[ref: TAILS_FILE]] is as follows:
