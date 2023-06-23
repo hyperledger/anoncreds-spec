@@ -479,18 +479,24 @@ The process for hashing the [[ref: TAILS_FILE]] is as follows:
 
 
 Once generated, the array of points is static, regardless of credential issuance
-or revocation events. Once generated, the SHA256 (TO BE VERIFIED) hash of the
+or revocation events. Once generated, the SHA256 hash of the
 array of points is calculated and returned to be inserted into the `tailsHash`
 item of the [[ref: Revocation Registry]] object (as described in the [previous
 section](#revocation-registry-definition-object-generation)). Typically, the array is streamed into a
 file (hence, the term "Tails File") and published to a [[ref: URL]] indicated by
 the `tailsLocation` input parameter provided by the [[ref: issuer]].
 
-The format of a [[ref: TAILS_FILE]] is as follows:
+The format of a [[ref: TAILS_FILE]] is as follows(binary points are shown in readable format):
 
-::: todo
-To Do: Define the format of the Tails File
-:::
+```json
+version: [0u8 2u8]
+point[0]: {x.1, x.0, y.1, y.0}
+point[1]: {x.1, x.0, y.1, y.0}
+point[2]: {x.1, x.0, y.1, y.0}
+.
+.
+.
+```
 
 While not required, the Hyperledger Indy community has created a component, the "[Indy Tails
 Server](https://github.com/bcgov/indy-tails-server)," which is basically a web
