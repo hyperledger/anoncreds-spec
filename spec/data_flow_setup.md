@@ -486,7 +486,7 @@ section](#revocation-registry-definition-object-generation)). Typically, the arr
 file (hence, the term "Tails File") and published to a [[ref: URL]] indicated by
 the `tailsLocation` input parameter provided by the [[ref: issuer]].
 
-The format of a [[ref: TAILS_FILE]] is as follows(binary points are shown in readable format):
+The format of a [[ref: TAILS_FILE]] is as follows(bytes representing points are shown in readable format):
 
 ```json
 version: [0u8 2u8]
