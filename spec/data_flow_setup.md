@@ -486,17 +486,12 @@ section](#revocation-registry-definition-object-generation)). Typically, the arr
 file (hence, the term "Tails File") and published to a [[ref: URL]] indicated by
 the `tailsLocation` input parameter provided by the [[ref: issuer]].
 
-The format of a [[ref: TAILS_FILE]] is as follows(bytes representing points are shown in readable format):
+The format of a [[ref: TAILS_FILE]] is as follows:
 
-```json
-version: [0u8 2u8]
-point[0]: {x.1, x.0, y.1, y.0}
-point[1]: {x.1, x.0, y.1, y.0}
-point[2]: {x.1, x.0, y.1, y.0}
-.
-.
-.
-```
+- First two bytes are version number(currently `0u8 2u8`)
+- A list of the points, one per credential in the Revocation Registry. Each point is a collection of three integers implemented as points in 3 dimensions as per `ECP2`. Each point is 3x4 = 12 bytes long.
+
+Thus the total size of a Tails File is 2 + 12*`Size of the Revocation Registry`.
 
 While not required, the Hyperledger Indy community has created a component, the "[Indy Tails
 Server](https://github.com/bcgov/indy-tails-server)," which is basically a web
