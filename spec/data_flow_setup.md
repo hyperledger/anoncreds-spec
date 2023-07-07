@@ -175,9 +175,15 @@ Credential Definition]], returned to the calling function and then published on 
 The following describes the process for generating the [[ref: Credential Definition]] and
 [[ref: Private Credential Definition]] data.
 
-::: todo
-Describe the generation process for the Credential Definition.
-:::
+- Build a credential schema using the schema definition.
+- Build a non-credential schema for containing the `master_secret` to ensure matching with earlier published [[ref: Credential Definition]].
+- Generate primes $p, q, n \leftarrow pq$, using methods described in [Anoncreds 1.0 Whitepaper](https://github.com/hyperledger/anoncreds-spec/blob/main/spec/ursaAnonCreds.pdf).
+- Compute random $x_z, x_{R_1}, ..., x_{R_l}$ in the range of safe primes, using the non-credential and credential schema attributes.
+- Compute random quadratic residue $S$ modulo $n$ (select a random number from $1$ to $n$, and square it $mod \, n$).
+- Compute $Z \leftarrow S^{x_z}(mod \, n)$, and $\{R_i = S^{x_{R_i}}(mod \, n)\}_{1\leq i\leq l}$
+- Credential Definition Public key is $P_k = ( n, S, Z, \{R_i\}_{i\leq i\leq l} )$ and the private key is $s_k = (p, q)$
+
+[Here](https://github.com/hyperledger/anoncreds-rs/blob/9c915bb77bc4e033cc6d28d45e330ee5bda26211/src/services/issuer.rs#L118) is the rust implementation of the above process.
 
 The [[ref: Private Credential Definition]] produced by the generation process has the following format:
 
