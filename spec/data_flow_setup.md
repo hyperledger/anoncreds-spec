@@ -465,7 +465,7 @@ Detailed process for tails file generation:
 - Calculate `pow` by doing modular exponentiation of revocation private key(`gamma`) with the finite field element previously calculated.
 - Multiply `pow` by `g_dash`, which is the generator of elliptic curve group `G2`, and this should be the required point on the curve.
 - Convert this tail point to an array of bytes(`u8`), and put them into the file as a slice buffer.
-- Repeat for all the attributes.
+- Repeat for all the attributes from index $1$ to $L$, by calculating $([\gamma], [\gamma^2], [\gamma^3], ...[\gamma^L], [\gamma^{L+2}], [\gamma^{L+3}], ..., [\gamma^{2L}])$. Omit $[\gamma^{L+1}]$ as it can be used to generate fake witness for non-revocation.
 - Close the file buffer.
 
 Relevant links: [Anoncreds-rs repository](https://github.com/hyperledger/anoncreds-rs/blob/9c915bb77bc4e033cc6d28d45e330ee5bda26211/src/services/tails.rs#LL148C1-L148C37), [Anoncreds-CLSignatures repository](https://github.com/hyperledger/anoncreds-clsignatures-rs/blob/f1ae666656054cd73fe765928c0dada64ef21d87/src/mod.rs#L517)
