@@ -123,6 +123,19 @@ NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “NOT RECOMMENDED”
 “MAY”, and “OPTIONAL” in this document are to be interpreted as
 described in BCP 14 [RFC2119] [RFC8174] when, and only when, they
 appear in all capitals, as shown here.</p>
+<p><code>a || b</code> : Denotes the concatenation of octet strings a and b.</p>
+<p><code>I \ J</code> : For sets I and J, denotes the difference of the two sets i.e., all the elements of I that do not appear in J, in the same order as they were in I.</p>
+<p><code>X[a..b]</code> : Denotes a slice of the array X containing all elements from and including the value at index a until and including the value at index b. Note when this syntax is applied to an octet string, each element in the array X is assumed to be a single byte.</p>
+<p><code>range(a, b)</code> : For integers a and b, with a &lt;= b, denotes the ascending ordered list of all integers between a and b inclusive (i.e., the integers “i” such that a &lt;= i &lt;= b).</p>
+<p><code>length(input)</code> : Takes as input either an array or an octet string. If the input is an array, returns the number of elements of the array. If the input is an octet string, returns the number of bytes of the inputted octet string.</p>
+<p><code>H(...)</code> : Any hash function.</p>
+<p>Terms specific to pairing-friendly elliptic curves are:</p>
+<p><code>E1, E2</code> : elliptic curve groups defined over finite fields. This document assumes that E1 has a more compact representation than E2, i.e., because E1 is defined over a smaller field than E2.</p>
+<p><code>G1, G2</code> : subgroups of E1 and E2 (respectively) having prime order r.</p>
+<p><code>GT</code> : a subgroup, of prime order r, of the multiplicative group of a field extension.</p>
+<p><code>e</code> : G1 x G2 -&gt; GT: a non-degenerate bilinear map.</p>
+<p><code>r</code> : The prime order of the G1 and G2 subgroups.</p>
+<p><code>P1, P2</code> : points on G1 and G2 respectively. For a pairing-friendly curve, this document denotes operations in E1 and E2 in additive notation, i.e., P + Q denotes point addition and x * P denotes scalar multiplication. Operations in GT are written in multiplicative notation, i.e., a * b is field multiplication.</p>
 <h2 id="terminology"><a class="toc-anchor" href="#terminology" >§</a> Terminology</h2>
 <div id="todo-1" class="notice todo"><a class="notice-link" href="#todo-1">TODO</a><p><span id="term:blinding-factor">blinding factor</span></p>
 </div>
