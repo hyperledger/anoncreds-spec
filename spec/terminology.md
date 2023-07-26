@@ -10,10 +10,11 @@
 [[def: Credential Key Correctness Proof]]
 ~ This is produced during the creation of the [[ref: Credential Definition]] and is included in the [[ref: Credential Offer]] so that the [[ref:holder]] can verify that the [[ref: Public Credential Definition]] used in the blinding process belongs to the [[ref:issuer]].
 
-::: todo
 [[def: Signature Correctness Proof]]
+~ A ZKP based proof to show that a signature to a message is valid, without revealing the message or signature.
+
 [[def: Blinded Secrets Correctness Proof]]
-:::
+~ A ZKP based proof to show that some blinded secret was produced correctly from an unblinded secret without exposing the secret to anyone.
 
 [[def: credential, credentials]]
 ~ A credential is a set of [[ref: claims]] about an identity [[ref: subject]]. A verifiable credential is a tamper-proof credential whose authorship is cryptographically verifiable. An anonymous credential, also known as AnonCreds, is a verifiable credential that has privacy-preserving properties to enable data minimization and correlation resistance.
