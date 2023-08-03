@@ -115,7 +115,13 @@ referenced [[ref: Public Credential Definition]] from a [[ref: Verifiable Data
 Registry]]. The holder MAY want to retrieve the [[ref: Schema]] referenced in
 the [[ref: Credential Offer]] and verify the consistency between the list of
 attributes in the [[ref: Schema]] and in the [[ref: Public Credential
-Definition]].
+Definition]]. The [[ref: holder]] creates an 80 bit nonce in the request which is a randomly 
+generated number used to prevent replay attacks and authentication between protocol 
+steps.
+
+The nonce of the [[ref: Credential Offer]] is used to generate the proof of correctness
+for blinded credential secrets, where it is hashed with the blinded secrets to
+create the proof which is sent to the [[ref: issuer]].
 
 In addition, the [[ref: holder]] also requires access to their [[ref: link
 secret]].
