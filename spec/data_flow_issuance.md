@@ -115,9 +115,7 @@ referenced [[ref: Public Credential Definition]] from a [[ref: Verifiable Data
 Registry]]. The holder MAY want to retrieve the [[ref: Schema]] referenced in
 the [[ref: Credential Offer]] and verify the consistency between the list of
 attributes in the [[ref: Schema]] and in the [[ref: Public Credential
-Definition]]. The [[ref: holder]] creates an 80 bit nonce in the request which is a randomly 
-generated number used to prevent replay attacks and authentication between protocol 
-steps.
+Definition]].
 
 The nonce of the [[ref: Credential Offer]] is used to generate the proof of correctness
 for blinded credential secrets, where it is hashed with the blinded secrets to
@@ -170,12 +168,6 @@ The [[ref: holder]] constructs the following [[ref: Credential Request]] JSON st
 }
 ```
 
-::: todo
-
-Complete the data element descriptions in the following list.
-
-:::
-
 * `entropy`: a required string.
   * Called `prover_did` in earlier AnonCreds implementations, and called
   `prover_id` in [Ursa](https://github.com/hyperledger/ursa), `entropy` is a
@@ -199,7 +191,8 @@ Complete the data element descriptions in the following list.
 * `cred_def_id`: The ID of the [[ref: Public Credential Definition]] on which the [[ref: Credential]] to be issued will be based.
 * `blinded_ms`: The [[ref: link secret]] in its blinded form. Described in detail in the section [Blinding the Link Secret](#blinding-the-link-secret) (below).
 * `blinded_ms_correctness_proof`: The [[ref: Blinded Secrets Correctness Proof]] of the blinded [[ref: link secret]]. Described in detail in the section [The Blinded Link Secret Correctness Proof](#the-blinded-link-secret-correctness-proof) (below).
-* `nonce`: Used for preventing replay attacks and authentication between protocol steps. *Generation Process to be added*
+* `nonce`: Used for preventing replay attacks and authentication between protocol steps. The [[ref: holder]] creates an 80 bit nonce in the request which is a randomly 
+generated number.
 
 [legacy Indy AnonCreds Method]: https://hyperledger.github.io/anoncreds-methods-registry/#hyperledger-indy-legacy-anoncreds-method
 
