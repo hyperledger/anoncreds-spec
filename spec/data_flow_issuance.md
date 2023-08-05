@@ -209,12 +209,6 @@ during presentations, is proven by the [[ref holder]] to be associated with the
 link_secret]] itself. This is the capability that enables the binding of the
 credential to the holder without revealing a correlatable identifier.
 
-::: todo
-
-Confirm purpose of the blinding factor and add how it is generated.
-
-:::
-
 The [[ref: blinding factor]] is a secret held by the [[ref: holder]] for blinding
 the [[ref: link secret]] before sending it to the [[ref: issuer]], and used later
 when generating the proof of knowledge that the [[ref: link secret]] was used in
