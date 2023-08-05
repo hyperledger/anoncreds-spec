@@ -209,17 +209,11 @@ during presentations, is proven by the [[ref holder]] to be associated with the
 link_secret]] itself. This is the capability that enables the binding of the
 credential to the holder without revealing a correlatable identifier.
 
-::: todo
-
-Confirm purpose of the blinding factor and add how it is generated.
-
-:::
-
 The [[ref: blinding factor]] is a secret held by the [[ref: holder]] for blinding
 the [[ref: link secret]] before sending it to the [[ref: issuer]], and used later
 when generating the proof of knowledge that the [[ref: link secret]] was used in
 the signature received from the [[ref: issuer]]. The [[ref: blinding factor]],
-$v$ is created by... *TO BE ADDED*
+$v$ is created by generating a 3152-bit random number.
 
 The process of blinding the link secret uses the [[ref: issuer]]'s
 `CredentialPrimaryPublicKey`, $P$, which is included in the [[ref: Public Credential Definition]],
@@ -249,17 +243,11 @@ The resulting blinded link secret data structure inserted into the [[ref: Creden
 }
 ```
 
-::: todo
-
-Add in the missing details for the items in the list below.
-
-:::
-
 Where:
 
-* `u`: *TO BE ADDED*
-* `ur`: is `null` if revocation is not active for the [[ref: Public Credential Definition], and if revocation is active is *TO BE ADDED*
-* `hidden_attributes`: is an array of hidden attributes from the list of [[ref: Public Credential Definition]. For AnonCreds v1.0, it is always a single entry of `master_secret`.
+* `u`: is the blinded link secret which is $(s^v \times A_{bl})\ Mod\ n$.
+* `ur`: is `null` if revocation is not active for the [[ref: Public Credential Definition]], and if revocation is active is the blinded version of revocation public key.
+* `hidden_attributes`: is an array of hidden attributes from the list of [[ref: Public Credential Definition]]. For AnonCreds v1.0, it is always a single entry of `master_secret`.
   * The [[ref: holder]]'s blinded [[ref: link secret]] is a default hidden attribute in AnonCreds, meaning it is not explicitly defined in the [[ref: Schema]] list of attributes but is included in both the [[ref: Public Credential Definition]] and all issued [[ref: credentials]]. Whilst it is cryptographically possible to have multiple hidden attributes, in this version of AnonCreds, only [[ref: link secret]] is used.
 * `committed_attributes`: An empty list of attributes in this version of AnonCreds.
 
