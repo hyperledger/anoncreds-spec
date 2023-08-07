@@ -300,7 +300,10 @@ Add json format of the Blinded Link Secret Correctness Proof for non-revocation 
 
 :::
 
-
+* `c`: is the hash of the concatenated bytes of $U$, $\tilde{U}$, and $n_0$, where $U$ and $n_0$ are recieved from the issuer, and $\tilde{U}$ is calculated using $\tilde{U} = s^{\tilde{v'}} \times \displaystyle \prod_{i \in A_h} r_{link secret}^{\tilde{m_i}}\ (Mod\ n)$, where $\tilde{m_i}$ are random 593-bit numbers generated for each hidden attribute. Thus $c \leftarrow H(U || \tilde{U} || n_0)$.
+* `v_dash_cap`: $\cap{v'} \leftarrow \tilde{v'} + cv'$, where $v'$ is the blinding factor and $\tilde{v'}$ is a 3488-bit random number.
+* `m_caps`: is *TO BE ADDED*.
+* `r_caps`: is an empty structure in this version of AnonCreds. It is *TO BE ADDED*.
 
 ### Issue Credential
 
