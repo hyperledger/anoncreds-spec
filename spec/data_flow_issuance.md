@@ -282,13 +282,10 @@ The values in the proof are generated as follows:
 [creating the Credential Definition]: #generating-a-credential-definition-without-revocation-support
 
   $$c = H(u || \tilde{u}  || n_0)$$
-
   where
-
   * $u$ is described above.
   * $\tilde{u} = s^{\tilde{v}'} \times r_{linksecret}^{\tilde{A_l}}\ mod\ n$ where $\tilde{v}'$ is randomly selected 3488-bit value and $\tilde{A_l}$ is 593-bit value by reference [_Anonymous credentials with type-3 revocation_ by Dmitry Khovratovisch, Michael Lodder and Cam Parra](https://github.com/hyperledger/anoncreds-spec/blob/main/spec/ursaAnonCreds.pdf)
   * $n_0$ is the nonce value.
-* `c`:  (a [[ref: BigNumber]]) is the hash of the concatenated bytes of $U$, $\tilde{U}$, and $n_0$, where $U$ and $n_0$ are recieved from the issuer, and $\tilde{U}$ is calculated using $\tilde{U} = s^{\tilde{v'}} \times \displaystyle \prod_{i \in A_h} r_{link secret}^{\tilde{m_i}}\ (Mod\ n)$, where $\tilde{m_i}$ are random 593-bit numbers generated for each hidden attribute. Thus $c \leftarrow H(U || \tilde{U} || n_0)$.
 * `v_dash_cap`: $\hat{v'} \leftarrow \tilde{v'} + cv'$, where $v'$ is the blinding factor and $\tilde{v'}$ is a 3488-bit random number.
 * `m_caps`: $\hat{m} = \tilde{A_l} + cA_l$
 * `r_caps`: is an empty structure in this version of AnonCreds.
