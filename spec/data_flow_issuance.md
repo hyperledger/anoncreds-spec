@@ -282,7 +282,9 @@ The values in the proof are generated as follows:
 [creating the Credential Definition]: #generating-a-credential-definition-without-revocation-support
 
   $$c = H(u || \tilde{u}  || n_0)$$
+
   where
+
   * $u$ is described above.
   * $\tilde{u} = s^{\tilde{v}'} \times r_{linksecret}^{\tilde{A_l}}\ mod\ n$ where $\tilde{v}'$ is randomly selected 3488-bit value and $\tilde{A_l}$ is 593-bit value by reference [_Anonymous credentials with type-3 revocation_ by Dmitry Khovratovisch, Michael Lodder and Cam Parra](https://github.com/hyperledger/anoncreds-spec/blob/main/spec/ursaAnonCreds.pdf)
   * $n_0$ is the nonce value.
