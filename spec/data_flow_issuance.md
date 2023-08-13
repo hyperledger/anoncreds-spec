@@ -213,7 +213,7 @@ The [[ref: blinding factor]] is a secret held by the [[ref: holder]] for blindin
 the [[ref: link secret]] before sending it to the [[ref: issuer]], and used later
 when generating the proof of knowledge that the [[ref: link secret]] was used in
 the signature received from the [[ref: issuer]]. The [[ref: blinding factor]],
-$v$ is created by generating a 3152-bit random number by [[ref: holder]].
+$v$ is created by the [[ref: holder]] generating a 3152-bit random number.
 
 The process of blinding the link secret uses the [[ref: issuer]]'s
 `CredentialPrimaryPublicKey`, $P$, which is included in the [[ref: Public Credential Definition]],
