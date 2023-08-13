@@ -177,7 +177,8 @@ The following describes the process for generating the [[ref: Credential Definit
 
 - Build a credential schema using the schema definition.
 - Build a non-credential schema that contains the single attribute `master_secret`, that will be used to hold the holder's blinded link secret. The non-credential schema attribute is included in all AnonCreds verifiable credentials.
-- Generate random 1536-bit primes $p'$, $q'$, such that $p \leftarrow 2p'+1$ and $q \leftarrow 2q'+1$ are primes too. Then compute $n \leftarrow pq$.
+- Generate random 1536-bit primes $p'$, $q'$, such that $p \leftarrow 2p'+1$ and $q \leftarrow 2q'+1$ are primes too. $p'$, $q'$, and $2p'+1$, $2q'+1$ are [Sophie Germain and Safe primes](https://en.wikipedia.org/wiki/Safe_and_Sophie_Germain_primes). 
+- Compute $n \leftarrow pq$.
 - Compute random $x_z, x_{R_1}, ..., x_{R_l}$ in the range of safe primes, using the non-credential and credential schema attributes.
 - Compute random quadratic residue $S$ modulo $n$ (select a random number from $1$ to $n$, and square it $mod \, n$).
 - Compute $Z \leftarrow S^{x_z}(mod \, n)$, and $\{R_i = S^{x_{R_i}}(mod \, n)\}_{1\leq i\leq l}$
