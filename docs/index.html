@@ -137,15 +137,15 @@ appear in all capitals, as shown here.</p>
 <p><code>r</code> : The prime order of the G1 and G2 subgroups.</p>
 <p><code>P1, P2</code> : points on G1 and G2 respectively. For a pairing-friendly curve, this document denotes operations in E1 and E2 in additive notation, i.e., P + Q denotes point addition and x * P denotes scalar multiplication. Operations in GT are written in multiplicative notation, i.e., a * b is field multiplication.</p>
 <h2 id="terminology"><a class="toc-anchor" href="#terminology" >§</a> Terminology</h2>
-<div id="todo-1" class="notice todo"><a class="notice-link" href="#todo-1">TODO</a><p><span id="term:blinding-factor">blinding factor</span></p>
-</div>
 <dl>
+<dt><span id="term:blinding-factor">Blinding factor</span></dt>
+<dd>Blinding factor is a 3152 bit number generated randomly that is used to blind the <code>link_secret</code> and non-disclosed attributes during the issuance of credentials.</dd>
 <dt><span id="term:claims"><span id="term:claim">claim</span></span></dt>
 <dd>A claim is a part of digital identity related to a <a class="term-reference" href="#term:subject">subject</a>. A claim can be attested by the identity subject itself, or it can be asserted by another entity.</dd>
 <dt><span id="term:credential-key-correctness-proof">Credential Key Correctness Proof</span></dt>
 <dd>This is produced during the creation of the <a class="term-reference" href="#term:credential-definition">Credential Definition</a> and is included in the <a class="term-reference" href="#term:credential-offer">Credential Offer</a> so that the <a class="term-reference" href="#term:holder">holder</a> can verify that the <a class="term-reference" href="#term:public-credential-definition">Public Credential Definition</a> used in the blinding process belongs to the <a class="term-reference" href="#term:issuer">issuer</a>.</dd>
 </dl>
-<div id="todo-2" class="notice todo"><a class="notice-link" href="#todo-2">TODO</a><p><span id="term:signature-correctness-proof">Signature Correctness Proof</span>
+<div id="todo-1" class="notice todo"><a class="notice-link" href="#todo-1">TODO</a><p><span id="term:signature-correctness-proof">Signature Correctness Proof</span>
 <span id="term:blinded-secrets-correctness-proof">Blinded Secrets Correctness Proof</span></p>
 </div>
 <dl>
@@ -552,7 +552,7 @@ process.</p>
 <p>The revocation scheme uses a pairing-based dynamic accumulator based on the <a path-0="link.springer.com"path-1="content"path-2="pdf"path-3="10.1007"path-4="978-3-642-00468-1_27.pdf"href="https://link.springer.com/content/pdf/10.1007/978-3-642-00468-1_27.pdf" >CKS scheme</a>.</p>
 <p>Pairing cryptography makes use of two pairing-friendly elliptic curve groups (G1, G2) with a known, computable pairing function e(G1,G2) -&gt; Gt that maps any two group elements from G1 and G2 respectively to an element in the third group Gt. All groups have the same order, q, the number of elements in the group. The accumulator scheme implemented uses Type-3 pairings such that G1 != G2 and there are no efficiently computable homomorphisms between G1 and G2. An introduction to pairings can be found <a path-0="www.math.uwaterloo.ca"path-1="~ajmeneze"path-2="publications"path-3="pairings.pdf"href="https://www.math.uwaterloo.ca/~ajmeneze/publications/pairings.pdf" >here</a>.</p>
 <p>NOTE: This scheme must use a specific pairing friendly elliptic curve. Believe it will be using BLS-381. But should confirm. For implementations to be interoperable they must use the same curve (or possibly support multiple, but then would have to identify the curve in this data somewhere. Feels like unnecessary complexity)</p>
-<div id="todo-3" class="notice todo"><a class="notice-link" href="#todo-3">TODO</a><p>Formally define a type-3 bilinear curve setup? Should this go in the appendix?</p>
+<div id="todo-2" class="notice todo"><a class="notice-link" href="#todo-2">TODO</a><p>Formally define a type-3 bilinear curve setup? Should this go in the appendix?</p>
 </div>
 <p>A <a class="term-reference" href="#term:private-credential-definition">Private Credential Definition</a> with revocation enabled has the following format. In this, the
 details of the <code>p_key</code> element are hidden, as they are the same as was covered
@@ -671,7 +671,7 @@ Sovrin MainNet and instance of Hyperledger Indy.</p>
 <span class="token punctuation">}</span>
 </code></pre>
 <p>The items within the data model are as follows:</p>
-<div id="todo-4" class="notice todo"><a class="notice-link" href="#todo-4">TODO</a><p>Update this to be the inputs for generating a Revocation Registry vs. the already published object</p>
+<div id="todo-3" class="notice todo"><a class="notice-link" href="#todo-3">TODO</a><p>Update this to be the inputs for generating a Revocation Registry vs. the already published object</p>
 </div>
 <ul>
 <li><code>issuerId</code> - the <a class="term-reference" href="#term:issuer-identifier">Issuer Identifier</a> of the revocation registry. MUST adhere to <a href="#issuer-identifiers" >Issuer Identifiers</a> rules and MUST be the same <code>issuerId</code> as the <a class="term-reference" href="#term:credential-definition">Credential Definition</a> on which the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> is based.</li>
@@ -715,9 +715,9 @@ revocations within the <a class="term-reference" href="#term:revocation-registry
 not been revoked.</p>
 <p>The process of generating the primes that populate the <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> is as
 follows:</p>
-<div id="todo-5" class="notice todo"><a class="notice-link" href="#todo-5">TODO</a><p>To Do: Document hashing of the tails file (<a path-0="github.com"path-1="hyperledger"path-2="indy-shared-rs"path-3="blob"path-4="d22373265f7c4cf93d59dd3c111251ef96d6a63d"path-5="indy-credx"path-6="src"path-7="services"path-8="tails.rs#L151"href="https://github.com/hyperledger/indy-shared-rs/blob/d22373265f7c4cf93d59dd3c111251ef96d6a63d/indy-credx/src/services/tails.rs#L151" >see also</a>).</p>
+<div id="todo-4" class="notice todo"><a class="notice-link" href="#todo-4">TODO</a><p>To Do: Document hashing of the tails file (<a path-0="github.com"path-1="hyperledger"path-2="indy-shared-rs"path-3="blob"path-4="d22373265f7c4cf93d59dd3c111251ef96d6a63d"path-5="indy-credx"path-6="src"path-7="services"path-8="tails.rs#L151"href="https://github.com/hyperledger/indy-shared-rs/blob/d22373265f7c4cf93d59dd3c111251ef96d6a63d/indy-credx/src/services/tails.rs#L151" >see also</a>).</p>
 </div>
-<div id="todo-6" class="notice todo"><a class="notice-link" href="#todo-6">TODO</a><p>To Do: Document the process for generating the primes.</p>
+<div id="todo-5" class="notice todo"><a class="notice-link" href="#todo-5">TODO</a><p>To Do: Document the process for generating the primes.</p>
 </div>
 <p>Once generated, the array of primes is static, regardless of credential issuance
 or revocation events. Once generated, the SHA256 (TO BE VERIFIED) hash of the
@@ -727,7 +727,7 @@ section</a>). Typically, the array is streamed into a
 file (hence, the term “Tails File”) and published to a <a class="term-reference" href="#term:url">URL</a> indicated by
 the <code>tailsLocation</code> input parameter provided by the <a class="term-reference" href="#term:issuer">issuer</a>.</p>
 <p>The format of a <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> is as follows:</p>
-<div id="todo-7" class="notice todo"><a class="notice-link" href="#todo-7">TODO</a><p>To Do: Define the format of the Tails File</p>
+<div id="todo-6" class="notice todo"><a class="notice-link" href="#todo-6">TODO</a><p>To Do: Define the format of the Tails File</p>
 </div>
 <p>While not required, the Hyperledger Indy community has created a component, the “<a path-0="github.com"path-1="bcgov"path-2="indy-tails-server"href="https://github.com/bcgov/indy-tails-server" >Indy Tails
 Server</a>,” which is basically a web
@@ -743,7 +743,7 @@ state updates, and</li>
 </ul>
 <h5 id="revocation-registry-definition-object-generation-2"><a class="toc-anchor" href="#revocation-registry-definition-object-generation-2" >§</a> Revocation Registry Definition Object Generation</h5>
 <p>In addition to generating the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> object, a <a class="term-reference" href="#term:private-revocation-registry">Private Revocation Registry</a> object is generated and securely stored by the <a class="term-reference" href="#term:issuer">issuer</a>. The data model and definition of the items in the <a class="term-reference" href="#term:private-revocation-registry">Private Revocation Registry</a> is as follows:</p>
-<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>To Do: Fill in the details about the Revocation Registry Definition</p>
+<div id="todo-7" class="notice todo"><a class="notice-link" href="#todo-7">TODO</a><p>To Do: Fill in the details about the Revocation Registry Definition</p>
 </div>
 <h4 id="publishing-the-revocation-registry-object"><a class="toc-anchor" href="#publishing-the-revocation-registry-object" >§</a> Publishing the Revocation Registry Object</h4>
 <p>Once constructed, the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> is published by the <a class="term-reference" href="#term:issuer">issuer</a> in a
@@ -786,7 +786,7 @@ used by the issuer.</p>
 (modulo) product of the primes for each non-revoked credential in the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a>.</p>
 <p>If all of the credentials are initially revoked (<code>revocationList</code> only contains <code>1</code> values), the accumulator value is <code>0</code>.</p>
 <p>The accumulator is calculated using the following steps:</p>
-<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>To Do: Adding the algorithm for calculating the accumulator</p>
+<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>To Do: Adding the algorithm for calculating the accumulator</p>
 </div>
 <p>THe following is an example of an initial, published <a class="term-reference" href="#term:revocation-status-list">Revocation Status List</a> object:</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
@@ -986,7 +986,7 @@ attribute that will be related to the <a class="term-reference" href="#term:link
     <span class="token property">"nonce"</span><span class="token operator">:</span> <span class="token string">"604812518357657692681285"</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>Complete the data element descriptions in the following list.</p>
+<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>Complete the data element descriptions in the following list.</p>
 </div>
 <ul>
 <li><code>entropy</code>: a required string.
@@ -1025,7 +1025,7 @@ cryptographic commitment by the <a class="term-reference" href="#term:holder">ho
 during presentations, is proven by the <a class="term-reference" href="#term:holder">holder</a> to be associated with the
 <a class="term-reference" href="#term:link_secret">link_secret</a> using a proof of knowledge, without revealing the <a class="term-reference" href="#term:link_secret">link_secret</a> itself. This is the capability that enables the binding of the
 credential to the holder without revealing a correlatable identifier.</p>
-<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><p>Confirm purpose of the blinding factor and add how it is generated.</p>
+<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>Confirm purpose of the blinding factor and add how it is generated.</p>
 </div>
 <p>The <a class="term-reference" href="#term:blinding-factor">blinding factor</a> is a secret held by the <a class="term-reference" href="#term:holder">holder</a> for blinding
 the <a class="term-reference" href="#term:link-secret">link secret</a> before sending it to the <a class="term-reference" href="#term:issuer">issuer</a>, and used later
@@ -1101,7 +1101,7 @@ in this process is <span class="katex"><span class="katex-mathml"><math xmlns="h
 <p><code>r_caps</code>: is an empty structure in this version of AnonCreds. It is <em>TO BE ADDED</em>.</p>
 </li>
 </ul>
-<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><p>Add json format of the Blinded Link Secret Correctness Proof for non-revocation credential.</p>
+<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><p>Add json format of the Blinded Link Secret Correctness Proof for non-revocation credential.</p>
 </div>
 <h3 id="issue-credential"><a class="toc-anchor" href="#issue-credential" >§</a> Issue Credential</h3>
 <p>After the <a class="term-reference" href="#term:issuer">issuer</a> receives the <a class="term-reference" href="#term:credential-request">Credential Request</a> from the <a class="term-reference" href="#term:holder">holder</a>, the <a class="term-reference" href="#term:issuer">issuer</a> processes the <a class="term-reference" href="#term:credential-request">Credential Request</a> and decides whether to issue the credential as requested in the <a class="term-reference" href="#term:credential-request">Credential Request</a> to the <a class="term-reference" href="#term:holder">holder</a>. In this section, we’ll cover issuing a credential that cannot be revoked, and then cover the additional steps/data elements in issuing a credential that can be revoked.</p>
@@ -1124,7 +1124,7 @@ in this process is <span class="katex"><span class="katex-mathml"><math xmlns="h
 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.904661em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord mathnormal">u</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.821331em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mathnormal mtight">c</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.7977219999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord mathnormal">u</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7143919999999999em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">c</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.3961009999999998em;vertical-align:-0.30130799999999996em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.094793em;"><span style="top:-2.398692em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">n</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mord mathnormal mtight">s</span><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight">c</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight">t</span></span></span></span><span style="top:-3.1506600000000002em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord accent mtight"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9201899999999998em;"><span style="top:-2.7em;"><span class="pstrut" style="height:2.7em;"></span><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight">A</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3448em;"><span style="top:-2.3487714285714287em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15122857142857138em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.3023300000000004em;"><span class="pstrut" style="height:2.7em;"></span><span class="accent-body" style="left:-0.25em;"><span class="mord mtight">~</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15122857142857138em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.30130799999999996em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.3067819999999999em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.0567819999999999em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord accent mtight"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9196885714285714em;"><span style="top:-2.7em;"><span class="pstrut" style="height:2.7em;"></span><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6828285714285715em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span></span><span style="top:-3.3018285714285716em;"><span class="pstrut" style="height:2.7em;"></span><span class="accent-body" style="left:-0.25em;"><span class="mord mtight">~</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="mspace"> </span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mord mathnormal">o</span><span class="mord mathnormal">d</span><span class="mspace"> </span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span></span></p>
 <p class="katex-block "><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mover accent="true"><mi>u</mi><mo>^</mo></mover><mo>=</mo><mover accent="true"><mi>u</mi><mo>~</mo></mover></mrow><annotation encoding="application/x-tex">\hat{u} = \tilde{u}
 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.69444em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">u</span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.22222em;"><span class="mord">^</span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.6678599999999999em;vertical-align:0em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6678599999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">u</span></span></span><span style="top:-3.35em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.22222em;"><span class="mord">~</span></span></span></span></span></span></span></span></span></span></span></p>
-<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><p>Add in the details about the nonce.</p>
+<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><p>Add in the details about the nonce.</p>
 </div>
 <p>Once the Credential Request is verified and if the <a class="term-reference" href="#term:issuer">issuer</a> decides to proceed with issuing the credential, the credential creation process is performed.</p>
 <h4 id="encoding-attribute-data"><a class="toc-anchor" href="#encoding-attribute-data" >§</a> Encoding Attribute Data</h4>
@@ -1243,7 +1243,7 @@ community.</p>
 </div>
 <h4 id="the-credential-signature"><a class="toc-anchor" href="#the-credential-signature" >§</a> The Credential Signature</h4>
 <p>The credential signature elements are constructed as follows:</p>
-<div id="todo-14" class="notice todo"><a class="notice-link" href="#todo-14">TODO</a><p>Add the details about the credential signature data elements</p>
+<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><p>Add the details about the credential signature data elements</p>
 </div>
 <ul>
 <li><code>m_2</code> is the <em>TO BE ADDED</em>. It is constructed as follows:
@@ -1269,7 +1269,7 @@ community.</p>
 </ul>
 <h4 id="the-credential-signature-correctness-proof"><a class="toc-anchor" href="#the-credential-signature-correctness-proof" >§</a> The Credential Signature Correctness Proof</h4>
 <p>The credential signature correction proof elements are constructed as follows:</p>
-<div id="todo-15" class="notice todo"><a class="notice-link" href="#todo-15">TODO</a><p>Add the details about the credential signature correctness proof data elements</p>
+<div id="todo-14" class="notice todo"><a class="notice-link" href="#todo-14">TODO</a><p>Add the details about the credential signature correctness proof data elements</p>
 </div>
 <ul>
 <li><code>se</code> is the <em>TO BE ADDED</em>. It is constructed as follows:
@@ -1304,7 +1304,7 @@ following describes the elements and how they are produced.</p>
 <span class="token punctuation">}</span>
 </code></pre>
 <p>The items in the data structure are:</p>
-<div id="todo-16" class="notice todo"><a class="notice-link" href="#todo-16">TODO</a><p>Add the details about the revocation signature, rev_reg and witness data elements</p>
+<div id="todo-15" class="notice todo"><a class="notice-link" href="#todo-15">TODO</a><p>Add the details about the revocation signature, rev_reg and witness data elements</p>
 </div>
 <ul>
 <li><code>sigma</code>: is <em>TO BE ADDED</em></li>
@@ -1344,7 +1344,7 @@ following describes the elements and how they are produced.</p>
 verify the credential and, if verified, will likely store the credential in a
 secure location.</p>
 <p>To verify the <code>signature_correctness_proof</code>, the <a class="term-reference" href="#term:holder">holder</a> does the following:</p>
-<div id="todo-17" class="notice todo"><a class="notice-link" href="#todo-17">TODO</a><p>Add the details about the verifying the credential signature correctness proof data elements and process.</p>
+<div id="todo-16" class="notice todo"><a class="notice-link" href="#todo-16">TODO</a><p>Add the details about the verifying the credential signature correctness proof data elements and process.</p>
 </div>
 <p>The verifying and securely storing of the credential by the <a class="term-reference" href="#term:holder">holder</a>
 completes the AnonCreds issuance process.</p>
@@ -1389,7 +1389,7 @@ presentation request to the Verifier.</p>
 <p>In step 7-10, the Verifier collects the required information and verifies the
 verifiable presentation and accepts it if the signature is valid, otherwise
 rejects the verifiable presentation.</p>
-<div id="todo-18" class="notice todo"><a class="notice-link" href="#todo-18">TODO</a><p>Question: VDR access for schema, revocation etc. retrieval mandatory?</p>
+<div id="todo-17" class="notice todo"><a class="notice-link" href="#todo-17">TODO</a><p>Question: VDR access for schema, revocation etc. retrieval mandatory?</p>
 </div>
 <h3 id="create-presentation-request"><a class="toc-anchor" href="#create-presentation-request" >§</a> Create Presentation Request</h3>
 <p>The <a class="term-reference" href="#term:verifier">verifier</a> starts the presentation process in step 1 of the <a href="#anoncreds-presentation-data-flow" >AnonCreds Presentation Data
@@ -2192,7 +2192,7 @@ other unrevoked credentials <strong>are</strong> included.</p>
 <p>Once the witness (<code>u</code>), the accumulator from the ledger (<code>e</code>) and the value of
 the tails file entry for the credential of interest (<code>b</code>) are known, the NRP can
 be generated as follows:</p>
-<div id="todo-19" class="notice todo"><a class="notice-link" href="#todo-19">TODO</a><p>To Do: Add more detail about the calculation of <code>C</code><sub><code>u</code></sub> and
+<div id="todo-18" class="notice todo"><a class="notice-link" href="#todo-18">TODO</a><p>To Do: Add more detail about the calculation of <code>C</code><sub><code>u</code></sub> and
 <code>C</code><sub><code>b</code></sub> in the following.</p>
 </div>
 <ul>
@@ -2239,7 +2239,7 @@ model:</p>
 <span class="token punctuation">}</span>
 </code></pre>
 <p>The values in the data model are:</p>
-<div id="todo-20" class="notice todo"><a class="notice-link" href="#todo-20">TODO</a><p>To Do: Enumerate each of the items in each NRP section of the presentation.</p>
+<div id="todo-19" class="notice todo"><a class="notice-link" href="#todo-19">TODO</a><p>To Do: Enumerate each of the items in each NRP section of the presentation.</p>
 </div>
 <ul>
 <li><code>x_list</code>&quot; is …
@@ -2377,9 +2377,9 @@ verification process, the <a class="term-reference" href="#term:verifier">verifi
 the presentation for the NRP being processed, plus the accumulator from
 appropriate <a class="term-reference" href="#term:revregentry">RevRegEntry</a>, the following steps are carried out to verify
 the NRP.</p>
-<div id="todo-21" class="notice todo"><a class="notice-link" href="#todo-21">TODO</a><p>To Do: Outline the NRP verification calculation.</p>
+<div id="todo-20" class="notice todo"><a class="notice-link" href="#todo-20">TODO</a><p>To Do: Outline the NRP verification calculation.</p>
 </div>
-<div id="todo-22" class="notice todo"><a class="notice-link" href="#todo-22">TODO</a><p>To Do: Is there a separate process to bind the NRP to the credential?</p>
+<div id="todo-21" class="notice todo"><a class="notice-link" href="#todo-21">TODO</a><p>To Do: Is there a separate process to bind the NRP to the credential?</p>
 </div>
 <p>The verification code MUST surface to the <a class="term-reference" href="#term:verifier">verifier</a> if any part of the
 presentation, including any NRP(s), fail cryptographic verification. The
@@ -2793,17 +2793,17 @@ Procedure:
 
 </code></pre>
 <h2 id="anoncreds-conventions"><a class="toc-anchor" href="#anoncreds-conventions" >§</a> AnonCreds Conventions</h2>
-<div id="todo-23" class="notice todo"><a class="notice-link" href="#todo-23">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
+<div id="todo-22" class="notice todo"><a class="notice-link" href="#todo-22">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
 </div>
 <h2 id="iana-considerations"><a class="toc-anchor" href="#iana-considerations" >§</a> IANA Considerations</h2>
 <p>This document has no IANA actions.</p>
 <h2 id="security-considerations"><a class="toc-anchor" href="#security-considerations" >§</a> Security Considerations</h2>
 <h3 id="cryptography"><a class="toc-anchor" href="#cryptography" >§</a> Cryptography</h3>
 <h4 id="signature"><a class="toc-anchor" href="#signature" >§</a> Signature</h4>
-<div id="todo-24" class="notice todo"><a class="notice-link" href="#todo-24">TODO</a><p>Add security considerations related to CL signatures</p>
+<div id="todo-23" class="notice todo"><a class="notice-link" href="#todo-23">TODO</a><p>Add security considerations related to CL signatures</p>
 </div>
 <h4 id="revocation-accumulators"><a class="toc-anchor" href="#revocation-accumulators" >§</a> Revocation / Accumulators</h4>
-<div id="todo-25" class="notice todo"><a class="notice-link" href="#todo-25">TODO</a><p>Add security considerations related to cryptographic accumulators and AnonCreds revocation</p>
+<div id="todo-24" class="notice todo"><a class="notice-link" href="#todo-24">TODO</a><p>Add security considerations related to cryptographic accumulators and AnonCreds revocation</p>
 <ul>
 <li>issues with too small revocation registries</li>
 <li>…</li>
@@ -2830,14 +2830,14 @@ Procedure:
 <h3 id="crypto-agility"><a class="toc-anchor" href="#crypto-agility" >§</a> Crypto Agility</h3>
 <p>The underlying signature algorithm of AnonCreds is not known to be a post-quantum computing resistant. As new signature algorithms evolve for the post-quantum computing security, the underlying signature algorithm of AnonCreds shall keep privacy-preserving features such as selective disclosure and non-correlatability.</p>
 <h2 id="privacy-considerations"><a class="toc-anchor" href="#privacy-considerations" >§</a> Privacy Considerations</h2>
-<div id="todo-26" class="notice todo"><a class="notice-link" href="#todo-26">TODO</a><p>Add privacy considerations.</p>
+<div id="todo-25" class="notice todo"><a class="notice-link" href="#todo-25">TODO</a><p>Add privacy considerations.</p>
 </div>
 <h2 id="references"><a class="toc-anchor" href="#references" >§</a> References</h2>
 <h3 id="normative-references"><a class="toc-anchor" href="#normative-references" >§</a> Normative References</h3>
-<div id="todo-27" class="notice todo"><a class="notice-link" href="#todo-27">TODO</a><p>Add normative references</p>
+<div id="todo-26" class="notice todo"><a class="notice-link" href="#todo-26">TODO</a><p>Add normative references</p>
 </div>
 <h3 id="informative-references"><a class="toc-anchor" href="#informative-references" >§</a> Informative References</h3>
-<div id="todo-28" class="notice todo"><a class="notice-link" href="#todo-28">TODO</a><p>Add informative references</p>
+<div id="todo-27" class="notice todo"><a class="notice-link" href="#todo-27">TODO</a><p>Add informative references</p>
 </div>
 <h4 id="resources-on-cryptography"><a class="toc-anchor" href="#resources-on-cryptography" >§</a> Resources on cryptography</h4>
 <h5 id="sigma-protocols"><a class="toc-anchor" href="#sigma-protocols" >§</a> Sigma protocols</h5>
@@ -2860,7 +2860,7 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li>Matt Raffel - Kiva Microfiance</li>
 </ul>
 <h2 id="authors-addresses"><a class="toc-anchor" href="#authors-addresses" >§</a> Authors’ Addresses</h2>
-<div id="todo-29" class="notice todo"><a class="notice-link" href="#todo-29">TODO</a><p>Add authors’ addresses.</p>
+<div id="todo-28" class="notice todo"><a class="notice-link" href="#todo-28">TODO</a><p>Add authors’ addresses.</p>
 </div>
 
                     </article>    
