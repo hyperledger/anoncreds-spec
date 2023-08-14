@@ -1,8 +1,7 @@
 ## Terminology
 
-::: todo
-[[def: blinding factor]]
-:::
+[[def: Blinding factor]]
+~ Blinding factor is a 3152 bit number generated randomly that is used to blind the `link_secret` and non-disclosed attributes during the issuance of credentials.
 
 [[def: claim, claims]]
 ~ A claim is a part of digital identity related to a [[ref: subject]]. A claim can be attested by the identity subject itself, or it can be asserted by another entity.
