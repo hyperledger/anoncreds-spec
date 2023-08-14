@@ -280,18 +280,10 @@ The values in the proof are generated as follows:
   * $\tilde{u} = s^{\tilde{v}'} \times r_{linksecret}^{\tilde{A_l}}\ mod\ n$ where $\tilde{v}'$ is randomly selected 3488-bit value and $\tilde{A_l}$ is 593-bit value by reference [_Anonymous credentials with type-3 revocation_ by Dmitry Khovratovisch, Michael Lodder and Cam Parra](https://github.com/hyperledger/anoncreds-spec/blob/main/spec/ursaAnonCreds.pdf)
   * $n_0$ is the nonce value.
 
-
-* `v_dash_cap`: $\hat{v}' = \tilde{v}' + cv'$ 
+  
+* `v_dash_cap`: $\hat{v'} \leftarrow \tilde{v'} + cv'$, where $v'$ is the blinding factor and $\tilde{v'}$ is a 3488-bit random number.
 * `m_caps`: $\hat{m} = \tilde{A_l} + cA_l$
-* `r_caps`: is an empty structure in this version of AnonCreds. It is *TO BE ADDED*.
-
-::: todo
-
-Add json format of the Blinded Link Secret Correctness Proof for non-revocation credential.
-
-:::
-
-
+* `r_caps`: is an empty structure in this version of AnonCreds.
 
 ### Issue Credential
 
