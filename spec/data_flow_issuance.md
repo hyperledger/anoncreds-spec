@@ -117,6 +117,10 @@ the [[ref: Credential Offer]] and verify the consistency between the list of
 attributes in the [[ref: Schema]] and in the [[ref: Public Credential
 Definition]].
 
+The nonce of the [[ref: Credential Offer]] is used to generate the proof of correctness
+for blinded credential secrets, where it is hashed with the blinded secrets to
+create the proof which is sent to the [[ref: issuer]].
+
 In addition, the [[ref: holder]] also requires access to their [[ref: link
 secret]].
 
@@ -164,12 +168,6 @@ The [[ref: holder]] constructs the following [[ref: Credential Request]] JSON st
 }
 ```
 
-::: todo
-
-Complete the data element descriptions in the following list.
-
-:::
-
 * `entropy`: a required string.
   * Called `prover_did` in earlier AnonCreds implementations, and called
   `prover_id` in [Ursa](https://github.com/hyperledger/ursa), `entropy` is a
@@ -193,7 +191,8 @@ Complete the data element descriptions in the following list.
 * `cred_def_id`: The ID of the [[ref: Public Credential Definition]] on which the [[ref: Credential]] to be issued will be based.
 * `blinded_ms`: The [[ref: link secret]] in its blinded form. Described in detail in the section [Blinding the Link Secret](#blinding-the-link-secret) (below).
 * `blinded_ms_correctness_proof`: The [[ref: Blinded Secrets Correctness Proof]] of the blinded [[ref: link secret]]. Described in detail in the section [The Blinded Link Secret Correctness Proof](#the-blinded-link-secret-correctness-proof) (below).
-* `nonce`: Used for preventing replay attacks and authentication between protocol steps. *Generation Process to be added*
+* `nonce`: Used for preventing replay attacks and authentication between protocol steps. The [[ref: holder]] creates an 80 bit nonce in the request which is a randomly 
+generated number.
 
 [legacy Indy AnonCreds Method]: https://hyperledger.github.io/anoncreds-methods-registry/#hyperledger-indy-legacy-anoncreds-method
 
@@ -209,17 +208,11 @@ during presentations, is proven by the [[ref holder]] to be associated with the
 link_secret]] itself. This is the capability that enables the binding of the
 credential to the holder without revealing a correlatable identifier.
 
-::: todo
-
-Confirm purpose of the blinding factor and add how it is generated.
-
-:::
-
 The [[ref: blinding factor]] is a secret held by the [[ref: holder]] for blinding
 the [[ref: link secret]] before sending it to the [[ref: issuer]], and used later
 when generating the proof of knowledge that the [[ref: link secret]] was used in
 the signature received from the [[ref: issuer]]. The [[ref: blinding factor]],
-$v$ is created by [[ref: holder]].
+$v$ is created by the [[ref: holder]] generating a 3152-bit random number.
 
 The process of blinding the link secret uses the [[ref: issuer]]'s
 `CredentialPrimaryPublicKey`, $P$, which is included in the [[ref: Public Credential Definition]],
@@ -250,12 +243,10 @@ The resulting blinded link secret data structure inserted into the [[ref: Creden
 ```
 
 
-
-Where:
-
-* `u`: $u = (s^{v'} \times A_{bl})\ Mod\ n$
+* `u`: is the blinded link secret which is $(s^v \times A_{bl})\ Mod\ n$.
 * `ur`: is `null` if revocation is not active for the [[ref: Public Credential Definition], and if revocation is active $u_r = h_2^{s'_r}$ where $s'_r$ is randomly selected quadratic residue of order of the bilinear groups `q` and $h_2$ is  part of the revocation public key.
-* `hidden_attributes`: is an array of hidden attributes from the list of [[ref: Public Credential Definition]. For AnonCreds v1.0, it is always a single entry of `master_secret`.
+* `hidden_attributes`: is an array of hidden attributes from the list of [[ref: Public Credential Definition]]. For AnonCreds v1.0, it is always a single entry of `master_secret`.
+
   * The [[ref: holder]]'s blinded [[ref: link secret]] is a default hidden attribute in AnonCreds, meaning it is not explicitly defined in the [[ref: Schema]] list of attributes but is included in both the [[ref: Public Credential Definition]] and all issued [[ref: credentials]]. Whilst it is cryptographically possible to have multiple hidden attributes, in this version of AnonCreds, only [[ref: link secret]] is used.
 * `committed_attributes`: An empty list of attributes in this version of AnonCreds.
 
@@ -289,18 +280,10 @@ The values in the proof are generated as follows:
   * $\tilde{u} = s^{\tilde{v}'} \times r_{linksecret}^{\tilde{A_l}}\ mod\ n$ where $\tilde{v}'$ is randomly selected 3488-bit value and $\tilde{A_l}$ is 593-bit value by reference [_Anonymous credentials with type-3 revocation_ by Dmitry Khovratovisch, Michael Lodder and Cam Parra](https://github.com/hyperledger/anoncreds-spec/blob/main/spec/ursaAnonCreds.pdf)
   * $n_0$ is the nonce value.
 
-
-* `v_dash_cap`: $\hat{v}' = \tilde{v}' + cv'$ 
+  
+* `v_dash_cap`: $\hat{v'} \leftarrow \tilde{v'} + cv'$, where $v'$ is the blinding factor and $\tilde{v'}$ is a 3488-bit random number.
 * `m_caps`: $\hat{m} = \tilde{A_l} + cA_l$
-* `r_caps`: is an empty structure in this version of AnonCreds. It is *TO BE ADDED*.
-
-::: todo
-
-Add json format of the Blinded Link Secret Correctness Proof for non-revocation credential.
-
-:::
-
-
+* `r_caps`: is an empty structure in this version of AnonCreds.
 
 ### Issue Credential
 
