@@ -212,7 +212,7 @@ The [[ref: blinding factor]] is a secret held by the [[ref: holder]] for blindin
 the [[ref: link secret]] before sending it to the [[ref: issuer]], and used later
 when generating the proof of knowledge that the [[ref: link secret]] was used in
 the signature received from the [[ref: issuer]]. The [[ref: blinding factor]],
-$v$ is created by the [[ref: holder]] generating a 3152-bit random number.
+$v$ is created by [[ref: holder]].
 
 The process of blinding the link secret uses the [[ref: issuer]]'s
 `CredentialPrimaryPublicKey`, $P$, which is included in the [[ref: Public Credential Definition]],
@@ -243,10 +243,12 @@ The resulting blinded link secret data structure inserted into the [[ref: Creden
 ```
 
 
-* `u`: is the blinded link secret which is $(s^v \times A_{bl})\ Mod\ n$.
-* `ur`: is `null` if revocation is not active for the [[ref: Public Credential Definition], and if revocation is active $u_r = h_2^{s'_r}$ where $s'_r$ is randomly selected quadratic residue of order of the bilinear groups `q` and $h_2$ is  part of the revocation public key.
-* `hidden_attributes`: is an array of hidden attributes from the list of [[ref: Public Credential Definition]]. For AnonCreds v1.0, it is always a single entry of `master_secret`.
 
+Where:
+
+* `u`: $u = (s^{v'} \times A_{bl})\ Mod\ n$
+* `ur`: is `null` if revocation is not active for the [[ref: Public Credential Definition], and if revocation is active $u_r = h_2^{s'_r}$ where $s'_r$ is randomly selected quadratic residue of order of the bilinear groups `q` and $h_2$ is  part of the revocation public key.
+* `hidden_attributes`: is an array of hidden attributes from the list of [[ref: Public Credential Definition]. For AnonCreds v1.0, it is always a single entry of `master_secret`.
   * The [[ref: holder]]'s blinded [[ref: link secret]] is a default hidden attribute in AnonCreds, meaning it is not explicitly defined in the [[ref: Schema]] list of attributes but is included in both the [[ref: Public Credential Definition]] and all issued [[ref: credentials]]. Whilst it is cryptographically possible to have multiple hidden attributes, in this version of AnonCreds, only [[ref: link secret]] is used.
 * `committed_attributes`: An empty list of attributes in this version of AnonCreds.
 
@@ -279,10 +281,8 @@ The values in the proof are generated as follows:
   * $u$ is described above.
   * $\tilde{u} = s^{\tilde{v}'} \times r_{linksecret}^{\tilde{A_l}}\ mod\ n$ where $\tilde{v}'$ is randomly selected 3488-bit value and $\tilde{A_l}$ is 593-bit value by reference [_Anonymous credentials with type-3 revocation_ by Dmitry Khovratovisch, Michael Lodder and Cam Parra](https://github.com/hyperledger/anoncreds-spec/blob/main/spec/ursaAnonCreds.pdf)
   * $n_0$ is the nonce value.
-
-  
 * `v_dash_cap`: $\hat{v'} \leftarrow \tilde{v'} + cv'$, where $v'$ is the blinding factor and $\tilde{v'}$ is a 3488-bit random number.
-* `m_caps`: $\hat{m} = \tilde{A_l} + cA_l$
+* `m_caps`: $\{\hat{m_i} \leftarrow \tilde{m_i} + cm_i\}_{i \in A_h}$, where $A_h$ is the set of all hidden attributes.
 * `r_caps`: is an empty structure in this version of AnonCreds.
 
 ### Issue Credential
@@ -291,7 +291,7 @@ After the [[ref: issuer]] receives the [[ref: Credential Request]] from the [[re
 
 #### Verifying the Credential Request
 
-Before deciding to issue the credential, the [[ref: issuer]] must first verify the [[ref: Credential Request]] from the [[ref: holder]] by checking first the nonce, and then the blinded link secret correctness proof.
+Before deciding to issue the credential, the [[ref: issuer]] must first verify the [[ref: Credential Request]] from the [[ref: holder]] by using the nonce from credential offer to verify the blinded link secret correctness proof.
  
 
 The `blinded_ms_correctness_proof` is verified by [[ref: issuer]]. The `blinded_ms_correctness_proof` verification is as follows:
@@ -309,13 +309,6 @@ $$= u^{-c} \times  r_{linksecret}^{\tilde{A_l}+ cA_l } \times s^{ \tilde{v'} + c
 $$= u^{-c} \times u^{c} \times  r_{linksecret}^{\tilde{A_l}} \times s^{\tilde{v'}}\ (Mod\ n)$$
 $$ \hat{u} = \tilde{u}$$
 
-
-
-::: todo
-
-Add in the details about the nonce.
-
-:::
 
 
 Once the Credential Request is verified and if the [[ref issuer]] decides to proceed with issuing the credential, the credential creation process is performed.
