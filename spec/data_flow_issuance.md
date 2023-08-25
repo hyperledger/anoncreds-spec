@@ -304,7 +304,7 @@ After the [[ref: issuer]] receives the [[ref: Credential Request]] from the [[re
 
 #### Verifying the Credential Request
 
-Before deciding to issue the credential, the [[ref: issuer]] must first verify the [[ref: Credential Request]] from the [[ref: holder]] by checking first the nonce, and then the blinded link secret correctness proof.
+Before deciding to issue the credential, the [[ref: issuer]] must first verify the [[ref: Credential Request]] from the [[ref: holder]] by using the nonce from credential offer to verify the blinded link secret correctness proof.
  
 
 The `blinded_ms_correctness_proof` is verified by [[ref: issuer]]. The `blinded_ms_correctness_proof` verification is as follows:
@@ -322,16 +322,6 @@ $$= u^{-c} \times  r_{linksecret}^{\tilde{A_l}+ cA_l } \times s^{ \tilde{v'} + c
 $$= u^{-c} \times u^{c} \times  r_{linksecret}^{\tilde{A_l}} \times s^{\tilde{v'}}\ (Mod\ n)$$
 $$ \hat{u} = \tilde{u}$$
 
-
-
-The `nonce` from credential offer is used in creation of signature correctness proof as follows
-1. Compute $q = \frac{Z}{us^{v''}r^{m}_{linksecret}\ (Mod\ n)}$ where $v''$ is a random 2724-bit number with most significant bit as $1$ and $e$ is a random prime such that $2^{596} \leq e \leq 2^{596}+2^{119}$
-2. Compute $A = q^{e^{-1}\ (Mod\ p'q')}\ (Mod\ n)$ where $p', q'$ are primes generated during issuer setup, and $e^{-1}$ is the multiplicative inverse of $e$.
-3. Using random $r<p'q'$, compute 
-$$ \hat{A} = q^r (Mod\ n) $$
-$$ c' = H(q||A||\hat{A}||n_1) $$
-where $n_1$ is the `nonce` from credential offer and $H$ is SHA-256 hashing algorithm.
-Signature correctness proof $s_e = r - c'e^{-1} (Mod\ p'q')$.
 
 
 Once the Credential Request is verified and if the [[ref issuer]] decides to proceed with issuing the credential, the credential creation process is performed.
