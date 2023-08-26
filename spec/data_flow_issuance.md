@@ -445,11 +445,6 @@ community.
 
 The credential signature elements are constructed as follows:
 
-::: todo
-
-Add the details about the credential signature data elements
-
-:::
 
 * `m_2` is a linkable identifier to the holder that is also called the `master_secret` in old versions. It is constructed as follows:
   * $m_2 = H(i || \mathcal{H})$, where $i$ is an index assigned to the holder, and $\mathcal{H}$ is an identifier with which the [[ref: holder]] is known to the [[ref: issuer]].
