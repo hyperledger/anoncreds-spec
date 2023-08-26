@@ -440,11 +440,6 @@ The credential signature elements are constructed as follows:
 
 1. Compute $q = \frac{Z}{us^{v''}r^{m}_{linksecret}\ (Mod\ n)}$ where $v''$ is a random 2724-bit number with most significant bit as $1$ and $e$ is a random prime such that $2^{596} \leq e \leq 2^{596}+2^{119}$
 2. Compute $a = q^{e^{-1}\ (Mod\ p'q')}\ (Mod\ n)$ where $p', q'$ are primes generated during issuer setup, and $e^{-1}$ is the multiplicative inverse of $e$.
-3. Using random $r<p'q'$, compute 
-$$\hat{a} = q^r (Mod\ n)$$
-$$ c' = H(q||a||\hat{a}||n_1) $$
-where $n_1$ is the `nonce` from credential request and $H$ is SHA-256 hashing algorithm.
-Signature correctness proof $s_e = r - c'e^{-1} (Mod\ p'q')$.
 
 ::: todo
 
