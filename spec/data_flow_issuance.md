@@ -291,7 +291,7 @@ After the [[ref: issuer]] receives the [[ref: Credential Request]] from the [[re
 
 #### Verifying the Credential Request
 
-Before deciding to issue the credential, the [[ref: issuer]] must first verify the [[ref: Credential Request]] from the [[ref: holder]] by using the nonce from credential offer to verify the blinded link secret correctness proof.
+Before deciding to issue the credential, the [[ref: issuer]] must first verify the [[ref: Credential Request]] from the [[ref: holder]] by using the nonce from credential offer ($n_0$) to verify the blinded link secret correctness proof.
  
 
 The `blinded_ms_correctness_proof` is verified by [[ref: issuer]]. The `blinded_ms_correctness_proof` verification is as follows:
