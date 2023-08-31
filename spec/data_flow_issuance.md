@@ -464,16 +464,15 @@ Add the details about the credential signature data elements
 
 The credential signature correction proof elements are constructed as follows:
 
-::: todo
+Using random $r<p'q'$, compute 
+$$\hat{a} = q^r (Mod\ n)$$
+$$ c = H(q||a||\hat{a}||n_1) $$
+where $n_1$ is the `nonce` from credential request and $H$ is SHA-256 hashing algorithm.
+Signature correctness proof $s_e = r - ce^{-1} (Mod\ p'q')$.
 
-Add the details about the credential signature correctness proof data elements
 
-:::
-
-* `se` is the *TO BE ADDED*. It is constructed as follows:
-  * *TO BE ADDED*
-* `c` is the *TO BE ADDED*. It is constructed as follows:
-  * *TO BE ADDED*
+* `se` is the credential signature correctness proof. 
+* `c` is the witness for the credential signature correctness proof.
 
 #### Supporting Revocation in a Credential
 
