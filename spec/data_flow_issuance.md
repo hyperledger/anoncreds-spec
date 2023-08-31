@@ -311,13 +311,6 @@ $$ \hat{u} = \tilde{u}$$
 
 
 
-::: todo
-
-Add in the details about the nonce.
-
-:::
-
-
 Once the Credential Request is verified and if the [[ref issuer]] decides to proceed with issuing the credential, the credential creation process is performed.
 
 #### Encoding Attribute Data
@@ -444,6 +437,9 @@ community.
 #### The Credential Signature
 
 The credential signature elements are constructed as follows:
+
+1. Compute $q = \frac{Z}{us^{v''}r^{m}_{linksecret}\ (Mod\ n)}$ where $v''$ is a random 2724-bit number with most significant bit as $1$ and $e$ is a random prime such that $2^{596} \leq e \leq 2^{596}+2^{119}$
+2. Compute $a = q^{e^{-1}\ (Mod\ p'q')}\ (Mod\ n)$ where $p', q'$ are primes generated during issuer setup, and $e^{-1}$ is the multiplicative inverse of $e$.
 
 ::: todo
 
