@@ -502,23 +502,18 @@ following describes the elements and how they are produced.
 
 The items in the data structure are:
 
-::: todo
-
-Add the details about the revocation signature, rev_reg and witness data elements
-
-:::
-
-
-* `sigma`: is *TO BE ADDED*
-* `c`: is *TO BE ADDED*
-* `vr_prime_prime`: is *TO BE ADDED*
+* `c`: is a random number belonging in the group G2 $(Mod\ q)$
+* `vr_prime_prime`: is also a random number belonging in the group G2 $(Mod\ q)$
+* `sigma`: is calculated as
+$$\sigma = (h_0h_1^{m_2}\ .\ u_r\ .\ g_i\ .\ h_2^{v_r''})^{\frac{1}{x+c}}$$
+where $h_0$, $h_1$ are from revocation public key, $u_r$ is from the blinded credential secrets, $g_i = g^{\gamma^i}$ where $i$ is the issuer's accumulator index, $h_2$ is from revocation public key, and $x$ is from the revocation private key.
 * `witness_signature`:
-  * `sigma_i`: is *TO BE ADDED*
-  * `u_i`: is *TO BE ADDED*
-  * `g_i`: is *TO BE ADDED*
-* `g_i`: is *TO BE ADDED*
-* `i`: is *TO BE ADDED*
-* `m2`: is *TO BE ADDED*
+  * `sigma_i`: is calculated as $g'^{\frac{1}{sk+\gamma^i}}$
+  * `u_i`: is $u^{\gamma^i}$
+  * `g_i`: is a point in curve G1 which calculated by $g^{\gamma^i}$
+* `g_i`: is a point in curve G1 which calculated by $g^{\gamma^i}$
+* `i`: $i$ is the issuer's accumulator index
+* `m2`: is the credential context which acts as a linkable identifier to the holder.
 
 `rev_reg` is the following JSON data structure:
 
@@ -530,7 +525,7 @@ Add the details about the revocation signature, rev_reg and witness data element
 
 The item in the data structure is:
 
-* `accum`: is *TO BE ADDED*
+* `accum`: is the accumulator value of the issuer which is updated with the new tails point as soon as new revocation credential is generated, and published to the public ledger.
 
 `witness` is the following JSON data structure:
 
@@ -542,7 +537,7 @@ The item in the data structure is:
 
 The item in the data structure is:
 
-* `omega`: is *TO BE ADDED*
+* `omega`: is calculated by $\prod\limits_{j \in V} g'_{L+1-j+i}$ where $V$ is the current set of non revoked indices and $L$ is the number of indices contained in the accumulator.
 
 ### Receiving a Credential
 
@@ -552,11 +547,12 @@ secure location.
 
 To verify the `signature_correctness_proof`, the [[ref: holder]] does the following:
 
-::: todo
-
-Add the details about the verifying the credential signature correctness proof data elements and process.
-
-:::
+- Verify that $e$ is a prime and lies within it's range.
+- Compute 
+$$ q \leftarrow \frac{Z}{S \prod\limits_{i in C_s} R_i^{m_i}} (Mod\ n)$$
+- Verify $q = a^e (Mod\ n)$
+- Compute $\hat{a} \leftarrow a^{c + s_e.e}(Mod\ n)$
+- Verify $c' = H(q || a || \hat{a} || n_1)$
 
 The verifying and securely storing of the credential by the [[ref: holder]]
 completes the AnonCreds issuance process.

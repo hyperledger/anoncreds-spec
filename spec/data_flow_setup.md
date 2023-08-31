@@ -451,30 +451,39 @@ The identifier for the [[ref: Revocation Registry]] is dependent on where the
 
 The second of the outcomes from creating of a [[ref: Revocation Registry]] is a [[ref:
 TAILS_FILE]]. The contents of a [[ref: TAILS_FILE]] is an array of calculated
-prime integers, one for each credential in the registry. Thus, if the [[ref:
+points on curve `G2`, one for each credential in the registry. Thus, if the [[ref:
 Revocation Registry]] has a capacity (`maxCredNum`) of 1000, the [[ref: TAILS_FILE]] holds
-an array of 1000 primes. Each credential issued using the [[ref: Revocation Registry]] is
+an array of 1000 `G2` curve points. Each credential issued using the [[ref: Revocation Registry]] is
 given its own index (1 to the capacity of the [[ref: Revocation Registry]]) into the array,
-the index of the prime for that credential. The contents of the [[ref;
-TAILS_FILE]] is needed by the [[ref: issuer]] to publish the current state of
-revocations within the [[ref: Revocation Registry]] and by the [[ref: holder]] to produce
+the index of the point for that credential. The contents of the [[ref:
+TAILS_FILE]] is needed by the [[ref: holder]] to produce
 (if possible) a "proof of non-revocation" to show their issued credential has
 not been revoked.
 
-The process of generating the primes that populate the [[ref: TAILS_FILE]] is as
-follows:
+The process of generating the points that populate the [[ref: TAILS_FILE]] are `tail[index] = g_dash * (gamma ** index)`
 
-::: todo
-To Do: Document hashing of the tails file ([see also](https://github.com/hyperledger/indy-shared-rs/blob/d22373265f7c4cf93d59dd3c111251ef96d6a63d/indy-credx/src/services/tails.rs#L151)).
+::: note
+Detailed process for tails file generation:
+- Create and open the tails file.
+- To generate a tail point for an attribute located at a specific index, follow the steps.
+- Convert index into an array of bytes(`u8`) using little endian ordering.
+- Create an element belonging to the finite field group from the `u8` array.
+- Calculate `pow` by doing modular exponentiation of revocation private key(`gamma`) with the finite field element previously calculated.
+- Multiply `pow` by `g_dash`, which is the generator of elliptic curve group `G2`, and this should be the required point on the curve.
+- Convert this tail point to an array of bytes(`u8`), and put them into the file as a slice buffer.
+- Repeat for all the attributes from index $1$ to $L$, by calculating $([\gamma], [\gamma^2], [\gamma^3], ...[\gamma^L], [\gamma], [\gamma^{L+2}], [\gamma^{L+3}], ..., [\gamma^{2L}])$. Note that Instead of inserting $[\gamma^{L+1}]$ in the sequence, insert the value $[\gamma]$ (the first value in the sequence) in its place, and then continue with $[\gamma^{L+2}]$ and on to $[\gamma^{2L}]$. $[\gamma^{L+1}]$ is not used by holders generating the [[def: Non-Revocation Proof]] and a dummy value is inserted in its place.
+- Close the file buffer.
+
+Relevant links: [Anoncreds-rs repository](https://github.com/hyperledger/anoncreds-rs/blob/9c915bb77bc4e033cc6d28d45e330ee5bda26211/src/services/tails.rs#LL148C1-L148C37), [Anoncreds-CLSignatures repository](https://github.com/hyperledger/anoncreds-clsignatures-rs/blob/f1ae666656054cd73fe765928c0dada64ef21d87/src/mod.rs#L517)
 :::
 
-::: todo
-To Do: Document the process for generating the primes.
-:::
+The process for hashing the [[ref: TAILS_FILE]] is as follows:
 
-Once generated, the array of primes is static, regardless of credential issuance
-or revocation events. Once generated, the SHA256 (TO BE VERIFIED) hash of the
-array of primes is calculated and returned to be inserted into the `tailsHash`
+- Append the tails file version and all the bytes of `G2` curve points one by one into a hasher.
+- Compute the hash digest using `SHA256` hashing algorithm.
+
+
+The SHA256 hash of the array of points is returned to be inserted into the `tailsHash`
 item of the [[ref: Revocation Registry]] object (as described in the [previous
 section](#revocation-registry-definition-object-generation)). Typically, the array is streamed into a
 file (hence, the term "Tails File") and published to a [[ref: URL]] indicated by
@@ -482,9 +491,10 @@ the `tailsLocation` input parameter provided by the [[ref: issuer]].
 
 The format of a [[ref: TAILS_FILE]] is as follows:
 
-::: todo
-To Do: Define the format of the Tails File
-:::
+- First two bytes are version number(currently `0u8 2u8`)
+- A list of the points, one per credential in the Revocation Registry. Each point is a collection of three integers implemented as points in 3 dimensions as per `ECP2`. Each point is 3x4 = 12 bytes long.
+
+Thus the total size of a Tails File is 2+ 12*`Size of the Revocation Registry`+6 (the L+1 entry).
 
 While not required, the Hyperledger Indy community has created a component, the "[Indy Tails
 Server](https://github.com/bcgov/indy-tails-server)," which is basically a web
