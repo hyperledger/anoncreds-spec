@@ -548,11 +548,12 @@ secure location.
 
 To verify the `signature_correctness_proof`, the [[ref: holder]] does the following:
 
-::: todo
-
-Add the details about the verifying the credential signature correctness proof data elements and process.
-
-:::
+- Verify that $e$ is a prime and lies within it's range.
+- Compute 
+$$ q \leftarrow \frac{Z}{S \prod\limits_{i in C_s} R_i^{m_i}} (Mod\ n)$$
+- Verify $q = a^e (Mod\ n)$
+- Compute $\hat{a} \leftarrow a^{c + s_e.e}(Mod\ n)$
+- Verify $c' = H(q || a || \hat{a} || n_1)$
 
 The verifying and securely storing of the credential by the [[ref: holder]]
 completes the AnonCreds issuance process.
