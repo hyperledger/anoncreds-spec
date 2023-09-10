@@ -187,23 +187,70 @@ Replace this example with one that includes:
 - one unrevealed attribute
 - one self-attested attribute
 
+:::
+
 ::: example Multi-Credential Presentation
 ```json
 [[insert: ./data/MutiCredentialPresentation.json ]]
 ```
+:::
 
 Once the presentation data structure is generated, it is sent to the verifier
 for processing.
 
-The following sections describe the data structures listed above, including the
+The following describes the data structures listed above, including the
 process of generating the data of the various types of proofs.
 
-##### The Presentation Request
+**The Presentation Request**
 
 The `presentation_request` is a copy of the `presentation_request` data structure from
 the verifier, as described [earlier in the specification](#the-presentation-request).
 
-##### Generating a Primary `eq_proof`
+**Presentation**
+
+The `presentation` contains:
+
+- Proofs of the source credentials.
+- An aggregated proof across all of the source credentials.
+- A mapping of how the requested attributes and predicates are satisfied.
+- A list of the identifiers related to each of the source credentials in the
+  proof.
+
+The `presentation` data structure is as follows. As noted in the JSON comments
+included, details for each section of the `presentation` is provided below.
+
+```json
+  "presentation": {
+    "proof": {
+      "proofs": [
+        {
+          "primary_proof": {
+            "eq_proof": {
+              # Described in detail below
+            },
+            "ge_proofs": [
+              # Described in detail below
+            ]
+          }
+        }
+      ],
+      "aggregated_proof": {
+        # Described in detail below
+      }
+    },
+    "requested_proof": {
+      # Described in detail below
+    }
+    "identifiers": {
+      # Described in details below
+    }
+  }
+```
+
+The `proofs` array contains an entry for each source verifiable credential.
+For each is a `primary_proof` covering the claims in the source credential called
+the `eq_proof`, and a `ge_proof` for each of the predicate proofs sourced from
+the verifiable credential.
 
 Each primary `eq_proof` is generated as follows:
 
@@ -213,8 +260,6 @@ To Do: Add algorithm for generating a `eq_proof` and the data values in the proo
 
 :::
 
-##### Generating a Primary `ge_proof`
-
 Each primary `ge_proof` is generated as follows:
 
 ::: todo
@@ -223,7 +268,8 @@ To Do: Add algorithm for generating a `ge_proof` and the data values in the proo
 
 :::
 
-##### Generating the Aggregate Proof
+The `aggregated_proof` proves that the same [[ref: linked secret]] was used to
+issue all of the source verifiable credentials in the presentation.
 
 The `aggregated_proof` is generated as follows:
 
@@ -233,19 +279,17 @@ To Do: Add algorithm for generating the aggregate proof and the data values in t
 
 :::
 
-##### Requested Proof
-
 The `requested_proof` is the mapping from the presentation request attributes
 and predicates to the data in the presentation that satisfies the request. This
 is divided into five parts:
 
 - The request attributes, where a single attribute `name` is requested.
 - The request attribute groups, where a set of `names` are requested from a single source credential.
-- Request attributes satisfied without `restrictions` that are satisfied with a self attested attribute.
+- Request attributes without `restrictions` that are satisfied with self attested attributes.
 - Request attributes that are unrevealed.
 - Request predicates.
 
-The a JSON summary, with comments, for the data in each of the parts is listed below:
+A JSON summary, with comments, for the data in each of the parts is listed below:
 
 **Revealed Attributes**
 
@@ -260,6 +304,24 @@ An entry for each single `name` request attribute from the presentation request.
         }
       }
 ```
+
+::: note
+
+It is important for all verifiers to understand that the revealed attribute
+proof (`eq_proof` described earlier) is a proof on the `encoded` value, not on
+the `raw` value. As such, it is up to the verifier to know the "raw to encoded"
+algorithm used by the issuer, and to verify that the revealed `raw` value properly
+encodes to the proven `encoded` value. It is possible for a malicious holder to
+put an unrelated `raw` value into a presentation to fool a verifier that does not
+checking the encoding process. In most Aries implementations, the encoding is checked
+by the Aries framework, as a "post-cryptographic verification" step.
+
+A future version of the AnonCreds specification is likely to do an "on the fly"
+encoding in AnonCreds rather than including both values in the source
+credentials and presentations. This would prevent the holder from replacing the
+`raw` value without detection.
+
+:::
 
 **Revealed Attribute Groups**
 
@@ -303,10 +365,13 @@ To Do: Describe predicates data structure
 
 :::
 
-##### Identifiers
+**Identifiers**
 
-The identifiers are listed in an array with one entry per source
-verifiable credential, ordered by the `proofs` list earlier in the presentation.
+The `identifiers` contains a list of the identifiers to be resolved by the
+verifier to retrieve the cryptographic material necessary to verify each of the
+proofs in the presentation. The identifiers are listed in an array with one
+entry per source verifiable credential, ordered by the `proofs` list earlier in
+the presentation.
 
 The data structure is:
 
@@ -324,7 +389,6 @@ revocable source credential, the `rev_reg_id` and `timestamp` (the identifier
 for the [[def: Revocation Registry Entry]] used in the non-revocation proof) are
 added. Those are described in the section below on [generation of non-revocation
 proofs](#generate-non-revocation-proofs)
-
 
 #### Generate Non-Revocation Proofs
 
