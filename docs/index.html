@@ -1424,7 +1424,7 @@ Verifier. If the Holder does not have the necessary credentials to satisfy the
 request, the Holder may ignore the presentation.</p>
 <p>In step 7, the Holder sends the verifiable presentation according to the
 presentation request to the Verifier.</p>
-<p>In step 7-10, the Verifier collects the required information and verifies the
+<p>In step 8-10, the Verifier collects the required information and verifies the
 verifiable presentation and accepts it if the signature is valid, otherwise
 rejects the verifiable presentation.</p>
 <div id="todo-6" class="notice todo"><a class="notice-link" href="#todo-6">TODO</a><p>Question: VDR access for schema, revocation etc. retrieval mandatory?</p>
@@ -1737,500 +1737,591 @@ attribute, and a predicate.</p>
 the <a class="term-reference" href="#term:verifier">verifier</a> sends the <a class="term-reference" href="#term:presentation-request">presentation request</a> to the <a class="term-reference" href="#term:holder">holder</a>.</p>
 <h3 id="generate-presentation"><a class="toc-anchor" href="#generate-presentation" >§</a> Generate Presentation</h3>
 <p>In step 3, 4, and 5 of the <a href="#anoncreds-presentation-data-flow" >AnonCreds Presentation Data
-Flow</a>, the Holder collects the required
-information and creates the verifiable presentation according to the
+Flow</a>, the <a class="term-reference" href="#term:holder">holder</a> collects the required
+information to create the verifiable presentation according to the
 <a href="#example-of-a-complete-presentation-request" >presentation request</a> received
-from the Verifier.</p>
-<p>Either a corresponding credential with optionally revealed attributes or a
-self-attested attribute must be provided for each requested attribute. A
-presentation request may request multiple credentials from different schemas and
-multiple issuers, which should reside in the Holder’s wallet.</p>
-<p>The <a class="term-reference" href="#term:verifier">verifier</a> may specify in the presentation request that some or
-all of the attributes/predicates that are derived from revocable verifiable credentials held by
-the <a class="term-reference" href="#term:holder">holder</a> have an accompanying non-revocation proof (NRP). The generation of an NRP
-is described <a href="#generate-non-revocation-proofs" >in this section</a> of the specification.</p>
-<div id="note-6" class="notice note"><a class="notice-link" href="#note-6">NOTE</a><p>Often in discussions about verifiable presentations, the term “<a class="term-reference" href="#term:prover">prover</a>”
-is used to indicate the participant generating the presentation.
-Throughout the Hyperledger Indy AnonCreds implementation the term <code>prover</code> is
-used in the names of methods performed by that participant. However, because
-in AnonCreds the <a class="term-reference" href="#term:holder">holder</a> and the <a class="term-reference" href="#term:prover">prover</a> are always the same entity, we’ll use
-<a class="term-reference" href="#term:holder">holder</a> to refer to the participant generating the requested presentation to
+from the <a class="term-reference" href="#term:verifier">verifier</a>.</p>
+<p>Each attribute and predicate in the presentation request must be satisfied by a
+source credential held by the <a class="term-reference" href="#term:holder">holder</a> that meets the associated
+<code>restrictions</code> item in the presentation request. The same source credential MAY
+be used to satisfy multiple attributes and predicates. Each attribute in the
+presentation request may specify (using the <code>names</code> item) that multiple <a class="term-reference" href="#term:claims">claims</a> from the source credential must be shared. If there is no <code>restrictions</code> item
+in the presentation request, the <a class="term-reference" href="#term:holder">holder</a> MAY satisfy the presentation request
+with self-attested attributes.</p>
+<div id="note-6" class="notice note"><a class="notice-link" href="#note-6">NOTE</a><p>To prevent confusion, the term “attribute” in this section <strong>always</strong> refers to
+the <code>required_attributes</code> in a presentation request, and the term “claim” is
+used for the data elements in a verifiable credential.</p>
+</div>
+<p>The <a class="term-reference" href="#term:verifier">verifier</a> may specify in the presentation request that if some or
+all of the attributes/predicates are to be satisfied by revocable credentials,
+the <a class="term-reference" href="#term:holder">holder</a> must accompany the verifiable credential proofs with
+non-revocation proofs (NRPs) for the source credentials. The generation of NRPs
+is described <a href="#generate-non-revocation-proofs" >in the generate non-revocation proofs
+section</a> of the specification.</p>
+<div id="note-7" class="notice note"><a class="notice-link" href="#note-7">NOTE</a><p>Often in discussions about verifiable presentations, the term “<a class="term-reference" href="#term:prover">prover</a>”
+is used to indicate the participant generating the presentation. Throughout the
+Hyperledger AnonCreds implementation the term <code>prover</code> is used in the names of
+methods performed by that participant. However, because in AnonCreds the <a class="term-reference" href="#term:holder">holder</a> and the <a class="term-reference" href="#term:prover">prover</a> are always the same entity, we’ll use <a class="term-reference" href="#term:holder">holder</a> to refer to the participant generating the requested presentation to
 emphasize that the same entity is both issued credentials and generating
 presentations from those credentials.</p>
 </div>
-<h4 id="generate-anoncreds-presentation"><a class="toc-anchor" href="#generate-anoncreds-presentation" >§</a> Generate AnonCreds Presentation</h4>
-<p>Before the Holder can generate the proof, he needs to collect all required credentials from the Holder wallet
-based on the provided presentation request. Instead of immediately returning fetched credentials, a three-step
-procedure is used, first creating a <code>search_handle</code>, then fetching credentials in batches, and finally
-closing the request.</p>
-<p>The holder then needs to create a <code>requested_credentials_json</code> document indicating the attributes and
-predicates to reveal.</p>
-<p>Finally, all required schemas, required public keys and revocation registries must be provided,
-typically by querying the verifiable data registry (VDR).</p>
-<p>Once all required information is available, the Holder generates the presentation.</p>
-<ol>
-<li>
-<p><code>anoncreds_prover_search_credentials_for_proof_req</code>: This API call
-returns a <code>search_handle</code> that can be used to fetch records by small batches
-(with <code>anoncreds_prover_fetch_credentials_for_proof_req</code>).</p>
-<pre class="language-rust"><code class="language-rust"><span class="token keyword">pub</span> <span class="token keyword">extern</span> <span class="token keyword">fn</span> <span class="token function-definition function">anoncreds_prover_search_credentials_for_proof_req</span><span class="token punctuation">(</span>command_handle<span class="token punctuation">:</span> <span class="token class-name">CommandHandle</span><span class="token punctuation">,</span>
-                                                          wallet_handle<span class="token punctuation">:</span> <span class="token class-name">WalletHandle</span><span class="token punctuation">,</span>
-                                                          proof_request_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
-                                                          extra_query_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
-                                                          cb<span class="token punctuation">:</span> <span class="token class-name">Option</span><span class="token operator">&lt;</span><span class="token keyword">extern</span> <span class="token keyword">fn</span><span class="token punctuation">(</span>
-                                                              command_handle_<span class="token punctuation">:</span> <span class="token class-name">CommandHandle</span><span class="token punctuation">,</span> err<span class="token punctuation">:</span> <span class="token class-name">ErrorCode</span><span class="token punctuation">,</span>
-                                                              search_handle<span class="token punctuation">:</span> <span class="token class-name">SearchHandle</span><span class="token punctuation">)</span><span class="token operator">></span><span class="token punctuation">)</span> <span class="token punctuation">-></span> <span class="token class-name">ErrorCode</span> <span class="token punctuation">{</span>
-</code></pre>
+<h4 id="collecting-the-source-verifiable-credential-data"><a class="toc-anchor" href="#collecting-the-source-verifiable-credential-data" >§</a> Collecting the Source Verifiable Credential Data</h4>
+<p>Before the <a class="term-reference" href="#term:holder">holder</a> can generate the presentation to satisfy a request,
+the source verifiable credentials that will be used in the presentation must be
+collected.</p>
+<p>The source verifiable credentials found for use in generating a presentation
+must meet the following requirements:</p>
 <ul>
-<li>
-<p><code>wallet_handle</code>: Wallet handle (created by <code>open_wallet</code>).</p>
-</li>
-<li>
-<p><code>proof_request_json</code>: Proof request in JSON format.</p>
-</li>
-<li>
-<p><code>extra_query_json</code>: (Optional) list of extra queries that will be applied to the correspondent
-attribute/predicate <code>&lt;attr_referent&gt;</code> / <code>&lt;predicate_referent&gt;</code>,
-see <a href="#wql-query-examples" >wql_query</a>.</p>
+<li>All of the source credentials MUST have been issued to the same link secret.</li>
+<li>The source credential for each presentation request attribute and predicate
+must satisfy the attribute’s or predicate’s associated <code>restrictions</code> item,
+and must include claim names that match the attribute’s <code>name</code> or <code>names</code>
+item, or claim name that match the requested predicate.</li>
+</ul>
+<p>The mechanism to find the credentials in the holder’s wallet that satisfy a
+presentation request is outside the scope of this specification. As such, the
+remainder of this section covering how this process is done in Hyperledger Aries
+implementations is non-normative.</p>
+<p>Aries implementations have historically used a mechanism called <a path-0="github.com"path-1="hyperledger"path-2="aries-rfcs"path-3="tree"path-4="main"path-5="concepts"path-6="0050-wallets#wallet-query-language"href="https://github.com/hyperledger/aries-rfcs/tree/main/concepts/0050-wallets#wallet-query-language" >Wallet Query
+Language</a> (WQL) to find the source credentials in the <a class="term-reference" href="#term:holder">holder</a> agent’s
+storage. Agents iterate through the presentation request attributes and
+predicates, converting the <code>restrictions</code> item from each into a corresponding
+WQL query, and calling an Aries key management service, such as <a path-0="github.com"path-1="hyperledger"path-2="aries-askar"href="https://github.com/hyperledger/aries-askar" >Aries Askar</a>,
+to return the credentials in the wallet that satisfy the query.</p>
+<p>Completing the process results in a list of 0 or more source verifiable
+credentials that satisfy each attribute and predicate. If there is not a source
+verifiable credential for each, a business process must be invoked to decide if
+or how to proceed. For example, if some of the attributes or predicates cannot
+be satisfied with a credential already in the <a class="term-reference" href="#term:holder">holder</a>'s storage, a
+process to get the necessary additional verifiable credentials may be initiated.
+If more than one verifiable credential satisfy any of the <code>restrictions</code> items,
+the <a class="term-reference" href="#term:holder">holder</a> software might select one to use by default, such as the
+most recently issued, non-revoked of the credentials, and/or might invoke a user
+interface to allow the entity that controls the <span id="term:holder">holder</span> software to
+select from the set of possible credentials to use.</p>
+<p>In order to proceed to the presentation generation step, there must be one
+credential selected for each attribute and predicate in the presentation
+request.</p>
+<h4 id="prepare-inputs-to-presentation-generator"><a class="toc-anchor" href="#prepare-inputs-to-presentation-generator" >§</a> Prepare Inputs to Presentation Generator</h4>
+<p>The next step of the process to create a presentation is to prepare the inputs
+to a call to AnonCreds to generate the presentation. The following are the
+inputs to the generation process
+(<a path-0="docs.rs"path-1="indy-credx"path-2="latest"path-3="indy_credx"path-4="prover"path-5="fn.create_presentation.html"href="https://docs.rs/indy-credx/latest/indy_credx/prover/fn.create_presentation.html" >implementation</a>).
+The holder must prepare each of the inputs by getting data either from local
+storage or, in the case of public data, retrieving it from the appropriate
+verifiable data registry(ies). AnonCreds implementations may provide functions
+to help in preparing some of the data.</p>
 <ul>
-<li>
-<p>Example:</p>
-<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-  <span class="token property">"attr1_referent"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-    <span class="token property">"attr::age::value"</span><span class="token operator">:</span> <span class="token string">"28"</span>
-  <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-</code></pre>
-</li>
+<li><code>pres_req</code> – The presentation request from the <a class="term-reference" href="#term:verifier">verifier</a>.</li>
+<li><code>credentials</code> – The list of credentials chosen by the holder for use in the presentation, including the request attributes and predicates to be populated from the each of the credentials. See note below.</li>
+<li><code>self_attested</code> - A Hash Map containing each attribute to be satisfied with a self-attested response. Each entry includes the name of a presentation request attribute, and the self-attested value for that attribute.</li>
+<li><code>link_secret</code> - The link secret for the credentials in the presentation.</li>
+<li><code>schemas_json</code> - A Hash Map containing the <code>SchemaId</code> and complete <code>Schema</code> for the
+schemas of the credentials in the presentation.</li>
+<li><code>credential_defs_json</code> - A Hash Map containing the <code>CredentialDefinitionId</code>
+and the complete <code>CredentialDefinition</code> for the credential definitions of the
+credentials in the presentation. Included in the <code>CredentialDefintion</code> are the
+revocation related values of the <code>CredentialDefinition</code>.</li>
+</ul>
+<p>The <code>credentials</code> data structure contains for each listed credential:</p>
+<ul>
+<li>The complete <code>credential</code> data structure, as received from the <a class="term-reference" href="#term:issuer">issuer</a>.</li>
+<li>A list of the presentation request attributes and predicates that will be
+populated from the credential.
+<ul>
+<li>For each of the source credential claim to be included in a request
+attribute, an indicator if the credential is to be revealed or not
+(<code>true</code>/<code>false</code>) in the presentation.</li>
 </ul>
 </li>
-<li>
-<p><code>cb</code>: Callback that takes command result as parameter.</p>
-</li>
-<li>
-<p><code>Returns</code></p>
+<li>The <code>timestamp</code> for the selected <a class="term-reference" href="#term:revregentry">RevRegEntry</a> that will be used to
+produce the non-revocation proof, if required.</li>
+<li>The <code>witness</code> for the credential based on the <a class="term-reference" href="#term:revregentry">RevRegEntry</a> being used
+to produce the non-revocation proof, if needed.</li>
+</ul>
+<p>If the credential is not revocable, the latter two inputs are <code>null</code>, and are
+not used. See the later section on <a href="#non-revocation-proof-generation-steps" >generating a presentation for a revocable
+credential</a> for details about populating
+the <code>timestamp</code> and <code>witness</code> data elements.</p>
+<p>The indicator of whether a claim is to be revealed or not in AnonCreds 1.0 must
+be carefully understood by verifiers. While a verifer requests a set of claims
+from the prover, the prover may choose to not reveal the <code>raw</code> value of some of
+those claims. If the prover does not reveal all of the requested claims,
+<strong>AnonCreds treats the presentation as cryptographically verified</strong>. It is then
+up to the verifier to decide, after cryptographic verification, if a
+presentation with unrevealed values is acceptable for the business purpose of
+the presentation.</p>
+<h4 id="generate-the-presentation"><a class="toc-anchor" href="#generate-the-presentation" >§</a> Generate the Presentation</h4>
+<p>From the inputs, the presentation data is generated and put into the following
+data structure:</p>
 <ul>
-<li><code>search_handle</code>: Search handle that can be used later to fetch records by small batches
-(with <code>anoncreds_prover_fetch_credentials_for_proof_req</code>).</li>
+<li><code>presentation_request</code> – The presentation request from the verifier.</li>
+<li><code>presentation</code> – The set of proofs generated to satisfy the presentation
+request, including:
+<ul>
+<li>For each source credential, a primary <code>eq_proof</code> of the issuer signature
+across all of the claims in the credentials.</li>
+<li>For each source credential that is revocable and for which the verifier
+has requested proof of non-revocation, a non-revocation proof, <code>non_revoc_proof</code>.
+<ul>
+<li>See the specification section on <a href="#non-revocation-proof-generation-steps" >non-revocation-proof
+generation</a> for details on this data
+structure.</li>
 </ul>
 </li>
+<li>For each requested predicate, a primary <code>ge_proof</code> (predicate) proof based
+on the requested claim from a source credential, the boolean operator (one of
+<code>&lt;=, &lt;, &gt;, &gt;=</code>), and the comparison value in the presentation request
+predicate.</li>
+<li>One aggregate proof, <code>aggregated_proof</code>, across all of the source credentials
+that proves that the same link secret was used in the issuance of all of the
+credentials.</li>
+<li>The mapping from each of the requested attributes and predicates to the
+primary proofs that satisfies the request.
+<ul>
+<li>A mapping for the requested attributes of the <code>raw</code> and
+<code>encoded</code> values from each revealed source credential claim.</li>
+<li>A list of the self-attested attributes provided for the requested
+attributes that permit self-attested attributes.</li>
+<li>A list of the unrevealed attributes.</li>
+<li>A mapping of the requested predicates to the <code>ge_proof</code> that satisfies the
+request.</li>
 </ul>
 </li>
-<li>
-<p><code>anoncreds_prover_fetch_credentials_for_proof_req</code>: This API call fetches the next batch of credentials of size <code>count</code>
-for the requested item using proof request <code>search_handle</code>
-(created by <code>anoncreds_prover_search_credentials_for_proof_req</code>).</p>
-<pre class="language-rust"><code class="language-rust"><span class="token keyword">pub</span>  <span class="token keyword">extern</span> <span class="token keyword">fn</span> <span class="token function-definition function">anoncreds_prover_fetch_credentials_for_proof_req</span><span class="token punctuation">(</span>command_handle<span class="token punctuation">:</span> <span class="token class-name">CommandHandle</span><span class="token punctuation">,</span>
-                                                       search_handle<span class="token punctuation">:</span> <span class="token class-name">SearchHandle</span><span class="token punctuation">,</span>
-                                                       item_referent<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
-                                                       count<span class="token punctuation">:</span> <span class="token keyword">usize</span><span class="token punctuation">,</span>
-                                                       cb<span class="token punctuation">:</span> <span class="token class-name">Option</span><span class="token operator">&lt;</span><span class="token keyword">extern</span> <span class="token keyword">fn</span><span class="token punctuation">(</span>command_handle_<span class="token punctuation">:</span> <span class="token class-name">CommandHandle</span><span class="token punctuation">,</span> err<span class="token punctuation">:</span> <span class="token class-name">ErrorCode</span><span class="token punctuation">,</span>
-                                                                            credentials_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">)</span><span class="token operator">></span><span class="token punctuation">)</span> <span class="token punctuation">-></span> <span class="token class-name">ErrorCode</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
-</code></pre>
+<li>An array <code>identifiers</code> containing the <code>schemaId</code> and <code>credDefId</code> for each
+source credential in the presentation.
 <ul>
-<li>
-<p><code>search_handle</code>: Search handle (created by <code>anoncreds_prover_search_credentials_for_proof_req</code>).</p>
-</li>
-<li>
-<p><code>item_referent</code>: Referent of attribute/predicate in the proof request.</p>
-</li>
-<li>
-<p><code>count</code>: Count of credentials to fetch.</p>
-</li>
-<li>
-<p><code>cb</code>: Callback that takes command result as parameter.</p>
-</li>
-<li>
-<p><code>Returns</code></p>
-<ul>
-<li>
-<p><code>credentials_json</code>: List of credentials for the given proof request.</p>
-<pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><span class="token punctuation">{</span>
-     <span class="token property">"cred_info"</span><span class="token operator">:</span> &lt;credential_info><span class="token punctuation">,</span>
-     <span class="token property">"interval"</span><span class="token operator">:</span> Optional&lt;non_revoc_interval>
-<span class="token punctuation">}</span><span class="token punctuation">]</span>
-</code></pre>
-<p>where</p>
-<ul>
-<li><code>credential_info</code>:<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-    <span class="token property">"referent"</span><span class="token operator">:</span> string<span class="token punctuation">,</span> - id of credential in the wallet
-    <span class="token property">"attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token property">"key1"</span><span class="token operator">:</span><span class="token string">"raw_value1"</span><span class="token punctuation">,</span> <span class="token property">"key2"</span><span class="token operator">:</span><span class="token string">"raw_value2"</span><span class="token punctuation">}</span><span class="token punctuation">,</span> - credential attributes
-    <span class="token property">"schema_id"</span><span class="token operator">:</span> string<span class="token punctuation">,</span> - identifier of schema
-    <span class="token property">"cred_def_id"</span><span class="token operator">:</span> string<span class="token punctuation">,</span> - identifier of credential definition
-    <span class="token property">"rev_reg_id"</span><span class="token operator">:</span> Optional&lt;string><span class="token punctuation">,</span> - identifier of revocation registry definition
-    <span class="token property">"cred_rev_id"</span><span class="token operator">:</span> Optional&lt;string> - identifier of credential in the revocation registry definition
-<span class="token punctuation">}</span>
-</code></pre>
-</li>
-<li><code>non_revoc_interval</code>:
-<code>json { &quot;from&quot;: Optional&lt;int&gt;, - timestamp of interval beginning &quot;to&quot;: Optional&lt;int&gt;, - timestamp of interval ending } </code>
-NOTE: If the length of the list is less than the requested <code>count</code>, then the search iterator
-correspondent to the requested <code>item_referent</code> is completed.</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p><code>anoncreds_prover_close_credentials_search_for_proof_req</code>: This API closes the credentials search
-for the proof request (invalidate <code>search_handle</code>)</p>
-<pre class="language-rust"><code class="language-rust"><span class="token keyword">pub</span>  <span class="token keyword">extern</span> <span class="token keyword">fn</span> <span class="token function-definition function">anoncreds_prover_close_credentials_search_for_proof_req</span><span class="token punctuation">(</span>command_handle<span class="token punctuation">:</span> <span class="token class-name">CommandHandle</span><span class="token punctuation">,</span>
-                                                                  search_handle<span class="token punctuation">:</span> <span class="token class-name">SearchHandle</span><span class="token punctuation">,</span>
-                                                                  cb<span class="token punctuation">:</span> <span class="token class-name">Option</span><span class="token operator">&lt;</span><span class="token keyword">extern</span> <span class="token keyword">fn</span><span class="token punctuation">(</span>command_handle_<span class="token punctuation">:</span> <span class="token class-name">CommandHandle</span><span class="token punctuation">,</span> err<span class="token punctuation">:</span> <span class="token class-name">ErrorCode</span><span class="token punctuation">)</span><span class="token operator">></span><span class="token punctuation">)</span> <span class="token punctuation">-></span> <span class="token class-name">ErrorCode</span> <span class="token punctuation">{</span>
-</code></pre>
-<ul>
-<li><code>search_handle</code>: Search handle (created by <code>anoncreds_prover_search_credentials_for_proof_req</code>).</li>
-</ul>
-</li>
-<li>
-<p><code>requested_credentials_json</code>: The Holder defines how to reveal attributes and predicates.
-Either a credential (<code>cred_id</code>) or a self-attested attribute for each requested attribute and predicate is
-provided in JSON format:</p>
-<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-   <span class="token property">"self_attested_attributes"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-       <span class="token property">"self_attested_attribute_referent"</span><span class="token operator">:</span> string
-   <span class="token punctuation">}</span><span class="token punctuation">,</span>
-   <span class="token property">"requested_attributes"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-       <span class="token property">"requested_attribute_referent_1"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-          <span class="token property">"cred_id"</span><span class="token operator">:</span> string<span class="token punctuation">,</span>
-          <span class="token property">"timestamp"</span><span class="token operator">:</span> Optional&lt;number><span class="token punctuation">,</span>
-          <span class="token property">"revealed"</span><span class="token operator">:</span> &lt;bool>
-       <span class="token punctuation">}</span><span class="token punctuation">,</span>
-       <span class="token property">"requested_attribute_referent_2"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-          <span class="token property">"cred_id"</span><span class="token operator">:</span> string<span class="token punctuation">,</span>
-          <span class="token property">"timestamp"</span><span class="token operator">:</span> Optional&lt;number><span class="token punctuation">,</span>
-          <span class="token property">"revealed"</span><span class="token operator">:</span> &lt;bool>
-       <span class="token punctuation">}</span>
-   <span class="token punctuation">}</span><span class="token punctuation">,</span>
-   <span class="token property">"requested_predicates"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-       <span class="token property">"requested_predicates_referent_1"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-           <span class="token property">"cred_id"</span><span class="token operator">:</span> string<span class="token punctuation">,</span>
-           <span class="token property">"timestamp"</span><span class="token operator">:</span> Optional&lt;number>
-       <span class="token punctuation">}</span>
-   <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-</code></pre>
-<p>Example:</p>
-<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-  <span class="token property">"self_attested_attributes"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-    <span class="token property">"attr1_referent"</span><span class="token operator">:</span> <span class="token string">"Alice"</span><span class="token punctuation">,</span>
-    <span class="token property">"attr2_referent"</span><span class="token operator">:</span> <span class="token string">"Garcia"</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token property">"requested_attributes"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-    <span class="token property">"attr3_referent"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-      <span class="token property">"cred_id"</span><span class="token operator">:</span> <span class="token string">"123"</span><span class="token punctuation">,</span>
-      <span class="token property">"revealed"</span><span class="token operator">:</span> <span class="token boolean">true</span>
-    <span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token property">"attr4_referent"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-      <span class="token property">"cred_id"</span><span class="token operator">:</span> <span class="token string">"456"</span><span class="token punctuation">,</span>
-      <span class="token property">"revealed"</span><span class="token operator">:</span> <span class="token boolean">true</span>
-    <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token property">"requested_predicates"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-    <span class="token property">"predicate1_referent"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-      <span class="token property">"cred_id"</span><span class="token operator">:</span> <span class="token string">"680"</span>
-    <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-</code></pre>
-</li>
-<li>
-<p><code>anoncreds_prover_create_proof</code>: This API creates a presentation according to the
-<a href="#example-of-a-complete-presentation-request" >presentation request</a></p>
-<ul>
-<li>Either a corresponding credential with optionally revealed attributes or a self-attested attribute must be provided
-for each requested attribute (see <code>anoncreds_prover_get_credentials_for_pool_req</code>).</li>
-<li>A proof request may request multiple credentials from different schemas and different issuers.</li>
-<li>All required schemas, public keys and revocation registries must be provided.</li>
-<li>The proof request also contains nonce.</li>
-<li>The proof contains either proof or self-attested attribute value for each requested attribute.</li>
-</ul>
-<pre class="language-rust"><code class="language-rust"><span class="token keyword">pub</span> <span class="token keyword">extern</span> <span class="token keyword">fn</span> <span class="token function-definition function">anoncreds_prover_create_proof</span><span class="token punctuation">(</span>command_handle<span class="token punctuation">:</span> <span class="token class-name">CommandHandle</span><span class="token punctuation">,</span>
-                                       wallet_handle<span class="token punctuation">:</span> <span class="token class-name">WalletHandle</span><span class="token punctuation">,</span>
-                                       proof_request_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
-                                       requested_credentials_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
-                                       link_secret_id<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
-                                       schemas_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
-                                       credential_defs_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
-                                       rev_states_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
-                                       cb<span class="token punctuation">:</span> <span class="token class-name">Option</span><span class="token operator">&lt;</span><span class="token keyword">extern</span> <span class="token keyword">fn</span><span class="token punctuation">(</span>command_handle_<span class="token punctuation">:</span> <span class="token class-name">CommandHandle</span><span class="token punctuation">,</span> err<span class="token punctuation">:</span> <span class="token class-name">ErrorCode</span><span class="token punctuation">,</span>
-                                                            proof_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">)</span><span class="token operator">></span><span class="token punctuation">)</span> <span class="token punctuation">-></span> <span class="token class-name">ErrorCode</span> <span class="token punctuation">{</span>
-</code></pre>
-<ul>
-<li>
-<p><code>wallet_handle</code>: Wallet handle (created by <code>open_wallet</code>).</p>
-</li>
-<li>
-<p><code>proof_request_json</code>: Proof request in JSON format.</p>
-</li>
-<li>
-<p><code>requested_credentials_json</code>: Document specifying either a credential or self-attested
-attribute for each requested attribute in JSON format.</p>
-</li>
-<li>
-<p><code>link_secret_id</code>: The id of the link secret stored in the wallet.</p>
-<ul>
-<li>Notes:
-<ul>
-<li>A Link Secret is an item of Private Data used by a Holder to guarantee that a credential uniquely applies to them.</li>
-<li>The Link Secret is an input that combines data from multiple Credentials to prove that the Credentials have a common subject (the Holder).</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p><code>schemas_json</code>: Collection of all schemas participating in the proof request.</p>
-<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-    <span class="token property">"schema1_id"</span><span class="token operator">:</span> &lt;schema1><span class="token punctuation">,</span>
-    <span class="token property">"schema2_id"</span><span class="token operator">:</span> &lt;schema2><span class="token punctuation">,</span>
-    <span class="token property">"schema3_id"</span><span class="token operator">:</span> &lt;schema3><span class="token punctuation">,</span>
-<span class="token punctuation">}</span>
-</code></pre>
-</li>
-<li>
-<p><code>credential_defs_json</code>: Collection of all credential definitions participating in the proof request.</p>
-<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-    <span class="token property">"cred_def1_id"</span><span class="token operator">:</span> &lt;credential_def1><span class="token punctuation">,</span>
-    <span class="token property">"cred_def2_id"</span><span class="token operator">:</span> &lt;credential_def2><span class="token punctuation">,</span>
-    <span class="token property">"cred_def3_id"</span><span class="token operator">:</span> &lt;credential_def3><span class="token punctuation">,</span>
-<span class="token punctuation">}</span>
-</code></pre>
-</li>
-<li>
-<p><code>rev_states_json</code>: Collection all revocation states participating in the proof request.</p>
-<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-    <span class="token property">"rev_reg_def1_id or credential_1_id"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-        <span class="token property">"timestamp1"</span><span class="token operator">:</span> &lt;rev_state1><span class="token punctuation">,</span>
-        <span class="token property">"timestamp2"</span><span class="token operator">:</span> &lt;rev_state2><span class="token punctuation">,</span>
-    <span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token property">"rev_reg_def2_id or credential_1_id"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-        <span class="token property">"timestamp3"</span><span class="token operator">:</span> &lt;rev_state3>
-    <span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token property">"rev_reg_def3_id or credential_1_id"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-        <span class="token property">"timestamp4"</span><span class="token operator">:</span> &lt;rev_state4>
-    <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span>
-</code></pre>
-<p>Note: Use <code>credential_id</code> instead of <code>rev_reg_id</code> in case of proving several credentials from the same revocation registry.</p>
-</li>
-<li>
-<p><code>cb</code>: Callback that takes command result as parameter.</p>
-</li>
-<li>
-<p><code>Returns</code></p>
-<ul>
-<li><code>proof_json</code>: Proof presentation for the given proof request.
-<ul>
-<li>For each requested attribute either a proof (with optionally revealed attribute value) or
-self-attested attribute value is provided.</li>
-<li>Each proof is associated with a credential and corresponding <code>schema_id</code>, <code>cred_def_id</code>, <code>rev_reg_id</code> and <code>timestamp</code>.</li>
-<li>There is also an aggregated proof part common for all credential proofs.</li>
+<li>Also included for each source credentials for which a non-revocation proof
+is provided is the <code>revRegDefId</code> and the <code>timestamp</code> of the <a class="term-reference" href="#term:revocation-registry-entry">Revocation Registry Entry</a> used in the non-revocation proof.</li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
-</li>
-</ol>
-<p>The resulting presentation <code>proof_json</code> created by the Holder has the following JSON format:</p>
-<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-    <span class="token property">"requested_proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-        <span class="token property">"revealed_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-            <span class="token property">"requested_attr1_id"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-                <span class="token property">"sub_proof_index"</span><span class="token operator">:</span> number<span class="token punctuation">,</span>
-                <span class="token property">"raw"</span><span class="token operator">:</span> string<span class="token punctuation">,</span>
-                <span class="token property">"encoded"</span><span class="token operator">:</span> string
-            <span class="token punctuation">}</span><span class="token punctuation">,</span>
-            <span class="token property">"requested_attr4_id"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-                <span class="token property">"sub_proof_index"</span><span class="token operator">:</span> number<span class="token punctuation">,</span>
-                <span class="token property">"raw"</span><span class="token operator">:</span> string<span class="token punctuation">,</span>
-                <span class="token property">"encoded"</span><span class="token operator">:</span> string
-            <span class="token punctuation">}</span>
-        <span class="token punctuation">}</span><span class="token punctuation">,</span>
-        <span class="token property">"revealed_attr_groups"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-            <span class="token property">"requested_attr5_id"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-                <span class="token property">"sub_proof_index"</span><span class="token operator">:</span> number<span class="token punctuation">,</span>
-                <span class="token property">"values"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-                    <span class="token property">"attribute_name"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-                        <span class="token property">"raw"</span><span class="token operator">:</span> string<span class="token punctuation">,</span>
-                        <span class="token property">"encoded"</span><span class="token operator">:</span> string
-                    <span class="token punctuation">}</span>
-                <span class="token punctuation">}</span>
-            <span class="token punctuation">}</span>
-        <span class="token punctuation">}</span><span class="token punctuation">,</span>
-        <span class="token property">"unrevealed_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-            <span class="token property">"requested_attr3_id"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-                <span class="token property">"sub_proof_index"</span><span class="token operator">:</span> number
-            <span class="token punctuation">}</span>
-        <span class="token punctuation">}</span><span class="token punctuation">,</span>
-        <span class="token property">"self_attested_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-            <span class="token property">"requested_attr2_id"</span><span class="token operator">:</span> self_attested_value
-        <span class="token punctuation">}</span><span class="token punctuation">,</span>
-        <span class="token property">"predicates"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-            <span class="token property">"requested_predicate_1_referent"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-                <span class="token property">"sub_proof_index"</span><span class="token operator">:</span> int
-            <span class="token punctuation">}</span><span class="token punctuation">,</span>
-            <span class="token property">"requested_predicate_2_referent"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-                <span class="token property">"sub_proof_index"</span><span class="token operator">:</span> int
-            <span class="token punctuation">}</span>
-        <span class="token punctuation">}</span>
-    <span class="token punctuation">}</span>
-    <span class="token property">"proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-        <span class="token property">"proofs"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
-            &lt;credential_proof><span class="token punctuation">,</span>
-            &lt;credential_proof><span class="token punctuation">,</span>
-            &lt;credential_proof>
+<p>The following is an example of a multi-credential presentation without
+revocation.</p>
+<div id="todo-7" class="notice todo"><a class="notice-link" href="#todo-7">TODO</a><p>Replace this example with one that includes:</p>
+<ul>
+<li>two request attributes</li>
+<li>one predicate request</li>
+<li>one unrevealed attribute</li>
+<li>one self-attested attribute</li>
+</ul>
+</div>
+<div id="multi-credential-presentation" class="notice example"><a class="notice-link" href="#multi-credential-presentation">EXAMPLE</a><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"presentation_request"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"nonce"</span><span class="token operator">:</span> <span class="token string">"182453895158932070575246"</span><span class="token punctuation">,</span>
+    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Step 3 Send your Health Information"</span><span class="token punctuation">,</span>
+    <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"1.0"</span><span class="token punctuation">,</span>
+    <span class="token property">"requested_attributes"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"biomarker_attrs_0"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"names"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token string">"name"</span><span class="token punctuation">,</span>
+          <span class="token string">"concentration"</span><span class="token punctuation">,</span>
+          <span class="token string">"unit"</span><span class="token punctuation">,</span>
+          <span class="token string">"range"</span><span class="token punctuation">,</span>
+          <span class="token string">"collected_on"</span><span class="token punctuation">,</span>
+          <span class="token string">"biomarker_id"</span><span class="token punctuation">,</span>
+          <span class="token string">"researcher_share"</span>
         <span class="token punctuation">]</span><span class="token punctuation">,</span>
-        <span class="token property">"aggregated_proof"</span><span class="token operator">:</span> &lt;aggregated_proof>
-    <span class="token punctuation">}</span>
-    <span class="token property">"identifiers"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>schema_id<span class="token punctuation">,</span> cred_def_id<span class="token punctuation">,</span> Optional&lt;rev_reg_id><span class="token punctuation">,</span> Optional&lt;timestamp><span class="token punctuation">}</span><span class="token punctuation">]</span>
-<span class="token punctuation">}</span>
-
-</code></pre>
-<h5 id="example-of-a-proof"><a class="toc-anchor" href="#example-of-a-proof" >§</a> Example of a proof:</h5>
-<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-    <span class="token property">"requested_proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-        <span class="token property">"revealed_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-            <span class="token property">"attr4_referent"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-                <span class="token property">"sub_proof_index"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
-                <span class="token property">"raw"</span><span class="token operator">:</span> <span class="token string">"graduated"</span><span class="token punctuation">,</span>
-                <span class="token property">"encoded"</span><span class="token operator">:</span> <span class="token string">"2213454313412354"</span>
-            <span class="token punctuation">}</span><span class="token punctuation">,</span>
-            <span class="token property">"attr5_referent"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">,</span>
-                <span class="token property">"sub_proof_index"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
-                <span class="token property">"raw"</span><span class="token operator">:</span> <span class="token string">"123-45-6789"</span><span class="token punctuation">,</span>
-                <span class="token property">"encoded"</span><span class="token operator">:</span> <span class="token string">"3124141231422543541"</span>
-            <span class="token punctuation">}</span><span class="token punctuation">,</span>
-            <span class="token property">"attr3_referent"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-                <span class="token property">"sub_proof_index"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
-                <span class="token property">"raw"</span><span class="token operator">:</span> <span class="token string">"Bachelor of Science, Marketing"</span><span class="token punctuation">,</span>
-                <span class="token property">"encoded"</span><span class="token operator">:</span> <span class="token string">"12434523576212321"</span>
-            <span class="token punctuation">}</span>
-        <span class="token punctuation">}</span><span class="token punctuation">,</span>
-        <span class="token property">"self_attested_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-            <span class="token property">"attr1_referent"</span><span class="token operator">:</span> <span class="token string">"Alice"</span><span class="token punctuation">,</span>
-            <span class="token property">"attr2_referent"</span><span class="token operator">:</span> <span class="token string">"Garcia"</span><span class="token punctuation">,</span>
-            <span class="token property">"attr6_referent"</span><span class="token operator">:</span> <span class="token string">"123-45-6789"</span>
-        <span class="token punctuation">}</span><span class="token punctuation">,</span>
-     <span class="token property">"unrevealed_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-     <span class="token punctuation">}</span><span class="token punctuation">,</span>
-     <span class="token property">"predicates"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-          <span class="token property">"predicate1_referent"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-              <span class="token property">"sub_proof_index"</span><span class="token operator">:</span> <span class="token number">0</span>
+        <span class="token property">"restrictions"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token punctuation">{</span>
+            <span class="token property">"schema_name"</span><span class="token operator">:</span> <span class="token string">"MYCO Biomarker"</span><span class="token punctuation">,</span>
+            <span class="token property">"attr::name::value"</span><span class="token operator">:</span> <span class="token string">"Iron"</span>
           <span class="token punctuation">}</span>
-     <span class="token punctuation">}</span>
-    <span class="token property">"proof"</span> <span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token comment">//# Validity Proof, to be checked by Verifier</span>
-    <span class="token property">"identifiers"</span> <span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token comment">//# Identifiers of credentials that were used for Presentation building</span>
+        <span class="token punctuation">]</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token property">"consent_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"restrictions"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token punctuation">{</span>
+            <span class="token property">"schema_name"</span><span class="token operator">:</span> <span class="token string">"MYCO Consent Enablement"</span><span class="token punctuation">,</span>
+            <span class="token property">"schema_version"</span><span class="token operator">:</span> <span class="token string">"0.1.0"</span><span class="token punctuation">,</span>
+            <span class="token property">"attr::jti_unique_identifier::value"</span><span class="token operator">:</span> <span class="token string">"205b1ea0-7848-48d4-b52b-339122d84f62"</span>
+          <span class="token punctuation">}</span>
+        <span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"jti_unique_identifier"</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"requested_predicates"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"presentation"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"proofs"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
         <span class="token punctuation">{</span>
-            <span class="token property">"schema_id"</span><span class="token operator">:</span> <span class="token string">"transcript_schema_id"</span><span class="token punctuation">,</span>
-            <span class="token property">"cred_def_id"</span><span class="token operator">:</span> <span class="token string">"123"</span><span class="token punctuation">,</span>
-            <span class="token property">"rev_reg_id"</span><span class="token operator">:</span> <span class="token string">"123_123"</span><span class="token punctuation">,</span>
-            <span class="token property">"timestamp"</span><span class="token operator">:</span> <span class="token number">1550503925</span>
+          <span class="token property">"primary_proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"eq_proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+              <span class="token property">"revealed_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+                <span class="token property">"biomarker_id"</span><span class="token operator">:</span> <span class="token string">"33034450023603237719386825060766757598085121996569112944281451290292212516012"</span><span class="token punctuation">,</span>
+                <span class="token property">"collected_on"</span><span class="token operator">:</span> <span class="token string">"92231735610070911075924224447204218356256133056723930517696107260511721601349"</span><span class="token punctuation">,</span>
+                <span class="token property">"concentration"</span><span class="token operator">:</span> <span class="token string">"10"</span><span class="token punctuation">,</span>
+                <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"85547618788485118809771015708850341281587970912661276233439574555663751388073"</span><span class="token punctuation">,</span>
+                <span class="token property">"range"</span><span class="token operator">:</span> <span class="token string">"106828626115908025842177441696860557581575579893927923198365300598359723920768"</span><span class="token punctuation">,</span>
+                <span class="token property">"researcher_share"</span><span class="token operator">:</span> <span class="token string">"101264834079306301897660576123112461042861436742738894013248454492965796383403"</span><span class="token punctuation">,</span>
+                <span class="token property">"unit"</span><span class="token operator">:</span> <span class="token string">"38351211041892038382023569421847544683371072212679556578649761181279472893849"</span>
+              <span class="token punctuation">}</span><span class="token punctuation">,</span>
+              <span class="token property">"a_prime"</span><span class="token operator">:</span> <span class="token string">"80156520245352052628208149565161465200964633377479145197038408116901327106468493831807000641577246417448908134495822028339761705905365398613527463662816881507291787145610182891716009505407072490691097943029471835157968113065071523597746984296197661560454442163361095634052138951650373193896962906203169809352467024247772052836999799731422581068645748537557874869718897034120634529002420631012358510111427944993245065350416694516913472010105229188198167306183788520891926236449848811955646933539477960935319919207451858981065765523367984374104834278565184338252025155136368869580505679884921590811310587077071610172673"</span><span class="token punctuation">,</span>
+              <span class="token property">"e"</span><span class="token operator">:</span> <span class="token string">"115602723672843258810892161808995599340414281260248127600708536325470178701996999306086286379312077726886107268519700961209712187789855371"</span><span class="token punctuation">,</span>
+              <span class="token property">"v"</span><span class="token operator">:</span> <span class="token string">"1250383260306407741656763352595256748825474237767244783206569756476708112785930898966696687140808011529311298553822794830872826226191807175199015541611342880032928005827271961840046208463350458298210749103878893742434685172894883857423865293195542824393317226300133796527531436931435189766065404966370796699897584860421160155369018136946091524266742514828667575397735892093187106092545876795688095293610064164136737808333322708435913545499149948994191514980395955519036106660001526586674248282052492138917987323789012051794441548696998993861159018178474063785171288325900474499496141522583368982451169653258746506425495702762445790848698570457196767532483566475068200091609719957656394696938689265240025099424248587121592521826940348286940172887963179718337593603053496022182071613592070622825622277436966372346642772481567879001423472517233061740522533372490151585309457871632521280719357505751796940152868034526426510835"</span><span class="token punctuation">,</span>
+              <span class="token property">"m"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+                <span class="token property">"master_secret"</span><span class="token operator">:</span> <span class="token string">"3455871040557234123393960708120725061759594951341120214330342075748561632734634451036095543889895409812764789858455375956895105746442946098665140470124325622343440794421325163223"</span><span class="token punctuation">,</span>
+                <span class="token property">"client_share"</span><span class="token operator">:</span> <span class="token string">"4233663763294709836704307308997831519311512039775169744174375585917035614714239153287862168426091336550799195245481707264207548331415960277065672755643752404180562900805493953484"</span>
+              <span class="token punctuation">}</span><span class="token punctuation">,</span>
+              <span class="token property">"m2"</span><span class="token operator">:</span> <span class="token string">"12942698897200869280316481431207639453433287089474860040781378232999349549981799159560238504559317917040820580596635945161264308025301203452846862479261473387068350544024561412435"</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token property">"ge_proofs"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+          <span class="token punctuation">}</span>
         <span class="token punctuation">}</span><span class="token punctuation">,</span>
         <span class="token punctuation">{</span>
-            <span class="token property">"schema_id"</span><span class="token operator">:</span> <span class="token string">"job_certificate_schema_id"</span><span class="token punctuation">,</span>
-            <span class="token property">"cred_def_id"</span><span class="token operator">:</span> <span class="token string">"456"</span><span class="token punctuation">,</span>
-            <span class="token property">"rev_reg_id"</span><span class="token operator">:</span> <span class="token string">"456_456"</span><span class="token punctuation">,</span>
-            <span class="token property">"timestamp"</span><span class="token operator">:</span> <span class="token number">1550503945</span>
+          <span class="token property">"primary_proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"eq_proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+              <span class="token property">"revealed_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+                <span class="token property">"jti_unique_identifier"</span><span class="token operator">:</span> <span class="token string">"46414468020333259158238797309781111434265856695713363124410805958145233348633"</span>
+              <span class="token punctuation">}</span><span class="token punctuation">,</span>
+              <span class="token property">"a_prime"</span><span class="token operator">:</span> <span class="token string">"52825780315318905340996188008133401356826233601375100674436798295026172087388431332751168238882607201020021795967828258295811342078457860422414605408183505911891895360825745994390769724939582542658347473498091021796952186290990181881158576706521445646669342676592451422000320708168877298354804819261007033664223006892049856834172427934815827786052257552492013807885418893279908149441273603109213847535482251568996326545234910687135167595657148526602160452192374611721411569543183642580629352619161783646990187905911781524203367796090408992624211661598980626941053749241077719601278347846928693650092940416717449494816"</span><span class="token punctuation">,</span>
+              <span class="token property">"e"</span><span class="token operator">:</span> <span class="token string">"40342480172543061520030194979861449480343743039487113094246205723322643070249538229638327935935486373873622430409109409257546971244601965"</span><span class="token punctuation">,</span>
+              <span class="token property">"v"</span><span class="token operator">:</span> <span class="token string">"217871997575635857881367472262154388060800564043554848081521162883333745687724235201324121915821236796357195214089699645741515836727882126142579489701412861659136426497703162695983681701205672924385915403141611021784136285588350763399255203187442277784718461565122805239422370067600654500115262174706580098147603414365915243447789285877195068031630371954678432401446457453517813298670236942253026249413255471803997869331683293818651006043399070308083119054618677128448043841313844695654424369871669436628257531643623230026240200330490039607166147891705813033761093730859310423856156850596341547950105490585959768382544221555877471751940512766452511773683786023245283041103270102119125303027835868565240336923422734962345750992898991606841120358203160628015844345063465293475128118937815965000466081345494616126511595974927544434058100817176268040385848789013718618727873445834393897904247054897801708217939187593785671914"</span><span class="token punctuation">,</span>
+              <span class="token property">"m"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+                <span class="token property">"iat_consent_timestamp"</span><span class="token operator">:</span> <span class="token string">"7919242808448912829024078929834347184203169048480606699350973804205285806978474375691141504249426249676222104091995582731720654507393708298132400435805626192291975477967402460279"</span><span class="token punctuation">,</span>
+                <span class="token property">"master_secret"</span><span class="token operator">:</span> <span class="token string">"3455871040557234123393960708120725061759594951341120214330342075748561632734634451036095543889895409812764789858455375956895105746442946098665140470124325622343440794421325163223"</span><span class="token punctuation">,</span>
+                <span class="token property">"data_controller"</span><span class="token operator">:</span> <span class="token string">"16070549690575784944224634793654539357398383214512772967411296056738507137421264813779497172425030465490587794790393434847583852932544021088761347641812155158324233253206392974293"</span><span class="token punctuation">,</span>
+                <span class="token property">"notice"</span><span class="token operator">:</span> <span class="token string">"2790610958721083178459621377821800672322230987466716467063649577108407884592339521820875278264969393963213925568888672412150769438560815981777952572004955362915245795447078373509"</span><span class="token punctuation">,</span>
+                <span class="token property">"sensitive"</span><span class="token operator">:</span> <span class="token string">"13552814315985495030467505807226704038231487014593307078913973520081443107274508887651839292151852713782653522711975492131914644109941607616672243509214979259100892541150351227883"</span><span class="token punctuation">,</span>
+                <span class="token property">"services"</span><span class="token operator">:</span> <span class="token string">"14860984314279608355643170908802532226194914773406547259519961082467311361623076451869406343140860447342041426195737612897540117192702117380288330928866665314831926780606136352645"</span><span class="token punctuation">,</span>
+                <span class="token property">"sub_subject_identifier"</span><span class="token operator">:</span> <span class="token string">"11736177517163751882849070942823049196298287414132249166618760803125435466270948777194044507635346721244111946358927525083691171695431736819244809221351813271261283779276670885101"</span><span class="token punctuation">,</span>
+                <span class="token property">"moc_method_of_collection"</span><span class="token operator">:</span> <span class="token string">"10026360820367693771310999595495505533281326977349798360729122862705999157070660881611421445424239119786180921960380892002204780026072600494332540208429642332890963846523547470729"</span><span class="token punctuation">,</span>
+                <span class="token property">"jurisdiction_data_processing"</span><span class="token operator">:</span> <span class="token string">"15829143141425514118932461858094583045441924952665872659029333578019676797278419825311275014912077620757631693167948665554731430154156737419706553672424812320891308795411687679270"</span><span class="token punctuation">,</span>
+                <span class="token property">"iss_internet_processing_uri"</span><span class="token operator">:</span> <span class="token string">"6900796243066434651671715348976599009606292569990892886896520779618011026060325075822786686418461731663661832508437549373109822105600719490952253743950241384782222356411498407620"</span><span class="token punctuation">,</span>
+                <span class="token property">"version_consent_specification"</span><span class="token operator">:</span> <span class="token string">"7796257942256624260327966366702213561879098947042014532961291550019706546662478888172243088973621029223408695289700984802154645011280488167967047321149956253054269901250137513345"</span><span class="token punctuation">,</span>
+                <span class="token property">"policy_url"</span><span class="token operator">:</span> <span class="token string">"12241676508867847022708464707584814145889660003604359058532137895063826021524887759921830911553663255421852525705197991376264187781979066233701110706958983099645275940668404311601"</span>
+              <span class="token punctuation">}</span><span class="token punctuation">,</span>
+              <span class="token property">"m2"</span><span class="token operator">:</span> <span class="token string">"6509130065158989037891281073557909501783443634141673890142284302459280804904096303151728187237486991775852971807701594247754409108836089746736345158069365449802597798950172729241"</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token property">"ge_proofs"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+          <span class="token punctuation">}</span>
         <span class="token punctuation">}</span>
+      <span class="token punctuation">]</span><span class="token punctuation">,</span>
+      <span class="token property">"aggregated_proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"c_hash"</span><span class="token operator">:</span> <span class="token string">"81763443376178433216866153835042672285397553441148068557996780431098922863180"</span><span class="token punctuation">,</span>
+        <span class="token property">"c_list"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token punctuation">[</span>
+            <span class="token number">2</span><span class="token punctuation">,</span>
+            <span class="token number">122</span><span class="token punctuation">,</span>
+            <span class="token number">246</span><span class="token punctuation">,</span>
+            <span class="token number">66</span><span class="token punctuation">,</span>
+            <span class="token number">85</span><span class="token punctuation">,</span>
+            <span class="token number">35</span><span class="token punctuation">,</span>
+            <span class="token number">17</span><span class="token punctuation">,</span>
+            <span class="token number">213</span><span class="token punctuation">,</span>
+            <span class="token number">1</span>
+          <span class="token punctuation">]</span><span class="token punctuation">,</span>
+          <span class="token punctuation">[</span>
+            <span class="token number">1</span><span class="token punctuation">,</span>
+            <span class="token number">162</span><span class="token punctuation">,</span>
+            <span class="token number">117</span><span class="token punctuation">,</span>
+            <span class="token number">246</span><span class="token punctuation">,</span>
+            <span class="token number">95</span><span class="token punctuation">,</span>
+            <span class="token number">154</span><span class="token punctuation">,</span>
+            <span class="token number">129</span><span class="token punctuation">,</span>
+            <span class="token number">32</span>
+          <span class="token punctuation">]</span>
+        <span class="token punctuation">]</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"requested_proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"revealed_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"consent_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token property">"sub_proof_index"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+          <span class="token property">"raw"</span><span class="token operator">:</span> <span class="token string">"205b1ea0-7848-48d4-b52b-339122d84f62"</span><span class="token punctuation">,</span>
+          <span class="token property">"encoded"</span><span class="token operator">:</span> <span class="token string">"46414468020333259158238797309781111434265856695713363124410805958145233348633"</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token property">"revealed_attr_groups"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"biomarker_attrs_0"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token property">"sub_proof_index"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+          <span class="token property">"values"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"researcher_share"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+              <span class="token property">"raw"</span><span class="token operator">:</span> <span class="token string">"bf712cb328a92862b57f0dc806dec12a"</span><span class="token punctuation">,</span>
+              <span class="token property">"encoded"</span><span class="token operator">:</span> <span class="token string">"101264834079306301897660576123112461042861436742738894013248454492965796383403"</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token property">"unit"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+              <span class="token property">"raw"</span><span class="token operator">:</span> <span class="token string">"μM"</span><span class="token punctuation">,</span>
+              <span class="token property">"encoded"</span><span class="token operator">:</span> <span class="token string">"38351211041892038382023569421847544683371072212679556578649761181279472893849"</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token property">"concentration"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+              <span class="token property">"raw"</span><span class="token operator">:</span> <span class="token string">"10"</span><span class="token punctuation">,</span>
+              <span class="token property">"encoded"</span><span class="token operator">:</span> <span class="token string">"10"</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token property">"name"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+              <span class="token property">"raw"</span><span class="token operator">:</span> <span class="token string">"Iron"</span><span class="token punctuation">,</span>
+              <span class="token property">"encoded"</span><span class="token operator">:</span> <span class="token string">"85547618788485118809771015708850341281587970912661276233439574555663751388073"</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token property">"range"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+              <span class="token property">"raw"</span><span class="token operator">:</span> <span class="token string">"9.00-30.0"</span><span class="token punctuation">,</span>
+              <span class="token property">"encoded"</span><span class="token operator">:</span> <span class="token string">"106828626115908025842177441696860557581575579893927923198365300598359723920768"</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token property">"collected_on"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+              <span class="token property">"raw"</span><span class="token operator">:</span> <span class="token string">"2020-07-05"</span><span class="token punctuation">,</span>
+              <span class="token property">"encoded"</span><span class="token operator">:</span> <span class="token string">"92231735610070911075924224447204218356256133056723930517696107260511721601349"</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token property">"biomarker_id"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+              <span class="token property">"raw"</span><span class="token operator">:</span> <span class="token string">"c9ace7dc-0485-4f3f-b466-16a27a80acf1"</span><span class="token punctuation">,</span>
+              <span class="token property">"encoded"</span><span class="token operator">:</span> <span class="token string">"33034450023603237719386825060766757598085121996569112944281451290292212516012"</span>
+            <span class="token punctuation">}</span>
+          <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token property">"self_attested_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token property">"unrevealed_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token property">"predicates"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"identifiers"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span>
+        <span class="token property">"schema_id"</span><span class="token operator">:</span> <span class="token string">"CsQY9MGeD3CQP4EyuVFo5m:2:MYCO Biomarker:0.0.3"</span><span class="token punctuation">,</span>
+        <span class="token property">"cred_def_id"</span><span class="token operator">:</span> <span class="token string">"CsQY9MGeD3CQP4EyuVFo5m:3:CL:14951:MYCO_Biomarker"</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span>
+        <span class="token property">"schema_id"</span><span class="token operator">:</span> <span class="token string">"FbozHyf7j5q7TDn2s8MXZN:2:MYCO Consent Enablement:0.1.0"</span><span class="token punctuation">,</span>
+        <span class="token property">"cred_def_id"</span><span class="token operator">:</span> <span class="token string">"TUku9MDGa7QALbAJX4oAww:3:CL:531757:MYCO_Consent_Enablement"</span>
+      <span class="token punctuation">}</span>
     <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 </code></pre>
+</div>
+<p>Once the presentation data structure is generated, it is sent to the verifier
+for processing.</p>
+<p>The following describes the data structures listed above, including the
+process of generating the data of the various types of proofs.</p>
+<p><strong>The Presentation Request</strong></p>
+<p>The <code>presentation_request</code> is a copy of the <code>presentation_request</code> data structure from
+the verifier, as described <a href="#the-presentation-request" >earlier in the specification</a>.</p>
+<p><strong>Presentation</strong></p>
+<p>The <code>presentation</code> contains:</p>
+<ul>
+<li>Proofs of the source credentials.</li>
+<li>An aggregated proof across all of the source credentials.</li>
+<li>A mapping of how the requested attributes and predicates are satisfied.</li>
+<li>A list of the identifiers related to each of the source credentials in the
+proof.</li>
+</ul>
+<p>The <code>presentation</code> data structure is as follows. As noted in the JSON comments
+included, details for each section of the <code>presentation</code> is provided below.</p>
+<pre class="language-json"><code class="language-json">  <span class="token property">"presentation"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"proofs"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span>
+          <span class="token property">"primary_proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"eq_proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+              # Described in detail below
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token property">"ge_proofs"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+              # Described in detail below
+            <span class="token punctuation">]</span>
+          <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">]</span><span class="token punctuation">,</span>
+      <span class="token property">"aggregated_proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        # Described in detail below
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"requested_proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      # Described in detail below
+    <span class="token punctuation">}</span>
+    <span class="token property">"identifiers"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      # Described in details below
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+</code></pre>
+<p>The <code>proofs</code> array contains an entry for each source verifiable credential.
+For each is a <code>primary_proof</code> covering the claims in the source credential called
+the <code>eq_proof</code>, and a <code>ge_proof</code> for each of the predicate proofs sourced from
+the verifiable credential.</p>
+<p>Each primary <code>eq_proof</code> is generated as follows:</p>
+<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>To Do: Add algorithm for generating a <code>eq_proof</code> and the data values in the proof.</p>
+</div>
+<p>Each primary <code>ge_proof</code> is generated as follows:</p>
+<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>To Do: Add algorithm for generating a <code>ge_proof</code> and the data values in the proof.</p>
+</div>
+<p>The <code>aggregated_proof</code> proves that the same <a class="term-reference" href="#term:linked-secret">linked secret</a> was used to
+issue all of the source verifiable credentials in the presentation.</p>
+<p>The <code>aggregated_proof</code> is generated as follows:</p>
+<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>To Do: Add algorithm for generating the aggregate proof and the data values in the proof.</p>
+</div>
+<p>The <code>requested_proof</code> is the mapping from the presentation request attributes
+and predicates to the data in the presentation that satisfies the request. This
+is divided into five parts:</p>
+<ul>
+<li>The request attributes, where a single attribute <code>name</code> is requested.</li>
+<li>The request attribute groups, where a set of <code>names</code> are requested from a single source credential.</li>
+<li>Request attributes without <code>restrictions</code> that are satisfied with self attested attributes.</li>
+<li>Request attributes that are unrevealed.</li>
+<li>Request predicates.</li>
+</ul>
+<p>A JSON summary, with comments, for the data in each of the parts is listed below:</p>
+<p><strong>Revealed Attributes</strong></p>
+<p>An entry for each single <code>name</code> request attribute from the presentation request.</p>
+<pre class="language-json"><code class="language-json">      <span class="token property">"revealed_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"consent_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>      # The request attribute name from the presentation request
+          <span class="token property">"sub_proof_index"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> # The index of the source credential primary proof for the claim
+          <span class="token property">"raw"</span><span class="token operator">:</span> <span class="token string">"205b1ea0-7848-48d4-b52b-339122d84f62"</span><span class="token punctuation">,</span>  # The raw and encoded claim values
+          <span class="token property">"encoded"</span><span class="token operator">:</span> <span class="token string">"46414468020333259158238797309781111434265856695713363124410805958145233348633"</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+</code></pre>
+<div id="note-8" class="notice note"><a class="notice-link" href="#note-8">NOTE</a><p>It is important for all verifiers to understand that the revealed attribute
+proof (<code>eq_proof</code> described earlier) is a proof on the <code>encoded</code> value, not on
+the <code>raw</code> value. As such, it is up to the verifier to know the “raw to encoded”
+algorithm used by the issuer, and to verify that the revealed <code>raw</code> value properly
+encodes to the proven <code>encoded</code> value. It is possible for a malicious holder to
+put an unrelated <code>raw</code> value into a presentation to fool a verifier that does not
+checking the encoding process. In most Aries implementations, the encoding is checked
+by the Aries framework, as a “post-cryptographic verification” step.</p>
+<p>A future version of the AnonCreds specification is likely to do an “on the fly”
+encoding in AnonCreds rather than including both values in the source
+credentials and presentations. This would prevent the holder from replacing the
+<code>raw</code> value without detection.</p>
+</div>
+<p><strong>Revealed Attribute Groups</strong></p>
+<p>An entry for each group <code>names</code> request attribute from the presentation request.</p>
+<pre class="language-json"><code class="language-json">      <span class="token property">"revealed_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"consent_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>      # The request attribute name from the presentation request
+          <span class="token property">"sub_proof_index"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> # The index of the source credential primary proof for the claims
+          <span class="token property">"values"</span><span class="token operator">:</span> <span class="token punctuation">{</span>           # An entry for the each of the names in the request attribute group
+            <span class="token property">"claim_name"</span><span class="token operator">:</span> <span class="token punctuation">{</span>     # The name of the claim<span class="token punctuation">,</span> its raw and encoded value
+              <span class="token property">"raw"</span><span class="token operator">:</span> <span class="token string">"205b1ea0-7848-48d4-b52b-339122d84f62"</span><span class="token punctuation">,</span>
+              <span class="token property">"encoded"</span><span class="token operator">:</span> <span class="token string">"46414468020333259158238797309781111434265856695713363124410805958145233348633"</span>
+            <span class="token punctuation">}</span>
+          <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+</code></pre>
+<p><strong>Self Attested Attributes</strong></p>
+<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><p>To Do: Describe self-attested attributes data structure</p>
+</div>
+<p><strong>Unrevealed Attributes</strong></p>
+<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><p>To Do: Describe unrevealed attributes data structure</p>
+</div>
+<p><strong>Predicatees</strong></p>
+<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><p>To Do: Describe predicates data structure</p>
+</div>
+<p><strong>Identifiers</strong></p>
+<p>The <code>identifiers</code> contains a list of the identifiers to be resolved by the
+verifier to retrieve the cryptographic material necessary to verify each of the
+proofs in the presentation. The identifiers are listed in an array with one
+entry per source verifiable credential, ordered by the <code>proofs</code> list earlier in
+the presentation.</p>
+<p>The data structure is:</p>
+<pre class="language-json"><code class="language-json">    <span class="token property">"identifiers"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span>
+        <span class="token property">"schema_id"</span><span class="token operator">:</span> <span class="token string">"CsQY9MGeD3CQP4EyuVFo5m:2:MYCO Biomarker:0.0.3"</span><span class="token punctuation">,</span>
+        <span class="token property">"cred_def_id"</span><span class="token operator">:</span> <span class="token string">"CsQY9MGeD3CQP4EyuVFo5m:3:CL:14951:MYCO_Biomarker"</span><span class="token punctuation">,</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+</code></pre>
+<p>The example above is for a source credential that is not revocable. For a
+revocable source credential, the <code>rev_reg_id</code> and <code>timestamp</code> (the identifier
+for the <span id="term:revocation-registry-entry">Revocation Registry Entry</span> used in the non-revocation proof) are
+added. Those are described in the section below on <a href="#generate-non-revocation-proofs" >generation of non-revocation
+proofs</a></p>
 <h4 id="generate-non-revocation-proofs"><a class="toc-anchor" href="#generate-non-revocation-proofs" >§</a> Generate Non-Revocation Proofs</h4>
 <p>A <a class="term-reference" href="#term:holder">holder</a> preparing an AnonCreds presentation must determine what, if
-any, non-revocation proofs (NRPs) must be added to the presentation based on a
-combination of what is in the proof request, and what verifiable credentials are
-to be used in the presentation. As noted in the <a href="#verifier-revocation-interval-request" >previous
-section</a>, the presentation request may
-have the <code>non-revoked</code> item at the outer-most level, applying to all source
-credentials, or at the <code>requested_attribute</code> and/or <code>requested_predicate</code> level,
-applying only to specific source credentials. For each, the <a class="term-reference" href="#term:holder">holder</a> must
-also determine if the verifiable credential selected for attributes/predicates
-where a NRP is requested is a revocable credential. Obviously, a NRP cannot be
-produced for a verifiable credential issued without a <a class="term-reference" href="#term:revreg">RevReg</a>.</p>
-<p>Once the <a class="term-reference" href="#term:holder">holder</a> has determined the required NRPs needed for the
-presentation, they must generate a NRP for each applicable source verifiable
-credential and add the NRPs to the presentation. For each, the <a class="term-reference" href="#term:holder">holder</a>
-must collect the necessary data from the <a class="term-reference" href="#term:revregentry">RevRegEntry</a>s
-published by the <a class="term-reference" href="#term:issuer">issuer</a> and then generate the NRP.</p>
+any, non-revocation proofs (NRPs) must be included the presentation based on a
+combination of what is in the proof request and what verifiable credentials are
+to be used in the presentation. As noted in the <a href="(#verifier-revocation-interval-request)" >section on revocation in the
+presentation request</a>, the presentation
+request may have the <code>non-revoked</code> item at the outer-most level, applying to all
+source credentials, or at the <code>requested_attribute</code> and/or <code>requested_predicate</code>
+level, applying only to specific source credentials. Further, the <a class="term-reference" href="#term:holder">holder</a> must determine if the source verifiable credential for the requested
+attributes/predicates where a NRP is requested is a revocable credential.
+Obviously, an NRP cannot be produced for a verifiable credential issued without
+that does not support revocation. Where a revocation interval is specified in
+the request, and where the source credential to satisfy the request is
+revocable, the holder must provide a non-revocation proof.</p>
+<p>Once the <a class="term-reference" href="#term:holder">holder</a> has determined the which source credentials will
+required an accompanying NRPs in the presentation, the <a class="term-reference" href="#term:holder">holder</a> must
+collect and prepare the necessary proof generation inputs.</p>
 <h4 id="collecting-data-for-generating-the-non-revocation-proof"><a class="toc-anchor" href="#collecting-data-for-generating-the-non-revocation-proof" >§</a> Collecting Data for Generating the Non-Revocation Proof</h4>
-<p>In order to produce a NRP, the <a class="term-reference" href="#term:holder">holder</a> must collect the following information from wherever the <a class="term-reference" href="#term:issuer">issuer</a>
-has published the information. Note that the <a class="term-reference" href="#term:holder">holder</a> may have some or all of this information cached
-from data previously collected.</p>
+<p>Recall from the earlier section on <a href="#prepare-inputs-to-presentation-generator" >preparing inputs to the presentation generation
+process</a> that for each revocable
+source credential, the holder must provide the following data elements:</p>
 <ul>
-<li>The type of <code>issuance_type</code> of the <a class="term-reference" href="#term:revreg">RevReg</a> – whether the initial state of the
-credentials in the registry is <code>active</code> or <code>revoked</code>. This information is part
-of the <a class="term-reference" href="#term:revreg">RevReg</a>, and so likely cached by the <a class="term-reference" href="#term:holder">holder</a> when they were first issued
-the credential.</li>
-<li>The tails file for <a class="term-reference" href="#term:revreg">RevReg</a>, the location (a URL) of which is stored in
-the issued credential’s <a class="term-reference" href="#term:revreg">RevReg</a>. The <a class="term-reference" href="#term:holder">holder</a> likely (though
-not necessarily) would have collected the tails file at the time of issuance.
-Recall (from <a href="data_flow_setup.md#tails-file-and-tails-file-generation" >this section of the
-specification</a>) that
-the tails file for a <a class="term-reference" href="#term:revreg">RevReg</a> is generated at creation time and never
-changes.</li>
-<li>The index of the credential within the <a class="term-reference" href="#term:revreg">RevReg</a> for the <a class="term-reference" href="#term:holder">holder</a>'s specific
-credential being used in the presentation. This information is given to the
-<a class="term-reference" href="#term:holder">holder</a> by the <a class="term-reference" href="#term:issuer">issuer</a> when the verifiable credential is issued.</li>
-<li>The accumulator published by the <a class="term-reference" href="#term:issuer">issuer</a> for the <a class="term-reference" href="#term:revregentry">RevRegEntry</a> that the <a class="term-reference" href="#term:holder">holder</a>
-will use in generating the NRP. In the Hyperledger Indy implementation of
-AnonCreds, the entries are published as <a class="term-reference" href="#term:revregentry">RevRegEntry</a>s on the ledger, and collected via a
-special request to the ledger (detailed below).</li>
-<li>The revocation status changes of all of the credential indices up to the
-publication of the accumulator that the <a class="term-reference" href="#term:holder">holder</a> will use in generating the
-proof. Required is the collection of all of the <code>issued</code> and <code>revoked</code> lists
-(as described <a href="#anoncreds-credential-revocation-and-publication" >here</a>) from
-all of the <a class="term-reference" href="#term:revregentry">RevRegEntry</a> publication requests made by the <a class="term-reference" href="#term:issuer">issuer</a> up to and
-including the request that includes the accumulator being used by the <a class="term-reference" href="#term:holder">holder</a>
-in generating the NRP.</li>
+<li><code>witness</code> – A single value calculated from the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> used by the holder to create the non-revocation proof.</li>
+<li><code>timestamp</code> – The <code>timestamp</code> of the <a class="term-reference" href="#term:revocation-registry-entry">Revocation Registry Entry</a> used
+by the holder to create the non-revocation proof. <code>timestamp</code> is an attribute of
+the <a class="term-reference" href="#term:revocation-registry-entry">Revocation Registry Entry</a> that allows the verifier to uniquely
+identify the <a class="term-reference" href="#term:revocation-registry-entry">Revocation Registry Entry</a> used by the holder. The
+<code>timestamp</code> must meet the <code>non_revocation_interval</code> requirements specified in
+the presentation request.</li>
 </ul>
-<p>The collection of the last two items is difficult without extra support of the
-entity holding the published <a class="term-reference" href="#term:revreg">RevReg</a> (e.g. the <a class="term-reference" href="#term:vdr">VDR</a>/ledger).
-Since each <a class="term-reference" href="#term:revregentry">RevRegEntry</a> holds only the list of <code>active</code> and <code>revoked</code>
-credential revocation status changes since the previous <a class="term-reference" href="#term:revregentry">RevRegEntry</a>
-(the “deltas”), a <a class="term-reference" href="#term:holder">holder</a> must retrieve those lists from every <a class="term-reference" href="#term:revregentry">RevRegEntry</a> from <a class="term-reference" href="#term:revreg">RevReg</a> creation to the <a class="term-reference" href="#term:revregentry">RevRegEntry</a> holding
-the accumulator the <a class="term-reference" href="#term:holder">holder</a> will use for generating the NRP. The
-<a class="term-reference" href="#term:issuer">issuer</a> could have made many calls to publish <a class="term-reference" href="#term:revregentry">RevRegEntry</a>
-transactions, and the <a class="term-reference" href="#term:holder">holder</a> would have to make a request for each one,
-which is not practical (and perhaps not even possible). In the Hyperledger Indy
-implementation, a special call
-(<a path-0="github.com"path-1="hyperledger"path-2="indy-node"path-3="blob"path-4="master"path-5="docs"path-6="source"path-7="requests.md#get_revoc_reg_delta"href="https://github.com/hyperledger/indy-node/blob/master/docs/source/requests.md#get_revoc_reg_delta" ><code>get_revoc_reg_delta</code></a>)
-is used to collect the necessary data from all the <a class="term-reference" href="#term:revregentry">RevRegEntry</a>
-transactions for a specified interval in a single request. In the most used
-version of the call, the interval in the request is <code>from</code> 0 (meaning from when
-the <a class="term-reference" href="#term:revreg">RevReg</a> was created) <code>to</code> the current time. If the <a class="term-reference" href="#term:holder">holder</a>
-has called the routine previously with an earlier <code>to</code> value and cached the
-results, the <a class="term-reference" href="#term:holder">holder</a> MAY use the time of the cached result as the
-<code>from</code>, so that only the credentials with revocation status changes since that
-time are returned. The <a class="term-reference" href="#term:holder">holder</a> then adds the returned lists to the
-cached lists. If the <a class="term-reference" href="#term:verifier">verifier</a> has requested a “back in time” NRP, the
-<a class="term-reference" href="#term:holder">holder</a> may use a <code>to</code> date to match the date of interest to the <a class="term-reference" href="#term:verifier">verifier</a>. When executed, the transaction returns:</p>
+<p>The <code>witness</code> is an integer that is used in the non-revocation zero
+knowledge proof to demonstrate to the verifier that the holder’s credential has
+not been revoked. Recall that the <code>accumulator</code> of a <span id="term:revocation-registry">Revocation Registry</span> is the product of the tails file entries for all of the unrevoked
+credentials in the registry. For a specific holder, its <code>witness</code> is the product
+of the tails file entries for all of the unrevoked credentials in the registry
+<strong>except for the holder’s own credential</strong>. Obviously, if the witness equals the
+accumulator, the holder’s credential has been revoked. But, if not, then a valid
+non-revocation proof demonstrates that the <code>witness</code> times the entry from the tails
+file for the holder’s credential equals the accumulator, without revealing
+either the <code>witness</code>, the credential’s index, or its tails file entry.</p>
+<p>An AnonCreds process is used to calculate the <code>witness</code> value, takes the
+following inputs:</p>
 <ul>
-<li>The full list of all <code>issued</code> and <code>revoked</code> entries in all of the <a class="term-reference" href="#term:revregentry">RevRegEntry</a>
-transactions within the requested interval.</li>
-<li>The accumulator for the last <a class="term-reference" href="#term:revregentry">RevRegEntry</a> within the requested interval.</li>
-<li>The timestamp (in the Unix epoch format) of the last <a class="term-reference" href="#term:revregentry">RevRegEntry</a> in the
-interval.</li>
+<li><code>tails_reader</code> – A reference to a local copy of the <a class="term-reference" href="#term:tails-file">Tails File</a> for
+the Revocation Registry for reading.</li>
+<li><code>revoc_reg_def</code> – The Revocation Registry Definition, as retrieved from the
+<a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> to which the issuer published it.</li>
+<li><code>rev_status_list</code> – A data structure about the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> to be used for creating the non-revocation proof. It includes:
+<ul>
+<li><code>rev_reg_def_id</code> – the ID of the <a class="term-reference" href="#term:revocation-registry-definition">Revocation Registry Definition</a>.</li>
+<li><code>issuer_id</code> – the ID of the issuer of the source credential and hence, the
+<a class="term-reference" href="#term:revocation-registry-definition">Revocation Registry Definition</a>.</li>
+<li><code>revocation_list</code> – a bit vector containing the status (<code>revoked</code>,
+<code>not revoked</code>) of all of the credentials in the revocation registry</li>
+<li><code>accum</code> – the value of the accumulator from the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> to be used for creating the non-revocation proof.</li>
+<li><code>timestamp</code> – the value of the timestamp from the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> to be used for creating the non-revocation proof.</li>
 </ul>
-<p>Once collected, the <a class="term-reference" href="#term:holder">holder</a> processes the <code>issued</code> and <code>revoked</code> lists
-to determine the credential status (revoked or not) of every credential in the
-<a class="term-reference" href="#term:revreg">RevReg</a>. As well, the <a class="term-reference" href="#term:holder">holder</a> can at the point see if the
-credential for which the NRP is being generated has been revoked, and decide
-to continue with the process (producing an unverifiable “proof”) or to stop the
-process, perhaps with a notification to the <a class="term-reference" href="#term:verifier">verifier</a>.</p>
+</li>
+<li><code>rev_reg_idx</code> – The index in the revocation registry of the holder’s
+credential. This is the credentials for which</li>
+<li><code>rev_state</code>: An optional, previous <code>witness</code> that can be updated to produce
+the new <code>witness</code> output.</li>
+<li><code>old_rev_status_list</code> – An optional, previous <code>rev_status_list</code> (described
+above) that was in place at the time the previous witness was generated.</li>
+</ul>
+<p>The holder must use the <code>from</code> and <code>to</code> timestamp revocation interval
+requirements from the presentation request and knowledge of the <a class="term-reference" href="#term:revocation-registry-entries">Revocation Registry Entries</a> to determine which <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> to retrieve and use in generating the NRP for a given credential. The
+selected <a class="term-reference" href="#term:revocation-registry-entry">Revocation Registry Entry</a> must either have been active at the
+time of the <code>from</code> value or have been published by the issuer between the <code>from</code>
+and <code>to</code> values. How to determine an appropriate <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> to use is up to the holder, and their use of the capabilities of the
+relevant <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a>.</p>
+<p>::: Note</p>
+<p>When Hyperledger Indy is the <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> for the <a class="term-reference" href="#term:revocation-registry-entry">Revocation Registry Entry</a>, the state is received from Indy ledger as the
+“deltas” (state changes) from either the initial state of the Registry or from a
+previous <a class="term-reference" href="#term:revocation-registry-entry">Revocation Registry Entry</a>. While the older Indy version of
+AnonCreds used the “deltas” representation directly, the newer AnonCreds version
+requires that the holder software convert the Indy “deltas” format into the
+<code>rev_status_list</code> representation, with every credential in the registry is given
+a <code>revoked</code> or <code>not revoked</code> boolean value.</p>
+<p>The benefit of the “full state” representation for <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> is that the <a class="term-reference" href="#term::verifiable-data-registry">:Verifiable Data Registry</a> can be “dumb”,
+returning the same static file given to it by the Issuer. With the Indy “deltas”
+approach, the [[Verifiable Data Registry (VDR)]] must be an active service
+returning an on-the-fly calculated result based on the inputs of the holder’s
+request.</p>
+<p>:::</p>
+<p>In collecting the <code>revocation_list</code> data in the <code>rev_status_list</code>, the holder
+may discover that their credential has been revoked by the issuer. The holder
+may choose at that point to stop the presentation process. If the holder decides
+to proceed, they will not be able to create a valid non-revocation proof for the
+source credential.</p>
+<p>The output of the process is the new <code>witness</code> for a credential that will be
+used as input to the generate presentation process.</p>
 <h5 id="non-revocation-proof-generation-steps"><a class="toc-anchor" href="#non-revocation-proof-generation-steps" >§</a> Non-Revocation Proof Generation Steps</h5>
 <p>Given the data collected by the <a class="term-reference" href="#term:holder">holder</a> to produce the NRP, the
 following calculations are performed.</p>
-<p>A <code>witness</code> is calculated in the same way as the accumulator (as described
-<a href="#publishing-the-initial-initial-revocation-registry-entry-object" >here</a>),
-except the tails file factor of the credential being proven as not revoked is
-<strong>not</strong> included in the calculation. All of the tails file entries from the
-other unrevoked credentials <strong>are</strong> included.</p>
 <p>Once the witness (<code>u</code>), the accumulator from the ledger (<code>e</code>) and the value of
 the tails file entry for the credential of interest (<code>b</code>) are known, the NRP can
 be generated as follows:</p>
-<div id="todo-7" class="notice todo"><a class="notice-link" href="#todo-7">TODO</a><p>To Do: Add more detail about the calculation of <code>C</code><sub><code>u</code></sub> and
+<div id="todo-14" class="notice todo"><a class="notice-link" href="#todo-14">TODO</a><p>To Do: Add more detail about the calculation of <code>C</code><sub><code>u</code></sub> and
 <code>C</code><sub><code>b</code></sub> in the following.</p>
 </div>
 <ul>
@@ -2277,7 +2368,7 @@ model:</p>
 <span class="token punctuation">}</span>
 </code></pre>
 <p>The values in the data model are:</p>
-<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>To Do: Enumerate each of the items in each NRP section of the presentation.</p>
+<div id="todo-15" class="notice todo"><a class="notice-link" href="#todo-15">TODO</a><p>To Do: Enumerate each of the items in each NRP section of the presentation.</p>
 </div>
 <ul>
 <li><code>x_list</code>&quot; is …
@@ -2415,9 +2506,9 @@ verification process, the <a class="term-reference" href="#term:verifier">verifi
 the presentation for the NRP being processed, plus the accumulator from
 appropriate <a class="term-reference" href="#term:revregentry">RevRegEntry</a>, the following steps are carried out to verify
 the NRP.</p>
-<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>To Do: Outline the NRP verification calculation.</p>
+<div id="todo-16" class="notice todo"><a class="notice-link" href="#todo-16">TODO</a><p>To Do: Outline the NRP verification calculation.</p>
 </div>
-<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>To Do: Is there a separate process to bind the NRP to the credential?</p>
+<div id="todo-17" class="notice todo"><a class="notice-link" href="#todo-17">TODO</a><p>To Do: Is there a separate process to bind the NRP to the credential?</p>
 </div>
 <p>The verification code MUST surface to the <a class="term-reference" href="#term:verifier">verifier</a> if any part of the
 presentation, including any NRP(s), fail cryptographic verification. The
@@ -2525,7 +2616,7 @@ entries, up to the total number of credentials in the <a class="term-reference" 
 any time is the same: determine the (modulo) product of the primes for each
 non-revoked credential in the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a>, as described
 <a href="#creating-the-initial-revocation-registry-entry-object" >here</a>.</p>
-<div id="note-7" class="notice note"><a class="notice-link" href="#note-7">NOTE</a><p>The <a class="term-reference" href="#term:issuer">issuer</a> MUST track of the revocation status of all of the
+<div id="note-9" class="notice note"><a class="notice-link" href="#note-9">NOTE</a><p>The <a class="term-reference" href="#term:issuer">issuer</a> MUST track of the revocation status of all of the
 credentials within a <a class="term-reference" href="#term:revreg">RevReg</a> so that it can both calculate the correct
 accumulator and send to the <a class="term-reference" href="#term:vdr">VDR</a> accurate lists (<code>issued</code> and <code>revoked</code>)
 of the indices of the credentials whose status has changed since the last <a class="term-reference" href="#term:revregentry">RevRegEntry</a> was published. If the list and accumulator published to <a class="term-reference" href="#term:vdr">VDR</a> get out of
@@ -2831,17 +2922,17 @@ Procedure:
 
 </code></pre>
 <h2 id="anoncreds-conventions"><a class="toc-anchor" href="#anoncreds-conventions" >§</a> AnonCreds Conventions</h2>
-<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
+<div id="todo-18" class="notice todo"><a class="notice-link" href="#todo-18">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
 </div>
 <h2 id="iana-considerations"><a class="toc-anchor" href="#iana-considerations" >§</a> IANA Considerations</h2>
 <p>This document has no IANA actions.</p>
 <h2 id="security-considerations"><a class="toc-anchor" href="#security-considerations" >§</a> Security Considerations</h2>
 <h3 id="cryptography"><a class="toc-anchor" href="#cryptography" >§</a> Cryptography</h3>
 <h4 id="signature"><a class="toc-anchor" href="#signature" >§</a> Signature</h4>
-<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><p>Add security considerations related to CL signatures</p>
+<div id="todo-19" class="notice todo"><a class="notice-link" href="#todo-19">TODO</a><p>Add security considerations related to CL signatures</p>
 </div>
 <h4 id="revocation-accumulators"><a class="toc-anchor" href="#revocation-accumulators" >§</a> Revocation / Accumulators</h4>
-<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><p>Add security considerations related to cryptographic accumulators and AnonCreds revocation</p>
+<div id="todo-20" class="notice todo"><a class="notice-link" href="#todo-20">TODO</a><p>Add security considerations related to cryptographic accumulators and AnonCreds revocation</p>
 <ul>
 <li>issues with too small revocation registries</li>
 <li>…</li>
@@ -2868,14 +2959,14 @@ Procedure:
 <h3 id="crypto-agility"><a class="toc-anchor" href="#crypto-agility" >§</a> Crypto Agility</h3>
 <p>The underlying signature algorithm of AnonCreds is not known to be a post-quantum computing resistant. As new signature algorithms evolve for the post-quantum computing security, the underlying signature algorithm of AnonCreds shall keep privacy-preserving features such as selective disclosure and non-correlatability.</p>
 <h2 id="privacy-considerations"><a class="toc-anchor" href="#privacy-considerations" >§</a> Privacy Considerations</h2>
-<div id="todo-14" class="notice todo"><a class="notice-link" href="#todo-14">TODO</a><p>Add privacy considerations.</p>
+<div id="todo-21" class="notice todo"><a class="notice-link" href="#todo-21">TODO</a><p>Add privacy considerations.</p>
 </div>
 <h2 id="references"><a class="toc-anchor" href="#references" >§</a> References</h2>
 <h3 id="normative-references"><a class="toc-anchor" href="#normative-references" >§</a> Normative References</h3>
-<div id="todo-15" class="notice todo"><a class="notice-link" href="#todo-15">TODO</a><p>Add normative references</p>
+<div id="todo-22" class="notice todo"><a class="notice-link" href="#todo-22">TODO</a><p>Add normative references</p>
 </div>
 <h3 id="informative-references"><a class="toc-anchor" href="#informative-references" >§</a> Informative References</h3>
-<div id="todo-16" class="notice todo"><a class="notice-link" href="#todo-16">TODO</a><p>Add informative references</p>
+<div id="todo-23" class="notice todo"><a class="notice-link" href="#todo-23">TODO</a><p>Add informative references</p>
 </div>
 <h4 id="resources-on-cryptography"><a class="toc-anchor" href="#resources-on-cryptography" >§</a> Resources on cryptography</h4>
 <h5 id="sigma-protocols"><a class="toc-anchor" href="#sigma-protocols" >§</a> Sigma protocols</h5>
@@ -2898,7 +2989,7 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li>Matt Raffel - Kiva Microfiance</li>
 </ul>
 <h2 id="authors-addresses"><a class="toc-anchor" href="#authors-addresses" >§</a> Authors’ Addresses</h2>
-<div id="todo-17" class="notice todo"><a class="notice-link" href="#todo-17">TODO</a><p>Add authors’ addresses.</p>
+<div id="todo-24" class="notice todo"><a class="notice-link" href="#todo-24">TODO</a><p>Add authors’ addresses.</p>
 </div>
 
                     </article>    
@@ -2987,7 +3078,9 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 </li>
 <li><a href="#generate-presentation" >Generate Presentation</a>
 <ul>
-<li><a href="#generate-anoncreds-presentation" >Generate AnonCreds Presentation</a></li>
+<li><a href="#collecting-the-source-verifiable-credential-data" >Collecting the Source Verifiable Credential Data</a></li>
+<li><a href="#prepare-inputs-to-presentation-generator" >Prepare Inputs to Presentation Generator</a></li>
+<li><a href="#generate-the-presentation" >Generate the Presentation</a></li>
 <li><a href="#generate-non-revocation-proofs" >Generate Non-Revocation Proofs</a></li>
 <li><a href="#collecting-data-for-generating-the-non-revocation-proof" >Collecting Data for Generating the Non-Revocation Proof</a></li>
 </ul>

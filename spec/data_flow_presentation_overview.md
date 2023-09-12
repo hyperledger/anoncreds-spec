@@ -38,7 +38,7 @@ request, the Holder may ignore the presentation.
 In step 7, the Holder sends the verifiable presentation according to the
 presentation request to the Verifier.
 
-In step 7-10, the Verifier collects the required information and verifies the
+In step 8-10, the Verifier collects the required information and verifies the
 verifiable presentation and accepts it if the signature is valid, otherwise
 rejects the verifiable presentation.
 
