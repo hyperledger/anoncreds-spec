@@ -248,7 +248,7 @@ Where:
 
 * `u`: $u = (s^{v'} \times A_{bl})\ Mod\ n$
 * `ur`: is `null` if revocation is not active for the [[ref: Public Credential Definition], and if revocation is active $u_r = h_2^{s'_r}$ where $s'_r$ is randomly selected quadratic residue of order of the bilinear groups `q` and $h_2$ is  part of the revocation public key.
-* `hidden_attributes`: is an array of hidden attributes from the list of [[ref: Public Credential Definition]. For AnonCreds v1.0, it is always a single entry of `master_secret`.
+* `hidden_attributes`: is an array of hidden attributes from the list of [[ref: Public Credential Definition]. For AnonCreds v1.0, it is always a single entry of `link_secret`.
   * The [[ref: holder]]'s blinded [[ref: link secret]] is a default hidden attribute in AnonCreds, meaning it is not explicitly defined in the [[ref: Schema]] list of attributes but is included in both the [[ref: Public Credential Definition]] and all issued [[ref: credentials]]. Whilst it is cryptographically possible to have multiple hidden attributes, in this version of AnonCreds, only [[ref: link secret]] is used.
 * `committed_attributes`: An empty list of attributes in this version of AnonCreds.
 
