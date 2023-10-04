@@ -252,6 +252,62 @@ For each is a `primary_proof` covering the claims in the source credential calle
 the `eq_proof`, and a `ge_proof` for each of the predicate proofs sourced from
 the verifiable credential.
 
+***Generating the Challenge Hash***
+
+For this step the [[ref: holder]] follows the following steps:
+- Generate a random 592-bit number $\tilde{m_j}$ for each $j \in \mathcal{A_{\bar{r}}}$ (unrevealed attributes)
+- For each credential $C_p = (\{m_j\}, A, e, v)$ and issuer's public key $pk$:
+  - Choose random 3152-bit $r$.
+  - Take $n, S$ from $pk$ and compute:
+  $$ A' \leftarrow AS^r \mod n $$
+  $$ v' \leftarrow v - e.r $$
+  and add them to $\mathcal{C}$.
+  - Compute $e' \leftarrow e-2^{596}$.
+  - Generate random 456-bit $\tilde{e}$ and random 3748-bit number $\tilde{v}$.
+  - Hide the unrevealed attributes using:
+  $$ T \leftarrow (A')^{\tilde{e}}(\prod_{j \in \mathcal{A_{\bar{r}}}} R_j^{\tilde{m_j}})(S^{\tilde{v}})\ (mod\ n) $$
+  and add them to $\mathcal{T}$
+- Load $Z, S$ from issuer's public key
+- For each predicate $p$ where operator * is one of $\gt, \ge, \lt, \le$:
+  - Calculate $\Delta$ such that
+  $$ \Delta \leftarrow   \left\{
+  \begin{array}{ll}
+        z_j-m_j & * \equiv\ \le \\
+        z_j-m_j-1 & * \equiv\ \lt \\
+        m_j-z_j & * \equiv\ \ge \\
+        m_j-z_j-1 & * \equiv\ \gt \\
+  \end{array} 
+  \right.  $$
+
+  - Calculate $a$ such that :
+  $$ a \leftarrow \left\{
+  \begin{array}{ll}
+        -1 & * \equiv\ \le or \lt \\
+        1 & * \equiv\ \ge or \gt \\
+  \end{array} 
+  \right.  $$
+
+  - Find (by exhaustive search) $u_1, u_2, u_3, u_4$ such that:
+  $$ \Delta = (u_1)^2+(u_2)^2+(u_3)^2+(u_4)^2 $$
+
+  - Generate random 2128-bit numbers $r_1, r_2, r_3, r_4, r_{\Delta}$.
+
+  - Blind values of $\Delta$ and $u_i$ by computing:
+  $$ \{ T_i \leftarrow Z^{u_i}S^{r_i}\ (mod\ n) \}_{1 \le i \le 4} $$
+  $$ T_{\Delta} \leftarrow Z^{\Delta}S^{r_{\Delta}}\ (mod\ n) $$ 
+  and add these values to $\mathcal{C}$ in the order $T_1, T_2, T_3, T_4, T_{\Delta}$.
+
+  - Generate random 592-bit numbers $\tilde{u_1}, \tilde{u_2}, \tilde{u_3}, \tilde{u_4}$, random 672-bit numbers $\tilde{r_1}, \tilde{r_2}, \tilde{r_3}, \tilde{r_4}, \tilde{r_{\Delta}}$, and random 2787-bit $\tilde{\alpha}$.
+
+  - Compute:
+  $$ \{ \bar{T_i} \leftarrow Z^{\tilde{u_i}}S^{\tilde{r_i}}\ (mod\ n) \}_{1 \le i \le 4} $$
+  $$ \bar{T_{\Delta}} \leftarrow Z^{\tilde{m_j}}S^{a\tilde{r_{\Delta}}}\ (mod\ n) $$
+  $$ Q \leftarrow (S^{\tilde{\alpha}}) \prod_{i=1}^{4} T_i^{\tilde{u_i}}\ (mod\ n) $$
+  and add these values to $\mathcal{T}$ in order $\bar{T_1}, \bar{T_2}, \bar{T_3}, \bar{T_4}, \bar{T_{\Delta}}, Q$.
+- Finally, the [[ref: holder]] computes the Fiat-Shamir challenge hash($c_H$):
+$$ c_H \leftarrow H(\mathcal{T}, \mathcal{C}, n_1) $$
+where $n_1$ is the nonce sent by [[ref: verifier]] in proof request.
+
 Each primary `eq_proof` is generated as follows:
 
 ::: todo
