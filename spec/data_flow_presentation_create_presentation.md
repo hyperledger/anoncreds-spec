@@ -351,11 +351,30 @@ Each primary `eq_proof` is generated as follows:
 
 Each primary `ge_proof` is generated as follows:
 
-::: todo
-
-To Do: Add algorithm for generating a `ge_proof` and the data values in the proof.
-
-:::
+- For each predicate $p$ compute:
+  $$ \{ \hat{u_i} \leftarrow \tilde{u_i} + c_Hu_i \}_{1 \le i \le 4} $$
+  $$ \{ \hat{r_i} \leftarrow \tilde{r_i} + c_Hr_i \}_{1 \le i \le 4} $$
+  $$ \hat{r_{\Delta}} \leftarrow \tilde{r_{\Delta}}+c_Hr_{\Delta} $$
+  $$ \hat{\alpha} \leftarrow \tilde{\alpha} + c_H(r_{\Delta} - u_1r_1 - u_2r_2 - u_3r_3 - u_4r_4) $$
+- Data attributes in `ge_proof` are:
+```json
+ge_proofs: [
+  {
+    u,
+    r,
+    mj,
+    alpha,
+    t,
+    predicate
+  }
+]
+```
+- `u`: The hashmap containing values of $\hat{u_i}$ in the proof.
+- `r`: The hashmap containing values of $\hat{r_i}$, and $\hat{r_{\Delta}}$ in the proof.
+- `mj`: $\hat{m_j}$ of the concerned predicate obtained from the equality proof.
+- `alpha`: The value of $\hat{\alpha}$ in the proof.
+- `t`: The hashmap containing values of $\bar{T_i}$, and $\bar{T_{\Delta}}$ from the init proof.
+- `predicate`: The concerned predicate from the proof request.
 
 The `aggregated_proof` proves that the same [[ref: linked secret]] was used to
 issue all of the source verifiable credentials in the presentation.
