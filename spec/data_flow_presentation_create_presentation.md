@@ -485,7 +485,7 @@ and `to` values. How to determine an appropriate [[ref: Revocation Registry
 Entry]] to use is up to the holder, and their use of the capabilities of the
 relevant [[ref: Verifiable Data Registry]].
 
-::: Note
+::: note
 
 When Hyperledger Indy is the [[ref: Verifiable Data Registry]] for the [[ref:
 Revocation Registry Entry]], the state is received from Indy ledger as the
