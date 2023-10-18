@@ -305,7 +305,7 @@ The `aggregated_proof` structure is as follows:
 where:
 
 - `c_hash` is the fiat shamir challenge hash $c_H$,
-- `c_list` is the list of commitments $\mathcal{C}$ that we calculated during the challenge hash generation.
+- `c_list` is the list of commitments $\mathcal{C}$ that we calculated during the challenge hash generation. It's size depends on the number of attributes to prove in a credential, and it is generated seperately for each credential.
 
 The `requested_proof` is the mapping from the presentation request attributes
 and predicates to the data in the presentation that satisfies the request. This
