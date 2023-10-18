@@ -343,7 +343,7 @@ An entry for each group `names` request attribute from the presentation request.
 
 **Self Attested Attributes**
 
-This is a set any other data that holder wants to prove to verifier that is not signed by any issuer thus it’s attested only by the holder. This is a set of attributes that the holder is attesting to the verifier. The holder is not claiming that the data is true, only that they are attesting to it.
+This is a set any other data that [[ref: holder]] wants to provide to the [[ref: verifier]] that is not signed by any issuer thus it’s attested only by the holder. This is a set of attributes that the holder is attesting to the verifier. The holder is not claiming that the data is true, only that they are attesting to it.
 
 ```json
       "self_attested_attrs": {
@@ -353,8 +353,7 @@ This is a set any other data that holder wants to prove to verifier that is not 
 
 **Unrevealed Attributes**
 
-These are a hashmap of unrevealed attributes with their sub proof index numbers.
-The [[ref: verifier]] can use the sub proof index numbers to retrieve the
+These are a hashmap of unrevealed attributes that the verifier requested in the presentation request, but the holder has decided not to reveal, along  with their sub proof index numbers. The [[ref: verifier]] can use the sub proof index numbers to retrieve the
 corresponding primary proof from the `proof` array in the presentation.
 
 ```json
