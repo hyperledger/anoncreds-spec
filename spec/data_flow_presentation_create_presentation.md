@@ -511,7 +511,7 @@ Init proof generation:
 - Update $C_{NR}$:
 $$ w \leftarrow w. \frac{\prod_{j \in V \backslash V_{old}} g'_{L+1-j+i}}{\prod_{j \in V_{old} \backslash V} g'_{L+1-j+i}} $$
 Here $V_{old}$ is taken from $wit_i$ and updated there.
-- Select random $ρ, ρ′ , r, r′ , r′′ , r′′′ , o, o′\ mod\ q$;
+- Select random $\rho, \rho' , r, r' , r'' , r''' , o, o'\ mod\ q$;
 - Compute:
 $$ E \leftarrow h_{ρ}\tilde{h^o}$$
 $$ D \leftarrow g^r\tilde{h}^{o'} $$
@@ -534,17 +534,17 @@ $$ \bar{T_8} \leftarrow e(\tilde{h}, u)^{\tilde{r}}.e(1/g, \hat{h})^{\tilde{r'''
 and add these values to $\mathcal{T}$.
 - For non-revocation credential $C_{NR}$ compute:
 $$ \widehat{\rho} \leftarrow \widetilde{\rho} - c_H\rho\bmod{q} $$
-$$ \widehat{o} \leftarrow \widetilde{o} - c_H\cdot o\bmod{q}\\ $$
+$$ \widehat{o} \leftarrow \widetilde{o} - c_H\cdot o\bmod{q} $$
 $$ \widehat{c} \leftarrow \widetilde{c} - c_H\cdot c\bmod{q} $$
-$$ \widehat{o'} \leftarrow \widetilde{o'} - c_H\cdot o'\bmod{q}\\ $$
+$$ \widehat{o'} \leftarrow \widetilde{o'} - c_H\cdot o'\bmod{q} $$
 $$ \widehat{m} \leftarrow \widetilde{m} - c_H m\bmod{q} $$
-$$ \widehat{m'} \leftarrow \widetilde{m'} - c_H m'\bmod{q}\\ $$
+$$ \widehat{m'} \leftarrow \widetilde{m'} - c_H m'\bmod{q} $$
 $$ \widehat{t} \leftarrow \widetilde{t} - c_H t\bmod{q} $$
-$$ \widehat{t'} \leftarrow \widetilde{t'} - c_H t'\bmod{q}\\ $$
+$$ \widehat{t'} \leftarrow \widetilde{t'} - c_H t'\bmod{q} $$
 $$ \widehat{m_2} \leftarrow \widetilde{m_2} - c_H m_2\bmod{q} $$
-$$ \widehat{s} \leftarrow \widetilde{s} - c_H s\bmod{q}\\ $$
+$$ \widehat{s} \leftarrow \widetilde{s} - c_H s\bmod{q} $$
 $$ \widehat{r} \leftarrow \widetilde{r} - c_H r\bmod{q} $$
-$$ \widehat{r'} \leftarrow \widetilde{r'} - c_H r'\bmod{q}\\ $$
+$$ \widehat{r'} \leftarrow \widetilde{r'} - c_H r'\bmod{q} $$
 $$ \widehat{r''} \leftarrow \widetilde{r''} - c_H r''\bmod{q} $$
 $$ \widehat{r'''} \leftarrow \widetilde{r'''} - c_H r'''\bmod{q}. $$
 and add them to $\mathcal{X}$.
