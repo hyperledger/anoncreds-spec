@@ -85,16 +85,17 @@ Calculation for NRP:
 
 $$\widehat{T_1} \leftarrow E^{c_H}\cdot h^{\widehat{\rho}} \cdot \widetilde{h}^{\widehat{o}} $$
 $$\widehat{T_2} \leftarrow E^{\widehat{c}}\cdot h^{-\widehat{m}}\cdot\widetilde{h}^{-\widehat{t}}$$
-$$\widehat{T_3} \leftarrow\left(\frac{e(h_0\mathcal{G},\widehat{h})}{e(A,y)} \right)^{c_H} \cdot e(A,\widehat{h})^{\widehat{c}}\cdot (\widetilde{h},\widehat{h})^{\widehat{r}}\cdot e(\widetilde{h},y)^{-\widehat{\rho}}\cdot e(\widetilde{h},\widehat{h})^{-\widehat{m}}\cdot e(h_1,\widehat{h})^{-\widehat{m_2}}\cdot e(h_2,\widehat{h})^{-\widehat{s}}$$
+$$\widehat{T_3} \leftarrow\left(\frac{e(h_0\mathcal{G},\widehat{h})}{e(A,y)} \right)^{c_H} \cdot e(A,\widehat{h})^{\widehat{c}}\cdot e(\widetilde{h},\widehat{h})^{\widehat{r}}\cdot e(\widetilde{h},y)^{-\widehat{\rho}}\cdot e(\widetilde{h},\widehat{h})^{-\widehat{m}}\cdot e(h_1,\widehat{h})^{-\widehat{m_2}}\cdot e(h_2,\widehat{h})^{-\widehat{s}}$$
 $$\widehat{T_4} \leftarrow\left(\frac{e(\mathcal{G},\mathrm{acc})}{e(g,\mathcal{W})z}\right)^{c_H} \cdot e(\widetilde{h},\mathrm{acc})^{\widehat{r}}\cdot e(1/g,\widehat{h})^{\widehat{r'}}$$
 $$\widehat{T_5} \leftarrow D^{c_H}\cdot g^{\widehat{r}}\widetilde{h}^{\widehat{o'}}$$
 $$\widehat{T_6} \leftarrow  D^{\widehat{r''}}\cdot g^{-\widehat{m'}} \widetilde{h}^{-\widehat{t'}}$$
 $$\widehat{T_7} \leftarrow \left(\frac{e(pk\cdot\mathcal{G},\mathcal{S})}{e(g,g')}\right)^{c_H}\cdot e(pk\cdot \mathcal{G},\widehat{h})^{\widehat{r''}}\cdot e(\widetilde{h},\widehat{h})^{-\widehat{m'}}\cdot e(\widetilde{h},\mathcal{S})^{\widehat{r}}$$
 $$\widehat{T_8} \leftarrow \left(\frac{e(\mathcal{G},u)}{e(g,\mathcal{U})}\right)^{c_H}\cdot e(\widetilde{h},u)^{\widehat{r}}\cdot e(1/g,\widehat{h})^{\widehat{r'''}}$$
 
-:::todo
-To Do: Is there a separate process to bind the NRP to the credential?
-:::
+Then all these values are added to $\hat{T}$. This is then added with the validity proof which when hashed with $\mathcal{C}$ and $n_1$(recieved from [[ref: holder]]) re constructs the challenge hash $\widehat{c_H}$
+Now, if $\widehat{c_H} = c_H$ then the proof is valid.
+
+The NRP is bound to the credential by the $\widehat{m_2}$ value that is present in the proof.
 
 The verification code MUST surface to the [[ref: verifier]] if any part of the
 presentation, including any NRP(s), fail cryptographic verification. The
