@@ -252,21 +252,129 @@ For each is a `primary_proof` covering the claims in the source credential calle
 the `eq_proof`, and a `ge_proof` for each of the predicate proofs sourced from
 the verifiable credential.
 
+***Generating the Challenge Hash***
+
+For this step the [[ref: holder]] follows the following steps:
+- Generate a random 592-bit number $\tilde{m_j}$ for each $j \in \mathcal{A_{\bar{r}}}$ (unrevealed attributes)
+- For each credential $C_p = (\{m_j\}, A, e, v)$ and issuer's public key $pk$:
+  - Choose random 3152-bit $r$.
+  - Take $n, S$ from $pk$ and compute:
+  $$ A' \leftarrow AS^r \mod n $$
+  $$ v' \leftarrow v - e.r $$
+  and add them to $\mathcal{C}$.
+  - Compute $e' \leftarrow e-2^{596}$.
+  - Generate random 456-bit $\tilde{e}$ and random 3748-bit number $\tilde{v}$.
+  - Hide the unrevealed attributes using:
+  $$ T \leftarrow (A')^{\tilde{e}}(\prod_{j \in \mathcal{A_{\bar{r}}}} R_j^{\tilde{m_j}})(S^{\tilde{v}})\ (mod\ n) $$
+  and add them to $\mathcal{T}$
+- Load $Z, S$ from issuer's public key
+- For each predicate $p$ where operator * is one of $\gt, \ge, \lt, \le$:
+  - Calculate $\Delta$ such that
+  $$ \Delta \leftarrow   \left\{
+  \begin{array}{ll}
+        z_j-m_j & * \equiv\ \le \\
+        z_j-m_j-1 & * \equiv\ \lt \\
+        m_j-z_j & * \equiv\ \ge \\
+        m_j-z_j-1 & * \equiv\ \gt \\
+  \end{array} 
+  \right.  $$
+
+  - Calculate $a$ such that :
+  $$ a \leftarrow \left\{
+  \begin{array}{ll}
+        -1 & * \equiv\ \le or \lt \\
+        1 & * \equiv\ \ge or \gt \\
+  \end{array} 
+  \right.  $$
+
+  - Find (by exhaustive search) $u_1, u_2, u_3, u_4$ such that:
+  $$ \Delta = (u_1)^2+(u_2)^2+(u_3)^2+(u_4)^2 $$
+
+  - Generate random 2128-bit numbers $r_1, r_2, r_3, r_4, r_{\Delta}$.
+
+  - Blind values of $\Delta$ and $u_i$ by computing:
+  $$ \{ T_i \leftarrow Z^{u_i}S^{r_i}\ (mod\ n) \}_{1 \le i \le 4} $$
+  $$ T_{\Delta} \leftarrow Z^{\Delta}S^{r_{\Delta}}\ (mod\ n) $$ 
+  and add these values to $\mathcal{C}$ in the order $T_1, T_2, T_3, T_4, T_{\Delta}$.
+
+  - Generate random 592-bit numbers $\tilde{u_1}, \tilde{u_2}, \tilde{u_3}, \tilde{u_4}$, random 672-bit numbers $\tilde{r_1}, \tilde{r_2}, \tilde{r_3}, \tilde{r_4}, \tilde{r_{\Delta}}$, and random 2787-bit $\tilde{\alpha}$.
+
+  - Compute:
+  $$ \{ \bar{T_i} \leftarrow Z^{\tilde{u_i}}S^{\tilde{r_i}}\ (mod\ n) \}_{1 \le i \le 4} $$
+  $$ \bar{T_{\Delta}} \leftarrow Z^{\tilde{m_j}}S^{a\tilde{r_{\Delta}}}\ (mod\ n) $$
+  $$ Q \leftarrow (S^{\tilde{\alpha}}) \prod_{i=1}^{4} T_i^{\tilde{u_i}}\ (mod\ n) $$
+  and add these values to $\mathcal{T}$ in order $\bar{T_1}, \bar{T_2}, \bar{T_3}, \bar{T_4}, \bar{T_{\Delta}}, Q$.
+- Finally, the [[ref: holder]] computes the Fiat-Shamir challenge hash($c_H$):
+$$ c_H \leftarrow H(\mathcal{T}, \mathcal{C}, n_1) $$
+where $n_1$ is the nonce sent by [[ref: verifier]] in proof request.
+
 Each primary `eq_proof` is generated as follows:
 
-::: todo
-
-To Do: Add algorithm for generating a `eq_proof` and the data values in the proof.
-
-:::
+- For primary credential $C_p$ compute:
+  $$e \leftarrow \tilde{e} + c_He'$$
+  $$v \leftarrow \tilde{v} + c_Hv'$$
+  $$\{ \hat{m_j} \leftarrow \tilde{m_j} + c_Hm_j \}_{j \in \mathcal{A_{\bar{r}}}}$$ 
+  where $\mathcal{A_{\bar{r}}}$ is the set of unrevealed attributes.
+- Compute $\hat{m_2} \leftarrow \tilde{m_2}+c_Hm_2\ (mod\ q)$
+- Data attributes in `eq_proof` are:
+```json
+"eq_proof": {
+  "revealed_attrs": {
+    "jti_unique_identifier": "46414468020333259158238797309781111434265856695713363124410805958145233348633"
+  },
+  "a_prime": "52825780315318905340996188008133401356826233601375100674436798295026172087388431332751168238882607201020021795967828258295811342078457860422414605408183505911891895360825745994390769724939582542658347473498091021796952186290990181881158576706521445646669342676592451422000320708168877298354804819261007033664223006892049856834172427934815827786052257552492013807885418893279908149441273603109213847535482251568996326545234910687135167595657148526602160452192374611721411569543183642580629352619161783646990187905911781524203367796090408992624211661598980626941053749241077719601278347846928693650092940416717449494816",
+  "e": "40342480172543061520030194979861449480343743039487113094246205723322643070249538229638327935935486373873622430409109409257546971244601965",
+  "v": "217871997575635857881367472262154388060800564043554848081521162883333745687724235201324121915821236796357195214089699645741515836727882126142579489701412861659136426497703162695983681701205672924385915403141611021784136285588350763399255203187442277784718461565122805239422370067600654500115262174706580098147603414365915243447789285877195068031630371954678432401446457453517813298670236942253026249413255471803997869331683293818651006043399070308083119054618677128448043841313844695654424369871669436628257531643623230026240200330490039607166147891705813033761093730859310423856156850596341547950105490585959768382544221555877471751940512766452511773683786023245283041103270102119125303027835868565240336923422734962345750992898991606841120358203160628015844345063465293475128118937815965000466081345494616126511595974927544434058100817176268040385848789013718618727873445834393897904247054897801708217939187593785671914",
+  "m": {
+    "iat_consent_timestamp": "7919242808448912829024078929834347184203169048480606699350973804205285806978474375691141504249426249676222104091995582731720654507393708298132400435805626192291975477967402460279",
+    "master_secret": "3455871040557234123393960708120725061759594951341120214330342075748561632734634451036095543889895409812764789858455375956895105746442946098665140470124325622343440794421325163223",
+    "data_controller": "16070549690575784944224634793654539357398383214512772967411296056738507137421264813779497172425030465490587794790393434847583852932544021088761347641812155158324233253206392974293",
+    "notice": "2790610958721083178459621377821800672322230987466716467063649577108407884592339521820875278264969393963213925568888672412150769438560815981777952572004955362915245795447078373509",
+    "sensitive": "13552814315985495030467505807226704038231487014593307078913973520081443107274508887651839292151852713782653522711975492131914644109941607616672243509214979259100892541150351227883",
+    "services": "14860984314279608355643170908802532226194914773406547259519961082467311361623076451869406343140860447342041426195737612897540117192702117380288330928866665314831926780606136352645",
+    "sub_subject_identifier": "11736177517163751882849070942823049196298287414132249166618760803125435466270948777194044507635346721244111946358927525083691171695431736819244809221351813271261283779276670885101",
+    "moc_method_of_collection": "10026360820367693771310999595495505533281326977349798360729122862705999157070660881611421445424239119786180921960380892002204780026072600494332540208429642332890963846523547470729",
+    "jurisdiction_data_processing": "15829143141425514118932461858094583045441924952665872659029333578019676797278419825311275014912077620757631693167948665554731430154156737419706553672424812320891308795411687679270",
+    "iss_internet_processing_uri": "6900796243066434651671715348976599009606292569990892886896520779618011026060325075822786686418461731663661832508437549373109822105600719490952253743950241384782222356411498407620",
+    "version_consent_specification": "7796257942256624260327966366702213561879098947042014532961291550019706546662478888172243088973621029223408695289700984802154645011280488167967047321149956253054269901250137513345",
+    "policy_url": "12241676508867847022708464707584814145889660003604359058532137895063826021524887759921830911553663255421852525705197991376264187781979066233701110706958983099645275940668404311601"
+  },
+  "m2": "6509130065158989037891281073557909501783443634141673890142284302459280804904096303151728187237486991775852971807701594247754409108836089746736345158069365449802597798950172729241"
+},
+```
+  - `revealed_attrs`: The mapping of revealed attributes with their values.
+  - `a_prime`: This is the value generated during init proof and challenge hash calculation
+  - `e`: The value of $e$ in the proof.
+  - `v`: The value of $v$ in the proof.
+  - `m`: The hashmap containing hidden attribute name with calculated $\hat{m_j}$ value.
+  - `m2`: The value of $\hat{m_2}$ in the proof.
 
 Each primary `ge_proof` is generated as follows:
 
-::: todo
-
-To Do: Add algorithm for generating a `ge_proof` and the data values in the proof.
-
-:::
+- For each predicate $p$ compute:
+  $$ \{ \hat{u_i} \leftarrow \tilde{u_i} + c_Hu_i \}_{1 \le i \le 4} $$
+  $$ \{ \hat{r_i} \leftarrow \tilde{r_i} + c_Hr_i \}_{1 \le i \le 4} $$
+  $$ \hat{r_{\Delta}} \leftarrow \tilde{r_{\Delta}}+c_Hr_{\Delta} $$
+  $$ \hat{\alpha} \leftarrow \tilde{\alpha} + c_H(r_{\Delta} - u_1r_1 - u_2r_2 - u_3r_3 - u_4r_4) $$
+- Data attributes in `ge_proof` are:
+```json
+ge_proofs: [
+  {
+    u,
+    r,
+    mj,
+    alpha,
+    t,
+    predicate
+  }
+]
+```
+- `u`: The hashmap containing values of $\hat{u_i}$ in the proof.
+- `r`: The hashmap containing values of $\hat{r_i}$, and $\hat{r_{\Delta}}$ in the proof.
+- `mj`: $\hat{m_j}$ of the concerned predicate obtained from the equality proof.
+- `alpha`: The value of $\hat{\alpha}$ in the proof.
+- `t`: The hashmap containing values of $\bar{T_i}$, and $\bar{T_{\Delta}}$ from the init proof.
+- `predicate`: The concerned predicate from the proof request.
 
 The `aggregated_proof` proves that the same [[ref: linked secret]] was used to
 issue all of the source verifiable credentials in the presentation.
