@@ -2330,14 +2330,28 @@ credentials and presentations. This would prevent the holder from replacing the
       <span class="token punctuation">}</span>
 </code></pre>
 <p><strong>Self Attested Attributes</strong></p>
-<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>To Do: Describe self-attested attributes data structure</p>
-</div>
+<p>This is a set any other data that <a class="term-reference" href="#term:holder">holder</a> wants to provide to the <a class="term-reference" href="#term:verifier">verifier</a> that is not signed by any issuer thus it’s attested only by the holder. This is a set of attributes that the holder is attesting to the verifier. The holder is not claiming that the data is true, only that they are attesting to it.</p>
+<pre class="language-json"><code class="language-json">      <span class="token property">"self_attested_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"consent_attrs"</span><span class="token operator">:</span> <span class="token string">"I agree to share my data with the verifier"</span>
+      <span class="token punctuation">}</span>
+</code></pre>
 <p><strong>Unrevealed Attributes</strong></p>
-<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>To Do: Describe unrevealed attributes data structure</p>
-</div>
-<p><strong>Predicatees</strong></p>
-<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>To Do: Describe predicates data structure</p>
-</div>
+<p>These are a hashmap of unrevealed attributes that the verifier requested in the presentation request, but the holder has decided not to reveal, along  with their sub proof index numbers. The <a class="term-reference" href="#term:verifier">verifier</a> can use the sub proof index numbers to retrieve the
+corresponding primary proof from the <code>proof</code> array in the presentation.</p>
+<pre class="language-json"><code class="language-json">      <span class="token property">"unrevealed_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"consent_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>      # The request attribute name from the presentation request
+          <span class="token property">"sub_proof_index"</span><span class="token operator">:</span> <span class="token number">1</span>  # The index of the source credential primary proof for the claim
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+</code></pre>
+<p><strong>Predicates</strong></p>
+<p>An entry for each predicate request from the presentation request.</p>
+<pre class="language-json"><code class="language-json">      <span class="token property">"predicates"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"consent_attrs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>      # The request predicate name from the presentation request
+          <span class="token property">"sub_proof_index"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> # The index of the source credential primary proof for the claim
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+</code></pre>
 <p><strong>Identifiers</strong></p>
 <p>The <code>identifiers</code> contains a list of the identifiers to be resolved by the
 verifier to retrieve the cryptographic material necessary to verify each of the
@@ -2428,8 +2442,7 @@ selected <a class="term-reference" href="#term:revocation-registry-entry">Revoca
 time of the <code>from</code> value or have been published by the issuer between the <code>from</code>
 and <code>to</code> values. How to determine an appropriate <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> to use is up to the holder, and their use of the capabilities of the
 relevant <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a>.</p>
-<p>::: Note</p>
-<p>When Hyperledger Indy is the <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> for the <a class="term-reference" href="#term:revocation-registry-entry">Revocation Registry Entry</a>, the state is received from Indy ledger as the
+<div id="note-9" class="notice note"><a class="notice-link" href="#note-9">NOTE</a><p>When Hyperledger Indy is the <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> for the <a class="term-reference" href="#term:revocation-registry-entry">Revocation Registry Entry</a>, the state is received from Indy ledger as the
 “deltas” (state changes) from either the initial state of the Registry or from a
 previous <a class="term-reference" href="#term:revocation-registry-entry">Revocation Registry Entry</a>. While the older Indy version of
 AnonCreds used the “deltas” representation directly, the newer AnonCreds version
@@ -2441,7 +2454,7 @@ returning the same static file given to it by the Issuer. With the Indy “delta
 approach, the [[Verifiable Data Registry (VDR)]] must be an active service
 returning an on-the-fly calculated result based on the inputs of the holder’s
 request.</p>
-<p>:::</p>
+</div>
 <p>In collecting the <code>revocation_list</code> data in the <code>rev_status_list</code>, the holder
 may discover that their credential has been revoked by the issuer. The holder
 may choose at that point to stop the presentation process. If the holder decides
@@ -2455,7 +2468,7 @@ following calculations are performed.</p>
 <p>Once the witness (<code>u</code>), the accumulator from the ledger (<code>e</code>) and the value of
 the tails file entry for the credential of interest (<code>b</code>) are known, the NRP can
 be generated as follows:</p>
-<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><p>To Do: Add more detail about the calculation of <code>C</code><sub><code>u</code></sub> and
+<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>To Do: Add more detail about the calculation of <code>C</code><sub><code>u</code></sub> and
 <code>C</code><sub><code>b</code></sub> in the following.</p>
 </div>
 <ul>
@@ -2502,7 +2515,7 @@ model:</p>
 <span class="token punctuation">}</span>
 </code></pre>
 <p>The values in the data model are:</p>
-<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><p>To Do: Enumerate each of the items in each NRP section of the presentation.</p>
+<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>To Do: Enumerate each of the items in each NRP section of the presentation.</p>
 </div>
 <ul>
 <li><code>x_list</code>&quot; is …
@@ -2855,7 +2868,7 @@ entries, up to the total number of credentials in the <a class="term-reference" 
 any time is the same: determine the (modulo) product of the primes for each
 non-revoked credential in the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a>, as described
 <a href="#creating-the-initial-revocation-registry-entry-object" >here</a>.</p>
-<div id="note-9" class="notice note"><a class="notice-link" href="#note-9">NOTE</a><p>The <a class="term-reference" href="#term:issuer">issuer</a> MUST track of the revocation status of all of the
+<div id="note-10" class="notice note"><a class="notice-link" href="#note-10">NOTE</a><p>The <a class="term-reference" href="#term:issuer">issuer</a> MUST track of the revocation status of all of the
 credentials within a <a class="term-reference" href="#term:revreg">RevReg</a> so that it can both calculate the correct
 accumulator and send to the <a class="term-reference" href="#term:vdr">VDR</a> accurate lists (<code>issued</code> and <code>revoked</code>)
 of the indices of the credentials whose status has changed since the last <a class="term-reference" href="#term:revregentry">RevRegEntry</a> was published. If the list and accumulator published to <a class="term-reference" href="#term:vdr">VDR</a> get out of
@@ -3161,17 +3174,17 @@ Procedure:
 
 </code></pre>
 <h2 id="anoncreds-conventions"><a class="toc-anchor" href="#anoncreds-conventions" >§</a> AnonCreds Conventions</h2>
-<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
+<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
 </div>
 <h2 id="iana-considerations"><a class="toc-anchor" href="#iana-considerations" >§</a> IANA Considerations</h2>
 <p>This document has no IANA actions.</p>
 <h2 id="security-considerations"><a class="toc-anchor" href="#security-considerations" >§</a> Security Considerations</h2>
 <h3 id="cryptography"><a class="toc-anchor" href="#cryptography" >§</a> Cryptography</h3>
 <h4 id="signature"><a class="toc-anchor" href="#signature" >§</a> Signature</h4>
-<div id="todo-14" class="notice todo"><a class="notice-link" href="#todo-14">TODO</a><p>Add security considerations related to CL signatures</p>
+<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><p>Add security considerations related to CL signatures</p>
 </div>
 <h4 id="revocation-accumulators"><a class="toc-anchor" href="#revocation-accumulators" >§</a> Revocation / Accumulators</h4>
-<div id="todo-15" class="notice todo"><a class="notice-link" href="#todo-15">TODO</a><p>Add security considerations related to cryptographic accumulators and AnonCreds revocation</p>
+<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><p>Add security considerations related to cryptographic accumulators and AnonCreds revocation</p>
 <ul>
 <li>issues with too small revocation registries</li>
 <li>…</li>
@@ -3198,14 +3211,14 @@ Procedure:
 <h3 id="crypto-agility"><a class="toc-anchor" href="#crypto-agility" >§</a> Crypto Agility</h3>
 <p>The underlying signature algorithm of AnonCreds is not known to be a post-quantum computing resistant. As new signature algorithms evolve for the post-quantum computing security, the underlying signature algorithm of AnonCreds shall keep privacy-preserving features such as selective disclosure and non-correlatability.</p>
 <h2 id="privacy-considerations"><a class="toc-anchor" href="#privacy-considerations" >§</a> Privacy Considerations</h2>
-<div id="todo-16" class="notice todo"><a class="notice-link" href="#todo-16">TODO</a><p>Add privacy considerations.</p>
+<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><p>Add privacy considerations.</p>
 </div>
 <h2 id="references"><a class="toc-anchor" href="#references" >§</a> References</h2>
 <h3 id="normative-references"><a class="toc-anchor" href="#normative-references" >§</a> Normative References</h3>
-<div id="todo-17" class="notice todo"><a class="notice-link" href="#todo-17">TODO</a><p>Add normative references</p>
+<div id="todo-14" class="notice todo"><a class="notice-link" href="#todo-14">TODO</a><p>Add normative references</p>
 </div>
 <h3 id="informative-references"><a class="toc-anchor" href="#informative-references" >§</a> Informative References</h3>
-<div id="todo-18" class="notice todo"><a class="notice-link" href="#todo-18">TODO</a><p>Add informative references</p>
+<div id="todo-15" class="notice todo"><a class="notice-link" href="#todo-15">TODO</a><p>Add informative references</p>
 </div>
 <h4 id="resources-on-cryptography"><a class="toc-anchor" href="#resources-on-cryptography" >§</a> Resources on cryptography</h4>
 <h5 id="sigma-protocols"><a class="toc-anchor" href="#sigma-protocols" >§</a> Sigma protocols</h5>
@@ -3228,7 +3241,7 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li>Matt Raffel - Kiva Microfiance</li>
 </ul>
 <h2 id="authors-addresses"><a class="toc-anchor" href="#authors-addresses" >§</a> Authors’ Addresses</h2>
-<div id="todo-19" class="notice todo"><a class="notice-link" href="#todo-19">TODO</a><p>Add authors’ addresses.</p>
+<div id="todo-16" class="notice todo"><a class="notice-link" href="#todo-16">TODO</a><p>Add authors’ addresses.</p>
 </div>
 
                     </article>    
