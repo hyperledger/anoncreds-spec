@@ -379,13 +379,48 @@ ge_proofs: [
 The `aggregated_proof` proves that the same [[ref: linked secret]] was used to
 issue all of the source verifiable credentials in the presentation.
 
-The `aggregated_proof` is generated as follows:
+The `aggregated_proof` structure is as follows:
 
-::: todo
+```json
+"aggregated_proof": {
+        "c_hash": "base10string",
+        "c_list": [ ["base10string"] ]
+}
+```
+Here is an example: 
+```json
+"aggregated_proof": {
+        "c_hash": "81763443376178433216866153835042672285397553441148068557996780431098922863180",
+        "c_list": [
+          [
+            2,
+            122,
+            246,
+            66,
+            85,
+            35,
+            17,
+            213,
+            1
+          ],
+          [
+            1,
+            162,
+            117,
+            246,
+            95,
+            154,
+            129,
+            32
+          ]
+        ]
+      }
+```
 
-To Do: Add algorithm for generating the aggregate proof and the data values in the proof.
+where:
 
-:::
+- `c_hash` is the fiat shamir challenge hash $c_H$,
+- `c_list` is the list of commitments $\mathcal{C}$ that we calculated during the challenge hash generation. It's size depends on the number of attributes to prove in a credential, and it is generated seperately for each credential.
 
 The `requested_proof` is the mapping from the presentation request attributes
 and predicates to the data in the presentation that satisfies the request. This
