@@ -383,6 +383,13 @@ The `aggregated_proof` structure is as follows:
 
 ```json
 "aggregated_proof": {
+        "c_hash": "base10string",
+        "c_list": [ ["base10string"] ]
+}
+```
+Here is an example: 
+```json
+"aggregated_proof": {
         "c_hash": "81763443376178433216866153835042672285397553441148068557996780431098922863180",
         "c_list": [
           [
