@@ -486,27 +486,38 @@ An entry for each group `names` request attribute from the presentation request.
 
 **Self Attested Attributes**
 
-::: todo
+This is a set any other data that [[ref: holder]] wants to provide to the [[ref: verifier]] that is not signed by any issuer thus it’s attested only by the holder. This is a set of attributes that the holder is attesting to the verifier. The holder is not claiming that the data is true, only that they are attesting to it.
 
-To Do: Describe self-attested attributes data structure
-
-:::
+```json
+      "self_attested_attrs": {
+        "consent_attrs": "I agree to share my data with the verifier"
+      }
+```
 
 **Unrevealed Attributes**
 
-::: todo
+These are a hashmap of unrevealed attributes that the verifier requested in the presentation request, but the holder has decided not to reveal, along  with their sub proof index numbers. The [[ref: verifier]] can use the sub proof index numbers to retrieve the
+corresponding primary proof from the `proof` array in the presentation.
 
-To Do: Describe unrevealed attributes data structure
+```json
+      "unrevealed_attrs": {
+        "consent_attrs": {      # The request attribute name from the presentation request
+          "sub_proof_index": 1  # The index of the source credential primary proof for the claim
+        }
+      }
+```
 
-:::
+**Predicates**
 
-**Predicatees**
+An entry for each predicate request from the presentation request.
 
-::: todo
-
-To Do: Describe predicates data structure
-
-:::
+```json
+      "predicates": {
+        "consent_attrs": {      # The request predicate name from the presentation request
+          "sub_proof_index": 1, # The index of the source credential primary proof for the claim
+        }
+      }
+```
 
 **Identifiers**
 
@@ -616,7 +627,7 @@ and `to` values. How to determine an appropriate [[ref: Revocation Registry
 Entry]] to use is up to the holder, and their use of the capabilities of the
 relevant [[ref: Verifiable Data Registry]].
 
-::: Note
+::: note
 
 When Hyperledger Indy is the [[ref: Verifiable Data Registry]] for the [[ref:
 Revocation Registry Entry]], the state is received from Indy ledger as the
