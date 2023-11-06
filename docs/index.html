@@ -2278,9 +2278,45 @@ where <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.
 </ul>
 <p>The <code>aggregated_proof</code> proves that the same <a class="term-reference" href="#term:linked-secret">linked secret</a> was used to
 issue all of the source verifiable credentials in the presentation.</p>
-<p>The <code>aggregated_proof</code> is generated as follows:</p>
-<div id="todo-7" class="notice todo"><a class="notice-link" href="#todo-7">TODO</a><p>To Do: Add algorithm for generating the aggregate proof and the data values in the proof.</p>
-</div>
+<p>The <code>aggregated_proof</code> structure is as follows:</p>
+<pre class="language-json"><code class="language-json"><span class="token property">"aggregated_proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"c_hash"</span><span class="token operator">:</span> <span class="token string">"base10string"</span><span class="token punctuation">,</span>
+        <span class="token property">"c_list"</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">[</span><span class="token string">"base10string"</span><span class="token punctuation">]</span> <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Here is an example:</p>
+<pre class="language-json"><code class="language-json"><span class="token property">"aggregated_proof"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"c_hash"</span><span class="token operator">:</span> <span class="token string">"81763443376178433216866153835042672285397553441148068557996780431098922863180"</span><span class="token punctuation">,</span>
+        <span class="token property">"c_list"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token punctuation">[</span>
+            <span class="token number">2</span><span class="token punctuation">,</span>
+            <span class="token number">122</span><span class="token punctuation">,</span>
+            <span class="token number">246</span><span class="token punctuation">,</span>
+            <span class="token number">66</span><span class="token punctuation">,</span>
+            <span class="token number">85</span><span class="token punctuation">,</span>
+            <span class="token number">35</span><span class="token punctuation">,</span>
+            <span class="token number">17</span><span class="token punctuation">,</span>
+            <span class="token number">213</span><span class="token punctuation">,</span>
+            <span class="token number">1</span>
+          <span class="token punctuation">]</span><span class="token punctuation">,</span>
+          <span class="token punctuation">[</span>
+            <span class="token number">1</span><span class="token punctuation">,</span>
+            <span class="token number">162</span><span class="token punctuation">,</span>
+            <span class="token number">117</span><span class="token punctuation">,</span>
+            <span class="token number">246</span><span class="token punctuation">,</span>
+            <span class="token number">95</span><span class="token punctuation">,</span>
+            <span class="token number">154</span><span class="token punctuation">,</span>
+            <span class="token number">129</span><span class="token punctuation">,</span>
+            <span class="token number">32</span>
+          <span class="token punctuation">]</span>
+        <span class="token punctuation">]</span>
+      <span class="token punctuation">}</span>
+</code></pre>
+<p>where:</p>
+<ul>
+<li><code>c_hash</code> is the fiat shamir challenge hash <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mi>H</mi></msub></mrow><annotation encoding="application/x-tex">c_H</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.08125em;">H</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>,</li>
+<li><code>c_list</code> is the list of commitments <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">C</mi></mrow><annotation encoding="application/x-tex">\mathcal{C}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord mathcal" style="margin-right:0.05834em;">C</span></span></span></span></span> that we calculated during the challenge hash generation. It’s size depends on the number of attributes to prove in a credential, and it is generated seperately for each credential.</li>
+</ul>
 <p>The <code>requested_proof</code> is the mapping from the presentation request attributes
 and predicates to the data in the presentation that satisfies the request. This
 is divided into five parts:</p>
@@ -2468,7 +2504,7 @@ following calculations are performed.</p>
 <p>Once the witness (<code>u</code>), the accumulator from the ledger (<code>e</code>) and the value of
 the tails file entry for the credential of interest (<code>b</code>) are known, the NRP can
 be generated as follows:</p>
-<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>To Do: Add more detail about the calculation of <code>C</code><sub><code>u</code></sub> and
+<div id="todo-7" class="notice todo"><a class="notice-link" href="#todo-7">TODO</a><p>To Do: Add more detail about the calculation of <code>C</code><sub><code>u</code></sub> and
 <code>C</code><sub><code>b</code></sub> in the following.</p>
 </div>
 <ul>
@@ -2515,7 +2551,7 @@ model:</p>
 <span class="token punctuation">}</span>
 </code></pre>
 <p>The values in the data model are:</p>
-<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>To Do: Enumerate each of the items in each NRP section of the presentation.</p>
+<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>To Do: Enumerate each of the items in each NRP section of the presentation.</p>
 </div>
 <ul>
 <li><code>x_list</code>&quot; is …
@@ -3174,17 +3210,17 @@ Procedure:
 
 </code></pre>
 <h2 id="anoncreds-conventions"><a class="toc-anchor" href="#anoncreds-conventions" >§</a> AnonCreds Conventions</h2>
-<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
+<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
 </div>
 <h2 id="iana-considerations"><a class="toc-anchor" href="#iana-considerations" >§</a> IANA Considerations</h2>
 <p>This document has no IANA actions.</p>
 <h2 id="security-considerations"><a class="toc-anchor" href="#security-considerations" >§</a> Security Considerations</h2>
 <h3 id="cryptography"><a class="toc-anchor" href="#cryptography" >§</a> Cryptography</h3>
 <h4 id="signature"><a class="toc-anchor" href="#signature" >§</a> Signature</h4>
-<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><p>Add security considerations related to CL signatures</p>
+<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>Add security considerations related to CL signatures</p>
 </div>
 <h4 id="revocation-accumulators"><a class="toc-anchor" href="#revocation-accumulators" >§</a> Revocation / Accumulators</h4>
-<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><p>Add security considerations related to cryptographic accumulators and AnonCreds revocation</p>
+<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><p>Add security considerations related to cryptographic accumulators and AnonCreds revocation</p>
 <ul>
 <li>issues with too small revocation registries</li>
 <li>…</li>
@@ -3211,14 +3247,14 @@ Procedure:
 <h3 id="crypto-agility"><a class="toc-anchor" href="#crypto-agility" >§</a> Crypto Agility</h3>
 <p>The underlying signature algorithm of AnonCreds is not known to be a post-quantum computing resistant. As new signature algorithms evolve for the post-quantum computing security, the underlying signature algorithm of AnonCreds shall keep privacy-preserving features such as selective disclosure and non-correlatability.</p>
 <h2 id="privacy-considerations"><a class="toc-anchor" href="#privacy-considerations" >§</a> Privacy Considerations</h2>
-<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><p>Add privacy considerations.</p>
+<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><p>Add privacy considerations.</p>
 </div>
 <h2 id="references"><a class="toc-anchor" href="#references" >§</a> References</h2>
 <h3 id="normative-references"><a class="toc-anchor" href="#normative-references" >§</a> Normative References</h3>
-<div id="todo-14" class="notice todo"><a class="notice-link" href="#todo-14">TODO</a><p>Add normative references</p>
+<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><p>Add normative references</p>
 </div>
 <h3 id="informative-references"><a class="toc-anchor" href="#informative-references" >§</a> Informative References</h3>
-<div id="todo-15" class="notice todo"><a class="notice-link" href="#todo-15">TODO</a><p>Add informative references</p>
+<div id="todo-14" class="notice todo"><a class="notice-link" href="#todo-14">TODO</a><p>Add informative references</p>
 </div>
 <h4 id="resources-on-cryptography"><a class="toc-anchor" href="#resources-on-cryptography" >§</a> Resources on cryptography</h4>
 <h5 id="sigma-protocols"><a class="toc-anchor" href="#sigma-protocols" >§</a> Sigma protocols</h5>
@@ -3241,7 +3277,7 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li>Matt Raffel - Kiva Microfiance</li>
 </ul>
 <h2 id="authors-addresses"><a class="toc-anchor" href="#authors-addresses" >§</a> Authors’ Addresses</h2>
-<div id="todo-16" class="notice todo"><a class="notice-link" href="#todo-16">TODO</a><p>Add authors’ addresses.</p>
+<div id="todo-15" class="notice todo"><a class="notice-link" href="#todo-15">TODO</a><p>Add authors’ addresses.</p>
 </div>
 
                     </article>    
