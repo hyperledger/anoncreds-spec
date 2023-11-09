@@ -2771,77 +2771,57 @@ Flow</a>, the <a class="term-reference" href="#term:holder">holder</a> sends the
 presentation, including any embedded NRPs, to the <a class="term-reference" href="#term:verifier">verifier</a>.</p>
 <p><a path-0="docs"path-1="dev"path-2="anoncred.pdf"href="indy-anoncreds/docs/dev/anoncred.pdf" >Link: indy-anoncreds/docs/dev/anoncred.pdf</a></p>
 <h3 id="verify-presentation"><a class="toc-anchor" href="#verify-presentation" >§</a> Verify Presentation</h3>
-<p>In step 7, 8, and 9 of the <a href="#anoncreds-presentation-data-flow" >AnonCreds Presentation Data
-Flow</a>, the Verifier collects the required
-information and verifies the verifiable presentation and accepts it if the
-signature is valid, otherwise rejects the verifiable presentation.</p>
-<p>This section covers the overall verification process of the attributes,
-predicates and link secret. Following that is a section that specifies the
-process for <a href="#verify-non-revocation-proof" >verifying the non-revocation proofs</a>
-(if any) in the presentation.</p>
-<pre class="language-rust"><code class="language-rust"><span class="token keyword">pub</span> <span class="token keyword">extern</span> <span class="token keyword">fn</span> <span class="token function-definition function">anoncreds_verifier_verify_proof</span><span class="token punctuation">(</span>command_handle<span class="token punctuation">:</span> <span class="token class-name">CommandHandle</span><span class="token punctuation">,</span>
-                                         proof_request_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
-                                         proof_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
-                                         schemas_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
-                                         credential_defs_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
-                                         rev_reg_defs_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
-                                         rev_regs_json<span class="token punctuation">:</span> <span class="token operator">*</span><span class="token keyword">const</span> c_char<span class="token punctuation">,</span>
-                                         cb<span class="token punctuation">:</span> <span class="token class-name">Option</span><span class="token operator">&lt;</span><span class="token keyword">extern</span> <span class="token keyword">fn</span><span class="token punctuation">(</span>command_handle_<span class="token punctuation">:</span> <span class="token class-name">CommandHandle</span><span class="token punctuation">,</span> err<span class="token punctuation">:</span> <span class="token class-name">ErrorCode</span><span class="token punctuation">,</span>
-                                                              valid<span class="token punctuation">:</span> <span class="token keyword">bool</span><span class="token punctuation">)</span><span class="token operator">></span><span class="token punctuation">)</span> <span class="token punctuation">-></span> <span class="token class-name">ErrorCode</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
-</code></pre>
-<ul>
-<li>
-<p><code>proof_request_json</code>: Proof request in JSON format.</p>
-</li>
-<li>
-<p><code>proof_json</code>: Proof for the given proof request.</p>
-</li>
-<li>
-<p><code>schemas_json</code>: Collection of all schemas participating in the proof.</p>
-</li>
-<li>
-<p><code>credential_defs_json</code>: Collection of all credential definitions participating in the proof.</p>
-</li>
-<li>
-<p><code>rev_reg_defs_json</code>: Collection of all revocation registry definitions participating in the proof.</p>
-<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-    <span class="token property">"rev_reg_def1_id"</span><span class="token operator">:</span> &lt;rev_reg_def1><span class="token punctuation">,</span>
-    <span class="token property">"rev_reg_def2_id"</span><span class="token operator">:</span> &lt;rev_reg_def2><span class="token punctuation">,</span>
-    <span class="token property">"rev_reg_def3_id"</span><span class="token operator">:</span> &lt;rev_reg_def3><span class="token punctuation">,</span>
-<span class="token punctuation">}</span>
-</code></pre>
-</li>
-</ul>
-<ul>
-<li><code>rev_regs_json</code>: Collection of all revocation registries participating in the proof.<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
-    <span class="token property">"rev_reg_def1_id"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-        <span class="token property">"timestamp1"</span><span class="token operator">:</span> &lt;rev_reg1><span class="token punctuation">,</span>
-        <span class="token property">"timestamp2"</span><span class="token operator">:</span> &lt;rev_reg2><span class="token punctuation">,</span>
-    <span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token property">"rev_reg_def2_id"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-        <span class="token property">"timestamp3"</span><span class="token operator">:</span> &lt;rev_reg3>
-    <span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token property">"rev_reg_def3_id"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-        <span class="token property">"timestamp4"</span><span class="token operator">:</span> &lt;rev_reg4>
-    <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span>
-</code></pre>
-</li>
-</ul>
-<ul>
-<li><code>cb</code>: Callback that takes command result as parameter.</li>
-<li><code>Returns</code>
-<ul>
-<li><code>valid</code>: true - if signature is valid, false - otherwise</li>
-</ul>
-</li>
-</ul>
+<p>In step 8, 9, and 10 of the <a href="#anoncreds-presentation-data-flow" >AnonCreds Presentation Data
+Flow</a>, the <a class="term-reference" href="#term:verifier">Verifier</a> collects the required
+information necessary to verify the verifiable presentation, attempts to verify
+the proofs that make up the presentation and returns either a <code>true</code> if successful,
+and a <code>false</code> if any of the proofs fail, or if the presentation does not meet
+the presentation request.</p>
+<p>In the <a href="#generate-presentation" >previous section on presentation generation</a>,
+the contents of the presentation is described. In verifying the presentation,
+each proof is extracted from the presentation and verified. The following
+sub-sections cover the verification of the proofs related to the source
+credentials (the <code>eq_proof</code>, any <code>ge_proof</code>s, and the <code>aggregate_proof</code>), and
+any non-revocation proofs in the presentation.</p>
+<p>For each source credential in the presentation, the <a class="term-reference" href="#term:verifier">Verifier</a> must
+retrieve (possibly from its cache, otherwise from the <a class="term-reference" href="#term:vdr">VDR</a>) the
+published <a class="term-reference" href="#term:schema">Schema</a> and <a class="term-reference" href="#term:credential-definition">Credential Definition</a> based on the
+<code>schema_id</code> and <code>cred_def_id</code> values from the <code>identifiers</code> data item. For the
+non-revocation proof, additional issuer published data must be collected, as
+described below.</p>
+<p>While in this section we mostly focus on the verification of the proofs in the
+presentation, there are other data elements included, such as the revealed
+attributes, self-attested attributes, and the <span id="term:presentation-request">Presentation Request</span> for
+which the presentation was generated. Some of these values contribute to the
+verification process, as noted below. Finally, an important part of the
+verification process is <strong>not</strong> carried out in AnonCreds v1.0 and must be
+performed by the calling <a class="term-reference" href="#term:verifier">verifier</a>. We highlight that as well.</p>
+<h4 id="verify-eq_proof"><a class="toc-anchor" href="#verify-eq_proof" >§</a> Verify <code>eq_proof</code></h4>
+<p>An AnoncCreds <code>eq_proof</code> is the proof of the signature over the entire source credential.
+As noted, there is one <code>eq_proof</code> for each source credential in the
+presentation. The cryptographic processing that verifies the signature over the
+encoded data values is described here.</p>
+<div id="todo-7" class="notice todo"><a class="notice-link" href="#todo-7">TODO</a><p>Add the eq_proof verification process</p>
+</div>
+<h4 id="verify-ge_proof"><a class="toc-anchor" href="#verify-ge_proof" >§</a> Verify <code>ge_proof</code></h4>
+<p>An AnoncCreds <code>ge_proof</code> is the proof of the predicates (if any) derived from the source credential.
+As noted, there is one <code>ge_proof</code> for each predicate from each source credential in the
+presentation. The cryptographic processing that verifies the predicate is described here.</p>
+<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>Add the ge_proof verification process</p>
+</div>
+<h4 id="verify-aggregate_proof"><a class="toc-anchor" href="#verify-aggregate_proof" >§</a> Verify <code>aggregate_proof</code></h4>
+<p>The AnoncCreds <code>aggregate_proof</code> is the proof that the blinded link secrets in
+each of the source credentials were derived from the same link secret, binding
+credentials to that one linked secret. The cryptographic processing that verifies
+the predicate is described here.</p>
+<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>Add the aggregate_proof verification process</p>
+</div>
 <h4 id="verify-non-revocation-proof"><a class="toc-anchor" href="#verify-non-revocation-proof" >§</a> Verify Non-Revocation Proof</h4>
 <p>If the presentation includes one or more Non-Revocation Proofs (NRPs) the
 <a class="term-reference" href="#term:verifier">verifier</a> must also extract from the verifiable presentation the NRPs
-and process each proof. If any of the NRPs cannot be verified because one
+and process each of them. If any of the NRPs cannot be verified because one
 or more of the attributes/predicates came from a revoked credential, the
-overall status of the presentation is rejected – not verifiable. The following
+overall status of the presentation is rejected as not verifiable. The following
 outlines the process for verifying an NRP.</p>
 <p>The <a class="term-reference" href="#term:verifier">verifier</a> begins by extracting from the section of the presentation
 for a given revocable credential the <code>non_revoc_proof</code> and <code>identifiers</code> data
@@ -2979,6 +2959,28 @@ NRP was received. However, if the credential used in the generation of the
 proof is revocable, and the <a class="term-reference" href="#term:holder">holder</a> did not provide the NRP, the
 verification code SHOULD surface to the <a class="term-reference" href="#term:verifier">verifier</a> that the presentation
 failed cryptographic verification.</p>
+<h4 id="other-verification"><a class="toc-anchor" href="#other-verification" >§</a> Other Verification</h4>
+<p>The AnonCreds verification code checks some additional non-cryptographic
+elements of the presentation.</p>
+<ul>
+<li>That all of the requested attributes to be revealed are covered as either
+<code>revealed</code> or <code>unrevealed</code> attributes. Any missing attributes trigger a <code>false</code> verification.</li>
+<li>That the non-revocation proofs (NRPs) meet the revocation interval requirements of the
+<a class="term-reference" href="#term:presentation-request">Presentation Request</a>. Note that the acceptable revocation interval may (and usually is)
+larger than the <code>from</code> and <code>to</code> values in the <a class="term-reference" href="#term:presentation-request">Presentation Request</a> as described <a href="#request-non-revocation-proofs" >here</a>.</li>
+</ul>
+<h4 id="encoding-not-verified"><a class="toc-anchor" href="#encoding-not-verified" >§</a> Encoding Not Verified</h4>
+<p><a class="term-reference" href="#term:verifiers">Verifiers</a> using AnonCreds 1.0 <strong>MUST</strong> verify that revealed attributes
+presented by the <a class="term-reference" href="#term:holder">Holder</a> encode to the values signed by the <a class="term-reference" href="#term:issuer">Issuer</a>. AIf not done, a malicious <a class="term-reference" href="#term:holder">Holder</a> could successfully
+substitute a different revealed attribute than what the issuer encoded and
+signed.</p>
+<p>As noted in the <a href="#encoding-attribute-data" >issuance section of this
+specification</a> the encoding of raw attribute data to
+the integers that are actually signed by the <a class="term-reference" href="#term:issuer">Issuer</a> is defined and
+handled by the <a class="term-reference" href="#term:issuer">Issuer</a>, and is not defined in this specification, nor
+performed by the implementation. As such, the verification of the encoding is
+likewise delegated to the <a class="term-reference" href="#term:verifier">Verifier</a>, enabling the risk to the verifier
+outlined above.</p>
 <h2 id="anoncreds-revocation-data-flow"><a class="toc-anchor" href="#anoncreds-revocation-data-flow" >§</a> AnonCreds Revocation Data Flow</h2>
 <p>AnonCreds includes a mechanism that supports the revocation of verifiable
 credentials. This mechanism includes:</p>
@@ -3379,17 +3381,17 @@ Procedure:
 
 </code></pre>
 <h2 id="anoncreds-conventions"><a class="toc-anchor" href="#anoncreds-conventions" >§</a> AnonCreds Conventions</h2>
-<div id="todo-7" class="notice todo"><a class="notice-link" href="#todo-7">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
+<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
 </div>
 <h2 id="iana-considerations"><a class="toc-anchor" href="#iana-considerations" >§</a> IANA Considerations</h2>
 <p>This document has no IANA actions.</p>
 <h2 id="security-considerations"><a class="toc-anchor" href="#security-considerations" >§</a> Security Considerations</h2>
 <h3 id="cryptography"><a class="toc-anchor" href="#cryptography" >§</a> Cryptography</h3>
 <h4 id="signature"><a class="toc-anchor" href="#signature" >§</a> Signature</h4>
-<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>Add security considerations related to CL signatures</p>
+<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><p>Add security considerations related to CL signatures</p>
 </div>
 <h4 id="revocation-accumulators"><a class="toc-anchor" href="#revocation-accumulators" >§</a> Revocation / Accumulators</h4>
-<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>Add security considerations related to cryptographic accumulators and AnonCreds revocation</p>
+<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><p>Add security considerations related to cryptographic accumulators and AnonCreds revocation</p>
 <ul>
 <li>issues with too small revocation registries</li>
 <li>…</li>
@@ -3416,14 +3418,14 @@ Procedure:
 <h3 id="crypto-agility"><a class="toc-anchor" href="#crypto-agility" >§</a> Crypto Agility</h3>
 <p>The underlying signature algorithm of AnonCreds is not known to be a post-quantum computing resistant. As new signature algorithms evolve for the post-quantum computing security, the underlying signature algorithm of AnonCreds shall keep privacy-preserving features such as selective disclosure and non-correlatability.</p>
 <h2 id="privacy-considerations"><a class="toc-anchor" href="#privacy-considerations" >§</a> Privacy Considerations</h2>
-<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>Add privacy considerations.</p>
+<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><p>Add privacy considerations.</p>
 </div>
 <h2 id="references"><a class="toc-anchor" href="#references" >§</a> References</h2>
 <h3 id="normative-references"><a class="toc-anchor" href="#normative-references" >§</a> Normative References</h3>
-<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><p>Add normative references</p>
+<div id="todo-14" class="notice todo"><a class="notice-link" href="#todo-14">TODO</a><p>Add normative references</p>
 </div>
 <h3 id="informative-references"><a class="toc-anchor" href="#informative-references" >§</a> Informative References</h3>
-<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><p>Add informative references</p>
+<div id="todo-15" class="notice todo"><a class="notice-link" href="#todo-15">TODO</a><p>Add informative references</p>
 </div>
 <h4 id="resources-on-cryptography"><a class="toc-anchor" href="#resources-on-cryptography" >§</a> Resources on cryptography</h4>
 <h5 id="sigma-protocols"><a class="toc-anchor" href="#sigma-protocols" >§</a> Sigma protocols</h5>
@@ -3446,7 +3448,7 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li>Matt Raffel - Kiva Microfiance</li>
 </ul>
 <h2 id="authors-addresses"><a class="toc-anchor" href="#authors-addresses" >§</a> Authors’ Addresses</h2>
-<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><p>Add authors’ addresses.</p>
+<div id="todo-16" class="notice todo"><a class="notice-link" href="#todo-16">TODO</a><p>Add authors’ addresses.</p>
 </div>
 
                     </article>    
@@ -3544,7 +3546,12 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 </li>
 <li><a href="#verify-presentation" >Verify Presentation</a>
 <ul>
+<li><a href="#verify-eq_proof" >Verify <code>eq_proof</code></a></li>
+<li><a href="#verify-ge_proof" >Verify <code>ge_proof</code></a></li>
+<li><a href="#verify-aggregate_proof" >Verify <code>aggregate_proof</code></a></li>
 <li><a href="#verify-non-revocation-proof" >Verify Non-Revocation Proof</a></li>
+<li><a href="#other-verification" >Other Verification</a></li>
+<li><a href="#encoding-not-verified" >Encoding Not Verified</a></li>
 </ul>
 </li>
 </ul>
