@@ -480,6 +480,31 @@ generated for the <a class="term-reference" href="#term:credential-definition">C
   <span class="token property">"r_key"</span><span class="token operator">:</span> <span class="token null keyword">null</span>
 <span class="token punctuation">}</span>
 </code></pre>
+<div id="warning-1" class="notice warning"><a class="notice-link" href="#warning-1">WARNING</a><p>A weakness in this specification is that the <a class="term-reference" href="#term:issuer">Issuer</a> does not provide a
+key correctness proof to demonstrate that the generated private key is
+sufficiently strong enough to meet the unlinkability guarantees of AnonCreds.</p>
+<p>The proof should demonstrate that:</p>
+<ul>
+<li><code>p</code> and <code>q</code> are both prime numbers</li>
+<li><code>p</code> and <code>q</code> are not equal</li>
+<li><code>p</code> and <code>q</code> are the same, sufficiently large, size
+<ul>
+<li>For example, using two values both 1024 bits long is sufficient, whereas
+using one value 2040 bits long and the other 8 bits long is not.</li>
+</ul>
+</li>
+</ul>
+<p>The <a class="term-reference" href="#term:issuer">Issuer</a> <strong>SHOULD</strong> provide a published key correctness proof based
+on the approach described in <a path-0="www.brics.dk"path-1="RS"path-2="98"path-3="29"path-4="BRICS-RS-98-29.pdf"href="https://www.brics.dk/RS/98/29/BRICS-RS-98-29.pdf" >Jan Camenisch and Markus Michels. Proving in
+zero-knowledge that a number is the product of two safe primes</a> (pages 12-13).
+In a future version of AnonCreds, the additional key correctness proof could be
+published separately or added to the <a class="term-reference" href="#term:credential-definition">Credential Definition</a> prior to
+publication. In the meantime, <a class="term-reference" href="#term:issuers">Issuers</a> in existing ecosystems can share
+such a proof with their ecosystem co-participants in an ad hoc manner.</p>
+<p>The lack of such a published key correctness proof allows a malicious <a class="term-reference" href="#term:issuer">Issuer</a> to deliberately generate a private key that lacks the requirements
+listed above, enabling the potential of a brute force attack that breaks the
+unlinkability guarantee of AnonCreds.</p>
+</div>
 <p>The <a class="term-reference" href="#term:credential-definition">Credential Definition</a> has the following format (based on this <a path-0="indyscan.io"path-1="tx"path-2="SOVRIN_MAINNET"path-3="domain"path-4="99654"href="https://indyscan.io/tx/SOVRIN_MAINNET/domain/99654" >example
 Credential Definition</a> on the Sovrin
 MainNet):</p>
