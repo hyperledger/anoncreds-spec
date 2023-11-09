@@ -198,6 +198,37 @@ The [[ref: Private Credential Definition]] produced by the generation process ha
 }
 ```
 
+::: warning
+
+A weakness in this specification is that the [[ref: Issuer]] does not provide a
+key correctness proof to demonstrate that the generated private key is
+sufficiently strong enough to meet the unlinkability guarantees of AnonCreds.
+
+The proof should demonstrate that:
+
+- `p` and `q` are both prime numbers
+- `p` and `q` are not equal
+- `p` and `q` are the same, sufficiently large, size
+  - For example, using two values both 1024 bits long is sufficient, whereas
+  using one value 2040 bits long and the other 8 bits long is not.
+
+The [[ref: Issuer]] **SHOULD** provide a published key correctness proof based
+on the approach described in [Jan Camenisch and Markus Michels. Proving in
+zero-knowledge that a number is the product of two safe primes] (pages 12-13).
+In a future version of AnonCreds, the additional key correctness proof could be
+published separately or added to the [[ref: Credential Definition]] prior to
+publication. In the meantime, [[ref: Issuers]] in existing ecosystems can share
+such a proof with their ecosystem co-participants in an ad hoc manner.
+
+[Jan Camenisch and Markus Michels. Proving in zero-knowledge that a number is the product of two safe primes]: https://www.brics.dk/RS/98/29/BRICS-RS-98-29.pdf
+
+The lack of such a published key correctness proof allows a malicious [[ref:
+Issuer]] to deliberately generate a private key that lacks the requirements
+listed above, enabling the potential of a brute force attack that breaks the
+unlinkability guarantee of AnonCreds.
+
+:::
+
 The [[ref: Credential Definition]] has the following format (based on this [example
 Credential Definition](https://indyscan.io/tx/SOVRIN_MAINNET/domain/99654) on the Sovrin
 MainNet):
