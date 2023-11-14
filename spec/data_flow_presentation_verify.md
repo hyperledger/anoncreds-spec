@@ -105,7 +105,7 @@ $$\widehat{T_6} \leftarrow  D^{\widehat{r''}}\cdot g^{-\widehat{m'}} \widetilde{
 $$\widehat{T_7} \leftarrow \left(\frac{e(pk\cdot\mathcal{G},\mathcal{S})}{e(g,g')}\right)^{c_H}\cdot e(pk\cdot \mathcal{G},\widehat{h})^{\widehat{r''}}\cdot e(\widetilde{h},\widehat{h})^{-\widehat{m'}}\cdot e(\widetilde{h},\mathcal{S})^{\widehat{r}}$$
 $$\widehat{T_8} \leftarrow \left(\frac{e(\mathcal{G},u)}{e(g,\mathcal{U})}\right)^{c_H}\cdot e(\widetilde{h},u)^{\widehat{r}}\cdot e(1/g,\widehat{h})^{\widehat{r'''}}$$
 
-Then all these values are added to $\widehat{T}$. This is then added with the validity proof which when hashed with $\mathcal{C}$ and $n_1$(recieved from [[ref: holder]]) re constructs the challenge hash $\widehat{c_H}$.
+Then all these values are added to $\widehat{T}$. This is then added with the validity proof which when hashed with $\mathcal{C}$ and $n_1$(received from [[ref: holder]]) re constructs the challenge hash $\widehat{c_H}$.
 If $\widehat{c_H} = c_H$, then the proof is valid.
 
 The NRP is bound to the primary credential by the $\widehat{m_2}$ value that is presented in both proofs.
