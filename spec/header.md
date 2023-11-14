@@ -10,6 +10,7 @@ AnonCreds Specification
 **Editors:**
 
 - [Stephen Curran](https://github.com/swcurran)
+- [Aritra Bhaduri](https://github.com/aritrocoder)
 - Artur Philipp - Technische Universität Berlin, IDunion
 - Hakan Yildiz - Technische Universität Berlin, IDunion
 - Sam Curren
