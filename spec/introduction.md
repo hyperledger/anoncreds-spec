@@ -7,10 +7,10 @@ AnonCreds ZKP verifiable credentials provide capabilities that many see as impor
 - Fully defined data models for all of the objects in the flows, including verifiable credentials, presentation requests and presentations sourced from multiple credentials.
 - Fully defined applications of cryptographic primitives.
 - The use of a Blind Signature scheme in the issuance process to enhance the privacy protections available to the holder recieving the credential, including:
-  - Only the holder learns the final credential signature, the issuer only learns a blinded version which the holder can unblind.
-  - The issuer can sign messages blindly, never learning their value, while still being able to guarantee properties of them such as the holder knows the value of the message being signed. This is used for the link secret, which the holder commits to during the issuance, the issuer blindly signs this message along with the rest of the credential attributes and then the holder removes the blinding to get a signature over the credential attributes including the unblinded link secret value.
+  - Only the holder learns the final credential signature, the issuer only learns a blinded version which only the holder can unblind.
+  - The issuer can sign messages blindly, never learning their value, while still being able to guarantee that the holder knows the value of the message being signed. This is used for the link secret, which the holder commits to during the issuance, the issuer blindly signs this message along with the rest of the credential attributes and then the holder removes the blinding to get a signature over the credential attributes including the unblinded link secret value.
 - The use of Zero Knowledge Proofs (ZKPs) in the verifiable presentation process to enhance the privacy protections available to the holder in presenting data to verifiers, including:
-  - Blinding issuer signatures to prevent correlation based on those signatures.
+  - Proving that certain values are part of a signed credential without revealing them including: credential signature, link secret and any attributes a holder does not wish to reveal. This helps prevent correlation based on these values.
   - The use of unrevealed identifiers for holder binding to prevent correlation based on such identifiers.
   - The use of predicate proofs to reduce the sharing of PII and potentially correlating data, especially dates (birth, credential issuance/expiry, etc.).
   - A revocation scheme that proves a presentation is based on credentials that have not been revoked by the issuers without revealing correlatable revocation identifiers.
