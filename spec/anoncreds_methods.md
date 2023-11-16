@@ -28,13 +28,25 @@ AnonCreds Resolver is possible, as is a Universal AnonCreds Registrar.
 
 ### AnonCreds Identifiers
 
-AnonCreds identifiers SHOULD be a Uniform Resource Identifier (URI)
-conformant with [RFC3986](https://www.w3.org/TR/did-core/#bib-rfc3986), although
+AnonCreds identifiers MUST be a Uniform Resource Identifier (URI)
+conformant with [RFC3986](https://www.rfc-editor.org/rfc/rfc3986), although
 one notable exception is permitted. The exception is that for backwards
 compatibility, the AnonCreds identifiers used in the early (pre
 `did:indy`) open source Hyperledger Indy AnonCreds implementation are permitted.
 In the [AnonCreds Method Registry](#anoncreds-method-registry),
 this is the [Hyperledger Indy Legacy AnonCreds Method](https://hyperledger.github.io/anoncreds-methods-registry/#hyperledger-indy-legacy-anoncreds-method).
+
+### Issuer Identifiers
+
+All AnonCreds objects that are published to a [[ref: Verifiable Data Registry]] ([[ref: Schema]], [[ref: Credential Definition]], [[ref: Revocation Registry Definition]], and [[ref: Revocation Status List]]) contain an `issuerId` reference. This identifier references the creator ([[ref: issuer]]) of the specific AnonCreds object.
+
+AnonCreds identifiers MUST be a Uniform Resource Identifier (URI)
+conformant with [RFC3986](https://www.rfc-editor.org/rfc/rfc3986), although
+one notable exception is permitted. The exception is that for backwards
+compatibility, the Indy DIDs used in the early (pre `did:indy`) open source
+Hyperledger Indy implementation are permitted.
+
+An AnonCreds object issuer identifier MAY be publicly resolvable. AnonCreds methods MUST define the format of the issuer identifier, and MUST verify that the publisher of the AnonCreds object controls the issuer identifier before publishing the object.
 
 ### Revocation Support
 
