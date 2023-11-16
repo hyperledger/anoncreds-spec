@@ -120,7 +120,6 @@ Definition]].
 
 In addition, the [[ref: holder]] also requires access to their [[ref: link
 secret]].
-In addition, the [[ref: holder]] also requires access to their [[ref: link secret]].
 
 The nonce of the [[ref: Credential Offer]] is used to generate the proof of correctness
 for blinded credential secrets, where it is hashed with the blinded secrets to
