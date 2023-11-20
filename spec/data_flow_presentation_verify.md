@@ -1,67 +1,79 @@
 ### Verify Presentation
 
-In step 7, 8, and 9 of the [AnonCreds Presentation Data
-Flow](#anoncreds-presentation-data-flow), the Verifier collects the required
-information and verifies the verifiable presentation and accepts it if the
-signature is valid, otherwise rejects the verifiable presentation.
+In step 8, 9, and 10 of the [AnonCreds Presentation Data
+Flow](#anoncreds-presentation-data-flow), the [[ref: Verifier]] collects the required
+information necessary to verify the verifiable presentation, attempts to verify
+the proofs that make up the presentation and returns either a `true` if successful,
+and a `false` if any of the proofs fail, or if the presentation does not meet
+the presentation request.
 
-This section covers the overall verification process of the attributes,
-predicates and link secret. Following that is a section that specifies the
-process for [verifying the non-revocation proofs](#verify-non-revocation-proof)
-(if any) in the presentation.
+In the [previous section on presentation generation](#generate-presentation),
+the contents of the presentation is described. In verifying the presentation,
+each proof is extracted from the presentation and verified. The following
+sub-sections cover the verification of the proofs related to the source
+credentials (the `eq_proof`, any `ge_proof`s, and the `aggregate_proof`), and
+any non-revocation proofs in the presentation.
 
-```rust
-pub extern fn anoncreds_verifier_verify_proof(command_handle: CommandHandle,
-                                         proof_request_json: *const c_char,
-                                         proof_json: *const c_char,
-                                         schemas_json: *const c_char,
-                                         credential_defs_json: *const c_char,
-                                         rev_reg_defs_json: *const c_char,
-                                         rev_regs_json: *const c_char,
-                                         cb: Option<extern fn(command_handle_: CommandHandle, err: ErrorCode,
-                                                              valid: bool)>) -> ErrorCode {}
-```
+For each source credential in the presentation, the [[ref: Verifier]] must
+retrieve (possibly from its cache, otherwise from the [[ref: VDR]]) the
+published [[ref: Schema]] and [[ref: Credential Definition]] based on the
+`schema_id` and `cred_def_id` values from the `identifiers` data item. For the
+non-revocation proof, additional issuer published data must be collected, as
+described below.
 
-* `proof_request_json`: Proof request in JSON format.
-* `proof_json`: Proof for the given proof request.
-* `schemas_json`: Collection of all schemas participating in the proof.
-* `credential_defs_json`: Collection of all credential definitions participating in the proof.
-* `rev_reg_defs_json`: Collection of all revocation registry definitions participating in the proof.
+While in this section we mostly focus on the verification of the proofs in the
+presentation, there are other data elements included, such as the revealed
+attributes, self-attested attributes, and the [[def: Presentation Request]] for
+which the presentation was generated. Some of these values contribute to the
+verification process, as noted below. Finally, an important part of the
+verification process is **not** carried out in AnonCreds v1.0 and must be
+performed by the calling [[ref: verifier]]. We highlight that as well.
 
-  ```json
-  {
-      "rev_reg_def1_id": <rev_reg_def1>,
-      "rev_reg_def2_id": <rev_reg_def2>,
-      "rev_reg_def3_id": <rev_reg_def3>,
-  }
-  ```
+#### Verify `eq_proof`
 
-- `rev_regs_json`: Collection of all revocation registries participating in the proof.
-  ```json
-  {
-      "rev_reg_def1_id": {
-          "timestamp1": <rev_reg1>,
-          "timestamp2": <rev_reg2>,
-      },
-      "rev_reg_def2_id": {
-          "timestamp3": <rev_reg3>
-      },
-      "rev_reg_def3_id": {
-          "timestamp4": <rev_reg4>
-      },
-  }
-  ```
-* `cb`: Callback that takes command result as parameter.
-* `Returns`
-  * `valid`: true - if signature is valid, false - otherwise
+An AnoncCreds `eq_proof` is the proof of the signature over the entire source credential.
+As noted, there is one `eq_proof` for each source credential in the
+presentation. The cryptographic processing that verifies the signature over the
+encoded data values is described here.
+
+::: todo
+
+Add the eq_proof verification process
+
+:::
+
+#### Verify `ge_proof`
+
+An AnoncCreds `ge_proof` is the proof of the predicates (if any) derived from the source credential.
+As noted, there is one `ge_proof` for each predicate from each source credential in the
+presentation. The cryptographic processing that verifies the predicate is described here.
+
+::: todo
+
+Add the ge_proof verification process
+
+:::
+
+#### Verify `aggregate_proof`
+
+The AnoncCreds `aggregate_proof` is the proof that the blinded link secrets in
+each of the source credentials were derived from the same link secret, binding
+credentials to that one linked secret. The cryptographic processing that verifies
+the predicate is described here.
+
+::: todo
+
+Add the aggregate_proof verification process
+
+:::
 
 #### Verify Non-Revocation Proof
 
 If the presentation includes one or more Non-Revocation Proofs (NRPs) the
 [[ref: verifier]] must also extract from the verifiable presentation the NRPs
-and process each proof. If any of the NRPs cannot be verified because one
+and process each of them. If any of the NRPs cannot be verified because one
 or more of the attributes/predicates came from a revoked credential, the
-overall status of the presentation is rejected -- not verifiable. The following
+overall status of the presentation is rejected as not verifiable. The following
 outlines the process for verifying an NRP.
 
 The [[ref: verifier]] begins by extracting from the section of the presentation
@@ -81,7 +93,7 @@ the presentation for the NRP being processed, plus the accumulator from
 appropriate [[ref: RevRegEntry]], the following steps are carried out to verify
 the NRP.
 
-Calculation for NRP: 
+Calculation for NRP:
 
 $$\widehat{T_1} \leftarrow E^{c_H}\cdot h^{\widehat{\rho}} \cdot \widetilde{h}^{\widehat{o}} $$
 $$\widehat{T_2} \leftarrow E^{\widehat{c}}\cdot h^{-\widehat{m}}\cdot\widetilde{h}^{-\widehat{t}}$$
@@ -110,3 +122,30 @@ NRP was received. However, if the credential used in the generation of the
 proof is revocable, and the [[ref: holder]] did not provide the NRP, the
 verification code SHOULD surface to the [[ref: verifier]] that the presentation
 failed cryptographic verification.
+
+#### Other Verification
+
+The AnonCreds verification code checks some additional non-cryptographic
+elements of the presentation.
+
+- That all of the requested attributes to be revealed are covered as either
+  `revealed` or `unrevealed` attributes. Any missing attributes trigger a `false` verification.
+- That the non-revocation proofs (NRPs) meet the revocation interval requirements of the
+  [[ref: Presentation Request]]. Note that the acceptable revocation interval may (and usually is)
+  larger than the `from` and `to` values in the [[ref: Presentation Request]] as described [here](#request-non-revocation-proofs).
+
+#### Encoding Not Verified
+
+[[ref: Verifiers]] using AnonCreds 1.0 **MUST** verify that revealed attributes
+presented by the [[ref: Holder]] encode to the values signed by the [[ref:
+Issuer]]. AIf not done, a malicious [[ref: Holder]] could successfully
+substitute a different revealed attribute than what the issuer encoded and
+signed.
+
+As noted in the [issuance section of this
+specification](#encoding-attribute-data) the encoding of raw attribute data to
+the integers that are actually signed by the [[ref: Issuer]] is defined and
+handled by the [[ref: Issuer]], and is not defined in this specification, nor
+performed by the implementation. As such, the verification of the encoding is
+likewise delegated to the [[ref: Verifier]], enabling the risk to the verifier
+outlined above.
