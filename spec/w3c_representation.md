@@ -328,11 +328,13 @@ Example AnonCreds W3C formatted presentation:
       },
       "credentialSubject":{
         "firstName":"Alice",
-        "age":{
-          "type":"AnonCredsPredicate",
-          "p_type":">=",
-          "p_value":18
-        }
+        "age":[
+          {
+            "type":"AnonCredsPredicate",
+            "p_type":">=",
+            "p_value":18
+          }
+        ]
       },
       "issuanceDate":"2023-11-15T10:59:48.036203Z",
       "issuer":"issuer:id/path=bar",
@@ -429,21 +431,26 @@ kinds of values:
             ...
         }
     ```
-* object - corresponds to a requested predicate resolved by presentation without revealing an exact value 
+* array of objects - corresponds to a requested predicates resolved by presentation without revealing an exact value 
+    * The value is an array as multiple predicates can be requested over the same attributed  
     ```
         "credentialSubject":{
             ...
-            "age":{
-                "type":"AnonCredsPredicate",
-                "p_type":">=",
-                "p_value":18
-            }
+            "age":[
+                {
+                  "type":"AnonCredsPredicate",
+                  "p_type":">=",
+                  "p_value":18
+                }
+            ]
             ...
         }
     ```
-    > The defined [@context](#context) includes the definition for the `AnonCredsPredicate` type describing the format of the resolved predicate
+    * A predicate object consists of the following data:
+      * `type` - `AnonCredsPredicate` type defined in the scope of [@context](#context) and describes the format of the resolved predicate
+      * `p_type` - type of the predicate: [same as in request](./data_flow_presentation_create_request.md)
+      * `p_value` - value of the predicate: [same as in request](./data_flow_presentation_create_request.md)
   
-
 ##### Proof (Signature)
 
 In the case of W3C AnonCreds presentations, the `proof` attribute for each verifiable credential must be an object of 
