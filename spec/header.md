@@ -14,6 +14,7 @@ AnonCreds Specification
 - Hakan Yildiz - Technische Universität Berlin, IDunion
 - Sam Curren
 - Victor Martinez Jurado
+- [Aritra Bhaduri](https://github.com/aritrocoder)
 
 <!-- -->
 
