@@ -198,6 +198,37 @@ The [[ref: Private Credential Definition]] produced by the generation process ha
 }
 ```
 
+::: warning
+
+A weakness in this specification is that the [[ref: Issuer]] does not provide a
+key correctness proof to demonstrate that the generated private key is
+sufficiently strong enough to meet the unlinkability guarantees of AnonCreds.
+
+The proof should demonstrate that:
+
+- `p` and `q` are both prime numbers
+- `p` and `q` are not equal
+- `p` and `q` are the same, sufficiently large, size
+  - For example, using two values both 1024 bits long is sufficient, whereas
+  using one value 2040 bits long and the other 8 bits long is not.
+
+The [[ref: Issuer]] **SHOULD** provide a published key correctness proof based
+on the approach described in [Jan Camenisch and Markus Michels. Proving in
+zero-knowledge that a number is the product of two safe primes] (pages 12-13).
+In a future version of AnonCreds, the additional key correctness proof could be
+published separately or added to the [[ref: Credential Definition]] prior to
+publication. In the meantime, [[ref: Issuers]] in existing ecosystems can share
+such a proof with their ecosystem co-participants in an ad hoc manner.
+
+[Jan Camenisch and Markus Michels. Proving in zero-knowledge that a number is the product of two safe primes]: https://www.brics.dk/RS/98/29/BRICS-RS-98-29.pdf
+
+The lack of such a published key correctness proof allows a malicious [[ref:
+Issuer]] to deliberately generate a private key that lacks the requirements
+listed above, enabling the potential of a brute force attack that breaks the
+unlinkability guarantee of AnonCreds.
+
+:::
+
 The [[ref: Credential Definition]] has the following format (based on this [example
 Credential Definition](https://indyscan.io/tx/SOVRIN_MAINNET/domain/99654) on the Sovrin
 MainNet):
@@ -237,7 +268,7 @@ signatures generated with the respective private key. The length of the block of
 messages, `L`, being signed is defined by referencing a specific Schema with a
 certain number of attributes, `A = a1,a2,..` and setting `L` to `A+1`. The
 additional message being signed as part of a credential is for a `link_secret`
-(called the [[ref: link_secret]] everywhere except in the existing open source
+(called the [[ref: link secret]] everywhere except in the existing open source
 code and data models) attribute which is included in all credentials. This value
 is blindly contributed to the credential during issuance and used to bind the
 issued credential to the entity to which it was issued.
@@ -612,13 +643,12 @@ To prepare to use AnonCreds credentials, the [[ref: Holder]] must create a
 [[ref: link secret]], a unique identifier that allows credentials issued to a
 [[ref: Holder]] to be bound to that [[ref: Holder]] and presented without
 revealing a unique identifier, thus avoiding correlation of credentials by
-[[ref: Verifier]]s. The [[ref: link_secret]] is kept private by the [[ref:
+[[ref: Verifier]]s. The [[ref: link secret]] is kept private by the [[ref:
 Holder]]. The [[ref: link secret]] is used during the credential issuance
 process to bind the credential to the [[ref: holder]] and in the generation of a
 presentation. For the latter, it allows the [[ref: holder]] to create a zero
-knowledge proof that they were issued the credential by demonstrating knowledge
-of the value of the [[ref: link_secret]] without sharing it. The details of how
-the [[ref: link_secret]] is used to do this is provided in the issuance,
+knowledge proof that they were issued the credential.This proof demonstrates knowledge the [[ref: link secret]] and prove that it is one of the signed credential attributes, without revealing the [[ref: link secret]] to the [[ref: verifier]]. The details of how
+the [[ref: link secret]] is used to do this is provided in the issuance,
 presentation generation and verification sections of this specification.
 
 The [[ref: link secret]] is a sufficiently random unique identifier. For
@@ -627,21 +657,21 @@ produced by a call to the Rust
 [uuid](https://docs.rs/uuid/0.5.1/uuid/index.html) Crate's `new_v4()` method to
 achieve sufficient randomness.
 
-Once generated, the [[ref: link_secret]] is stored locally by the [[ref:
+Once generated, the [[ref: link secret]] is stored locally by the [[ref:
 Holder]] for use in subsequent issuance and presentation interactions. If lost,
 the [[ref: Holder]] will not be able to generate a proof that the credential was
 issued to them. The [[ref: holder]] generates only a single [[ref:
-link_secret]], using it for all credentials the [[ref: holder]] is issued. This
+link secret]], using it for all credentials the [[ref: holder]] is issued. This
 allows for [[ref: verifier]]s to verify that all of the credentials used in
 generating a presentation with attributes from multiple credentials were all
 issued to the same [[ref: Holder]] without requiring the [[ref: Holder]] to
-disclose the unique identifier ([[ref: link_secret]]) that binds these
+disclose the unique identifier ([[ref: link secret]]) that binds these
 credentials together.
 
 There is nothing to stop a [[ref: Holder]] from generating multiple [[ref:
-link_secret]]s and contributing them to different credential issuance processes.
+link secret]]s and contributing them to different credential issuance processes.
 However, doing so prevents the [[ref: Holder]] from producing a presentation
-combining credentials issued to distinct [[ref: link_secret]]s that can be
+combining credentials issued to distinct [[ref: link secret]]s that can be
 proven to have been issued to the same entity. It is up to the [[ref: Verifier]]
 to require and enforce the binding between multiple credentials used in a
 presentation.
