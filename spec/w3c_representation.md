@@ -35,7 +35,7 @@ Example AnonCreds W3C formatted credential:
   },
   "proof": [
     {
-      "type": "CLSignature2023",
+      "type": "AnonCredsProof2023",
       "signature": "AAAgf9w5.....8Z_x3FqdwRHoWruiF0FlM"
     },
     {
@@ -217,7 +217,7 @@ and [Non-AnonCreds Data Integrity](https://www.w3.org/TR/vc-data-model/#data-int
 
 `AnonCreds CL` proof constructed from the `CL` signature of a verifiable credential.
 
-The defined [@context](#context) includes a definition for the `CLSignature2023` type describing the format of the proof
+The defined [@context](#context) includes a definition for the `AnonCredsProof2023` type describing the format of the proof
 entry:
 
 ```
@@ -225,7 +225,7 @@ entry:
   ... 
   "proof": [
     {
-      "type": "CLSignature2022",
+      "type": "AnonCredsProof2023",
       "signature": "AAAgf9w5lZg....RYp8Z_x3FqdwRHoWruiF0FlM"
     }
   ]  
@@ -235,7 +235,7 @@ entry:
 
 **Credential proof signature**
 
-* `type` - `CLSignature2023`
+* `type` - `AnonCredsProof2023`
 * `signature` - credential signature received by
     * building the following object from [cryptographic signature](./data_flow_issuance.md#the-credential-signature)
       data:
@@ -257,41 +257,49 @@ of non-AnonCreds [Data Integrity Proof](https://www.w3.org/TR/vc-data-model/#dat
 generated using one
 of NIST-approved algorithms (RSA, ECDSA, EdDSA).
 
+#### Status
+
+W3C [Status](https://www.w3.org/TR/vc-data-model/#status) section defines an optional capability to include 
+`credentialStatus` property to express credential status information, such as whether it is revoked. 
+
+In the case of W3C AnonCreds credentials, the `type` attribute of `credentialStatus` must 
+be `AnonCredsCredentialStatusList2023` (defined in the scope of [@context](#context)) pointing that 
+[AnonCreds Credential Revocation Flow](./data_flow_revocation.md) is used for credential issuance. 
+The `id` attribute of `credentialStatus` must contain id of revocation registry.
+
+Also, credential revocation data including revocation registry and witness values (`rev_reg` and `witness`) must be 
+included into the credential proof signature as demonstrated above in [AnonCreds CL proof](#anoncreds-cl-proof) section.
+
+```
+{
+  ... 
+  "credentialStatus": {
+    "type": "AnonCredsCredentialStatusList2023",
+    "id": "did:sov:NcYxiDXkpYi6ov5FcYDi1e:4:NcYxiDXkpYi6ov5FcYDi1e:3:CL:NcYxiDXkpYi6ov5FcYDi1e:2:gvt:1.0:tag:CL_ACCUM:TAG_1"
+  },
+  ...
+}
+```
+
 #### Expiration
 
 W3C [Expiration](https://www.w3.org/TR/vc-data-model/#expiration) section defines an optional capability to include
 credential expiration information.
 
 In the case of W3C AnonCreds credentials, instead of including `expirationDate` property there is defined another
-[Announced Revocation Data Flow](./data_flow_revocation.md).
-
-In order to satisfy this flow, id of `revocationRegistry` must be included into the `credentialSchema` and revocation
-data (`rev_reg` and `witness`) must be included into the proof signature.
+[Announced Revocation Data Flow](./data_flow_revocation.md) implementing through 
+the using if [`credentialStatus`](#status) property.
 
 ```
 {
   ... 
-  "credentialSchema": {
-    "type": "AnonCredsDefinition",
-    "definition": "did:sov:3avoBCqDMFHFaKUHug9s8W:3:CL:13:default",
-    "schema": "did:sov:3avoBCqDMFHFaKUHug9s8W:2:fabername:0.1.0",
-    "revocationRegistry": "did:sov:NcYxiDXkpYi6ov5FcYDi1e:4:NcYxiDXkpYi6ov5FcYDi1e:3:CL:NcYxiDXkpYi6ov5FcYDi1e:2:gvt:1.0:tag:CL_ACCUM:TAG_1",
-    "encoding": "auto"
+  "credentialStatus": {
+    "type": "AnonCredsCredentialStatusList2023",
+    "id": "did:sov:NcYxiDXkpYi6ov5FcYDi1e:4:NcYxiDXkpYi6ov5FcYDi1e:3:CL:NcYxiDXkpYi6ov5FcYDi1e:2:gvt:1.0:tag:CL_ACCUM:TAG_1"
   },
   ...
 }
 ```
-
-#### Status
-
-W3C [Status](https://www.w3.org/TR/vc-data-model/#status) section defines an optional capability to include credential
-status information.
-
-In the case of W3C AnonCreds credentials, instead of including `expirationDate` property there is defined another
-[Announced Revocation Data Flow](./data_flow_revocation.md).
-
-In order to satisfy this flow, id of `revocationRegistry` must be included into the `credentialSchema` and revocation
-data (`rev_reg` and `witness`) must be included into the proof signature.
 
 ### Presentation
 
@@ -331,8 +339,8 @@ Example AnonCreds W3C formatted presentation:
         "age":[
           {
             "type":"AnonCredsPredicate",
-            "p_type":">=",
-            "p_value":18
+            "predicate":">=",
+            "value":18
           }
         ]
       },
@@ -439,8 +447,8 @@ kinds of values:
             "age":[
                 {
                   "type":"AnonCredsPredicate",
-                  "p_type":">=",
-                  "p_value":18
+                  "predicate":">=",
+                  "value":18
                 }
             ]
             ...
@@ -448,8 +456,8 @@ kinds of values:
     ```
     * A predicate object consists of the following data:
       * `type` - `AnonCredsPredicate` type defined in the scope of [@context](#context) and describes the format of the resolved predicate
-      * `p_type` - type of the predicate: [same as in request](./data_flow_presentation_create_request.md)
-      * `p_value` - value of the predicate: [same as in request](./data_flow_presentation_create_request.md)
+      * `predicate` - type of the predicate: [same as in request](./data_flow_presentation_create_request.md)
+      * `value` - value of the predicate: [same as in request](./data_flow_presentation_create_request.md)
   
 ##### Proof (Signature)
 

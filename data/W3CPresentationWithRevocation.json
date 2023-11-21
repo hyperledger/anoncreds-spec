@@ -23,6 +23,10 @@
         "schema": "did:sov:3avoBCqDMFHFaKUHug9s8W:2:basic_person:0.1.0",
         "encoding": "auto"
       },
+      "credentialStatus":{
+        "type":"AnonCredsCredentialStatusList2023",
+        "id":"did:sov:3avoBCqDMFHFaKUHug9s8W:4:3avoBCqDMFHFaKUHug9s8W:3:CL:3avoBCqDMFHFaKUHug9s8W:2:basic_person:1.0:tag:CL_ACCUM:TAG_1"
+      },
       "credentialSubject": {
         "firstName": "Alice",
         "age": [

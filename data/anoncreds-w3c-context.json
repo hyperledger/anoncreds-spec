@@ -20,10 +20,6 @@
           "@id": "ac:schema",
           "@type": "@id"
         },
-        "revocationRegistry": {
-          "@id": "ac:revocationRegistry",
-          "@type": "@id"
-        },
         "encoding": {
           "@id": "ac:encoding",
           "@type": "@vocab",
@@ -35,6 +31,8 @@
         }
       }
     },
+
+    "AnonCredsCredentialStatusList2023": "ac:AnonCredsCredentialStatusList2023",
 
     "AnonCredsPresentation": "ac:AnonCredsPresentation",
 
@@ -58,8 +56,8 @@
       }
     },
 
-    "CLSignature2023": {
-      "@id": "ac:CLSignature2023",
+    "AnonCredsProof2023": {
+      "@id": "ac:AnonCredsProof2023",
       "@context": {
         "@version": 1.1,
         "@protected": true,
@@ -75,12 +73,12 @@
       "@context": {
         "@version": 1.1,
         "@protected": true,
-        "p_type": {
-          "@id": "ac:p_type",
+        "predicate": {
+          "@id": "ac:predicate",
           "@type": "xsd:string"
         },
-        "p_value": {
-          "@id": "ac:p_value",
+        "value": {
+          "@id": "ac:value",
           "@type": "xsd:decimal"
         }
       }
