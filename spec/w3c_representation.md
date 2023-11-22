@@ -1,7 +1,7 @@
 ## W3C Verifiable Credentials Representation
 
-This section describes how legacy AnonCreds credentials can be represented in the form of W3C Verifiable
-Credentials standard.
+This section describes how legacy AnonCreds credentials and presentations can be represented in the form of 
+W3C Verifiable Credentials standard.
 
 ### Credential
 
@@ -14,7 +14,7 @@ Example AnonCreds W3C formatted credential:
 {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://raw.githubusercontent.com/DSRCorporation/anoncreds-spec/w3c-credentials/data/anoncreds-w3c-context.json"
+    "https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json"
   ],
   "type": [
     "VerifiableCredential",
@@ -62,7 +62,7 @@ The **context** definition used for AnonCreds W3C credentials representation can
 discovered [here](../data/anoncreds-w3c-context.json).
 
 In the case of W3C AnonCreds credentials, the `@context` attribute includes an extra
-entry `https://github.io/anoncreds-w3c/context.json`
+entry `https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json`
 which is required for the resolution of custom structure definitions and looks the following:
 
 ```
@@ -70,7 +70,7 @@ which is required for the resolution of custom structure definitions and looks t
   ...  
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://github.io/anoncreds-w3c/context.json"
+    "https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json"
   ],
   ...
 }
@@ -116,9 +116,9 @@ Credential subject value contains [claims](https://www.w3.org/TR/vc-data-model/#
 
 In the context of W3C AnonCreds credentials, credential subject property is compliant with the following statements:
 
-- credentials will always include claims about only one subjects.
-    - So that `credentialSubject` property will always be represented as an object entry, but not an array.
-- credentials claims are always represented as key value pairs, where `value` is the `raw` value of CL credential
+- Credentials always include claims about only one subjects.
+    - So that `credentialSubject` property is always represented as an object entry, but not an array.
+- Credentials claims are always represented as key value pairs, where `value` is the `raw` value of CL credential
   attributes.
     - encoded CL credential values are not included in the credential subject
 
@@ -160,6 +160,7 @@ schema in order to include the information about AnonCreds related definitions t
 
 **Credential Schema Data**:
 
+* `type` - `AnonCredsDefinition`
 * `schema` - id of AnonCreds Schema
 * `definition` - id of AnonCreds Credential Definition
 * `revocation_registry` - (Optional) id of AnonCreds Revocation Registry
@@ -190,6 +191,8 @@ resolvable [DID URL](https://w3c-ccg.github.io/did-resolution/) and looks the fo
 
 W3C [Issuance Date](https://www.w3.org/TR/vc-data-model/#issuance-date) section requires including of `issuanceDate`
 property to express the date and time when a credential becomes valid.
+The value of the `issuanceDate` property must be a string value of 
+an [XMLSCHEMA11-2](https://www.w3.org/TR/xmlschema11-2/#dateTime) combined date-time.
 
 In the case of W3C AnonCreds credentials, the `issuanceDate` attribute should contain the time when a credential was
 issued or
@@ -209,9 +212,8 @@ W3C [Proofs (Signatures)](https://www.w3.org/TR/vc-data-model/#proofs-signatures
 property to express confirmation of the credential's validity.
 
 According to the specification, one or many proof objects can be added to verifiable credentials.
-In the case of W3C AnonCreds credentials, the `proof` attribute should contain at least two proof
-objects: `AnonCreds CL` proof
-and [Non-AnonCreds Data Integrity](https://www.w3.org/TR/vc-data-model/#data-integrity-proofs) proof.
+In the case of W3C AnonCreds credentials, the `proof` attribute must contain `AnonCreds CL` proof
+and may contain more [Non-AnonCreds Data Integrity](https://www.w3.org/TR/vc-data-model/#data-integrity-proofs) proofs.
 
 ##### AnonCreds CL proof
 
@@ -233,12 +235,11 @@ entry:
 }
 ```
 
-**Credential proof signature**
+**Credential Proof Signature Data**:
 
 * `type` - `AnonCredsProof2023`
-* `signature` - credential signature received by
-    * building the following object from [cryptographic signature](./data_flow_issuance.md#the-credential-signature)
-      data:
+* `signature` - credential signature received by:
+    * building the following object from [cryptographic signature](./data_flow_issuance.md#the-credential-signature):
       ```
       {
         "signature": {..}, 
@@ -247,28 +248,34 @@ entry:
         "witness": Option<{..}>,
       }
       ```
-    * encoding the object
-      as [base64 attachment](https://github.com/hyperledger/aries-rfcs/tree/main/concepts/0017-attachments#base64url)
+        * `signature` - [cryptographic credential signature correctness proof](./data_flow_issuance.md#the-credential-signature) generated for the credential.
+        * `signature_correctness_proof` -  [credential signature correctness proof](./data_flow_issuance.md#the-credential-signature) generated for the credential.
+        * `rev_reg` - `null` if the credential is not revocable. A description of the element and generation process when the credential is revocable are in the section [Supporting Revocation in a Credential](./data_flow_issuance.md#supporting-revocation-in-a-credential).
+        * `witness` - `null` if the credential is not revocable. A description of the element and generation process when the credential is revocable are in the section [Supporting Revocation in a Credential](./data_flow_issuance.md#supporting-revocation-in-a-credential).
+
+      * encoding the object
+      as [base64url attachment](https://github.com/hyperledger/aries-rfcs/tree/main/concepts/0017-attachments#base64url)
 
 ##### Non-AnonCreds Integrity proof
 
 In order to better conform to the W3C specification AnonCreds based credential allows including
 of non-AnonCreds [Data Integrity Proof](https://www.w3.org/TR/vc-data-model/#data-integrity-proofs) which must be
-generated using one
-of NIST-approved algorithms (RSA, ECDSA, EdDSA).
+generated using one of NIST-approved algorithms (RSA, ECDSA, EdDSA).
 
 #### Status
 
 W3C [Status](https://www.w3.org/TR/vc-data-model/#status) section defines an optional capability to include 
 `credentialStatus` property to express credential status information, such as whether it is revoked. 
 
-In the case of W3C AnonCreds credentials, the `type` attribute of `credentialStatus` must 
+In the case of W3C AnonCreds credentials, if a credential is revocable, the `type` attribute of `credentialStatus` must 
 be `AnonCredsCredentialStatusList2023` (defined in the scope of [@context](#context)) pointing that 
 [AnonCreds Credential Revocation Flow](./data_flow_revocation.md) is used for credential issuance. 
 The `id` attribute of `credentialStatus` must contain id of revocation registry.
 
 Also, credential revocation data including revocation registry and witness values (`rev_reg` and `witness`) must be 
 included into the credential proof signature as demonstrated above in [AnonCreds CL proof](#anoncreds-cl-proof) section.
+
+A description of generation process when the credential is revocable is in the section [Supporting Revocation in a Credential](./data_flow_issuance.md#supporting-revocation-in-a-credential).
 
 ```
 {
@@ -301,6 +308,50 @@ the using if [`credentialStatus`](#status) property.
 }
 ```
 
+Example AnonCreds W3C formatted revocable credential:
+```
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json"
+  ],
+  "type": [
+    "VerifiableCredential",
+    "AnonCredsCredential"
+  ],
+  "issuer": "did:sov:3avoBCqDMFHFaKUHug9s8W",
+  "issuanceDate": "2023-10-26T01:17:32Z",
+  "credentialSchema": {
+    "type": "AnonCredsDefinition",
+    "definition": "did:sov:3avoBCqDMFHFaKUHug9s8W:3:CL:13:default",
+    "schema": "did:sov:3avoBCqDMFHFaKUHug9s8W:2:basic_person:0.1.0",
+    "encoding": "auto"
+  },
+  "credentialStatus":{
+    "type":"AnonCredsCredentialStatusList2023",
+    "id":"did:sov:3avoBCqDMFHFaKUHug9s8W:4:3avoBCqDMFHFaKUHug9s8W:3:CL:3avoBCqDMFHFaKUHug9s8W:2:basic_person:1.0:tag:CL_ACCUM:TAG_1"
+  },
+  "credentialSubject": {
+    "firstName": "Alice",
+    "lastName": "Jones",
+    "age": "18"
+  },
+  "proof": [
+    {
+      "type": "AnonCredsProof2023",
+      "signature": "AAAgf9w5.....8Z_x3FqdwRHoWruiF0FlM"
+    },
+    {
+      "type": "Ed25519Signature2020",
+      "created": "2021-11-13T18:19:39Z",
+      "verificationMethod": "did:sov:3avoBCqDMFHFaKUHug9s8W#key-1",
+      "proofPurpose": "assertionMethod",
+      "proofValue": "z58DAdFfa9SkqZMVPxAQpic7ndSayn1PzZs6ZjWp1CktyGesjuTSwRdoWhAfGFCF5bppETSTojQCrfFPP2oumHKtz"
+    }
+  ]
+}
+```
+
 ### Presentation
 
 This section describes how [W3C presentation concepts](https://www.w3.org/TR/vc-data-model/#contexts) are applied to
@@ -312,7 +363,7 @@ Example AnonCreds W3C formatted presentation:
 {
   "@context":[
     "https://www.w3.org/2018/credentials/v1",
-    "https://raw.githubusercontent.com/DSRCorporation/anoncreds-spec/w3c-credentials/data/anoncreds-w3c-context.json"
+    "https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json"
   ],
   "type":[
     "VerifiablePresentation",
@@ -322,7 +373,7 @@ Example AnonCreds W3C formatted presentation:
     {
       "@context":[
         "https://www.w3.org/2018/credentials/v1",
-        "https://raw.githubusercontent.com/DSRCorporation/anoncreds-spec/w3c-credentials/data/anoncreds-w3c-context.json"
+        "https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json"
       ],
       "type":[
         "VerifiableCredential",
@@ -379,7 +430,7 @@ The **context** definition used for AnonCreds W3C presentations representation c
 discovered [here](../data/anoncreds-w3c-context.json).
 
 In the case of W3C AnonCreds presentations, the `@context` attribute includes an extra
-entry `https://github.io/anoncreds-w3c/context.json`
+entry `https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json`
 which is required for the resolution of custom structure definitions and looks the following:
 
 ```
@@ -387,7 +438,7 @@ which is required for the resolution of custom structure definitions and looks t
   ... 
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://github.io/anoncreds-w3c/context.json"
+    "https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json"
   ],
   ...
 }
@@ -429,8 +480,8 @@ section but with some differences.
 ##### Credential Subject
 
 In the case of W3C AnonCreds presentations, in contrast to the general verifiable credential structure
-(when all attributes represented as key value pairs), the `credentialSubject` attribute can contain two 
-kinds of values:
+(when all attributes represented as key value pairs), the `credentialSubject` attribute values can be represented 
+in two forms:
 * string - corresponds to a requested attribute which was revealed in the presentation
     ```
         "credentialSubject":{
@@ -477,22 +528,23 @@ In the case of W3C AnonCreds presentations, the `proof` attribute for each verif
   }
 ```
 
-**Verifiable Credential Proof structure**
+**Verifiable Credential Proof Data**
 
-* `proofValue` - encoded proof generated for each specific credential received by
+* `proofValue` - encoded proof generated for each specific credential received by:
     * building the following object from [cryptographic proof](./data_flow_presentation_create_presentation.md)
       data:
-    ```
-        {
-            sub_proof: {
-                "primary_proof": {
-                  "eq_proof": { ... },
-                  "ge_proofs": [ ... ]
-                },
-                "non_revoc_proof": { ... }  
+        ```
+            {
+                sub_proof: {
+                    "primary_proof": {
+                      "eq_proof": { ... },
+                      "ge_proofs": [ ... ]
+                    },
+                    "non_revoc_proof": { ... }  
+                }
             }
-        }
-    ```
+        ```
+      * `sub_proof` - [cryptographyc proof](./data_flow_presentation_create_presentation.md#generate-the-presentation) generated for each used credential
     * encoding the object
       as [base64 attachment](https://github.com/hyperledger/aries-rfcs/tree/main/concepts/0017-attachments#base64url)
 * `mapping` - explicit mapping pointing to the data requested in the presentation request
@@ -536,13 +588,14 @@ It is verifier and holder responsibility to negotiate which proof must be used
 * `proofValue` - encoded proof contained aggregated crypto proof data received by
     * building the following object from [cryptographic proof](./data_flow_presentation_create_presentation.md)
       data:
-    ```
+      ```
         {
             aggregated: { 
                 "c_hash": "...",
                 "c_list": [...]
             }
         }
-    ```
+      ```
+        * `aggregated` - [aggregate proof](./data_flow_presentation_create_presentation.md#generate-the-presentation), across all of the source credentials that proves that the same link secret was used in the issuance of all of the credentials.
     * encoding the object
       as [base64 attachment](https://github.com/hyperledger/aries-rfcs/tree/main/concepts/0017-attachments#base64url)
