@@ -41,16 +41,6 @@
       "issuer": "issuer:id/path=bar",
       "proof": {
         "type": "AnonCredsPresentationProof2023",
-        "mapping": {
-          "predicates": [
-            "predicate1_referent"
-          ],
-          "revealedAttributeGroups": [],
-          "revealedAttributes": [
-            "attr1_referent"
-          ],
-          "unrevealedAttributes": []
-        },
         "proofValue": "eyJzdWJfcHJvb2Yi...zMTc1NzU0NDAzNDQ0ODUifX1dfX19"
       }
     }

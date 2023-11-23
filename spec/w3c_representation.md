@@ -398,12 +398,6 @@ Example AnonCreds W3C formatted presentation:
       "issuer":"issuer:id/path=bar",
       "proof":{
         "type":"AnonCredsPresentationProof2023",
-        "mapping":{
-          "predicates":["predicate1_referent"],
-          "revealedAttributeGroups":[],
-          "revealedAttributes":["attr1_referent"],
-          "unrevealedAttributes":[]
-        },
         "proofValue":"eyJzdWJfcHJvb2Yi...zMTc1NzU0NDAzNDQ0ODUifX1dfX19"
       }
     }
@@ -517,11 +511,6 @@ In the case of W3C AnonCreds presentations, the `proof` attribute for each verif
 ```
   "proof": {
     "type": "AnonCredsPresentationProof2023",
-    "mapping": {
-      "revealedAttributes": ["attribute_0"],
-      "unrevealedAttributes": ["attribute_1"],
-      "requestedPredicates": ["predicate_1"]
-    },
     "proofValue": "AAEBAnr2Ql...0UhJ-bIIdWFKVWxjU3ePxv_7HoY5pUw",
     "timestamp": Option<1234567>,
   }
@@ -545,11 +534,6 @@ In the case of W3C AnonCreds presentations, the `proof` attribute for each verif
         ```
       * `sub_proof` - [cryptographyc proof](./data_flow_presentation_create_presentation.md#generate-the-presentation) generated for each used credential
     * encoding the object using `MessagePack` and next encoding the output bytes as `Base64Url` string with no padding.
-* `mapping` - explicit mapping pointing to the data requested in the presentation request
-    * data: attribute/predicate reference (key) in the presentation request
-        * `revealedAttributes` - list of requested attributes revealed using the credential
-        * `unrevealedAttributes` - list of requested attributes presented in the credential but left unrevealed
-        * `requestedPredicates` - list of predicates resolved using the credential
 * `timestamp` - (Optional) if revocation supported and requested, time as a total number of seconds from Unix Epoch
   representing pointing to the specif moment of revocation registry
 
