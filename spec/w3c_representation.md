@@ -253,8 +253,7 @@ entry:
         * `rev_reg` - `null` if the credential is not revocable. A description of the element and generation process when the credential is revocable are in the section [Supporting Revocation in a Credential](./data_flow_issuance.md#supporting-revocation-in-a-credential).
         * `witness` - `null` if the credential is not revocable. A description of the element and generation process when the credential is revocable are in the section [Supporting Revocation in a Credential](./data_flow_issuance.md#supporting-revocation-in-a-credential).
 
-      * encoding the object
-      as [base64url attachment](https://github.com/hyperledger/aries-rfcs/tree/main/concepts/0017-attachments#base64url)
+      * encoding the object using `MessagePack` and next encoding the output bytes as `Base64Url` string with no padding.
 
 ##### Non-AnonCreds Integrity proof
 
@@ -545,8 +544,7 @@ In the case of W3C AnonCreds presentations, the `proof` attribute for each verif
             }
         ```
       * `sub_proof` - [cryptographyc proof](./data_flow_presentation_create_presentation.md#generate-the-presentation) generated for each used credential
-    * encoding the object
-      as [base64 attachment](https://github.com/hyperledger/aries-rfcs/tree/main/concepts/0017-attachments#base64url)
+    * encoding the object using `MessagePack` and next encoding the output bytes as `Base64Url` string with no padding.
 * `mapping` - explicit mapping pointing to the data requested in the presentation request
     * data: attribute/predicate reference (key) in the presentation request
         * `revealedAttributes` - list of requested attributes revealed using the credential
@@ -597,5 +595,4 @@ It is verifier and holder responsibility to negotiate which proof must be used
         }
       ```
         * `aggregated` - [aggregate proof](./data_flow_presentation_create_presentation.md#generate-the-presentation), across all of the source credentials that proves that the same link secret was used in the issuance of all of the credentials.
-    * encoding the object
-      as [base64 attachment](https://github.com/hyperledger/aries-rfcs/tree/main/concepts/0017-attachments#base64url)
+    * encoding the object using `MessagePack` and next encoding the output bytes as `Base64Url` string with no padding.
