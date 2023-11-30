@@ -28,6 +28,10 @@ such as this one on [non-interactive zero knowledge proofs]:
 
 [non-interactive zero knowledge proofs]: http://www0.cs.ucl.ac.uk/staff/J.Groth/ShortNIZK.pdf
 
+The security of the ZKPs is based on the security of RSA cryptography, and
+specifically that the factoring of `n`, where `n` is the product of two [[ref:
+safe primes]], is a computationally hard problem.
+
 These properties apply in the places where zero knowledge proofs are used in AnonCreds:
 
 - No linkable identifiers for the holder are shared to the issuer during the

@@ -25,7 +25,7 @@ specification.
   - In a presentation, holders prove all of the credentials they were issued are
     bound to the same link secret without revealing a correlatable identifier to
     verifiers.
-- In a presentation, the issuer provides proof of the issuers signatures without
+- In a presentation, the holder provides proof of the issuers signatures without
   revealing the signatures itself, which can be used as a correlatable
   identifier.
 - [[ref: Holders]] can (verifiably) selectively disclose [[ref: claims]] from
@@ -36,10 +36,10 @@ specification.
   proofs]] (NRPs) about the source credentials in a presentation without
   revealing a correlatable identifier for themselves or the source credentials.
   - If credentials are both revocable and not revoked, the [[ref: Holder]] can
-    produce a NRP for presented source credentials.
+    produce a valid NRP for presented source credentials.
   - If credentials are both revocable and revoked, the [[ref: Holder]] cannot
-    produce a NRP for presented source credentials.
-  - If credentials are not revocable, the [[ref: Holder]] cannot produce a NRP
+    produce a valid NRP for presented source credentials.
+  - If credentials are not revocable, the [[ref: Holder]] cannot produce a valid NRP
     for presented source credentials.
 
 The further privacy properties are stated according to [Section 5 of
@@ -60,6 +60,11 @@ include:
   Verifiers]] could be correlated.
   - Using a secure, encrypted, peer-to-peer communication channel such as
     [DIDComm] can be used to mitigate the surveillance risk.
+- An implementation of AnonCreds based on this specification can not hide the
+  time to generate or size of a presentation.
+  - A deployment based on this implementation could mitigate this potential
+    leakage by artificially inflating both the time to generate and the size of
+    the presentation.
 - If the [[ref: Holder]] must request credential revocation information directly
   from an [[ref: Issuer]] when creating a presentation, the [[ref: Issuer]]
   could surveil the use of a credential by the [[ref: Holder]]. Further, if the
