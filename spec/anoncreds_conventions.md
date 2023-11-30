@@ -1,8 +1,8 @@
 ## AnonCreds Conventions
 
 Over the years of using Hyperledger AnonCreds, several conventions (listed here) have been defined can or must be used
-in deploying AnonCreds. They conventions are not required in the current [AnonCreds implementation], but 
-are necessary to be followed to be interoperable with other AnonCreds implementations.
+in deploying AnonCreds. The conventions are not required in the current [AnonCreds implementation], but
+are necessary to follow for interoperability with other AnonCreds implementations.
 
 [AnonCreds implementation]: https://github.com/hyperledger/anoncreds-rs
 
