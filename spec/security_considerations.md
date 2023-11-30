@@ -95,9 +95,9 @@ Likewise in the presentation request, the [[ref: verifier]] provides a nonce
 that is incorporated by the [[ref: holder]] in generating the presentation, and
 verified by the [[ref: verifier]].
 
-### Message Insertion and Modification
+### Message Tampering
 
-Message insertion and modification during AnonCreds exchanges is ineffective when
+Message tampering during AnonCreds exchanges is ineffective when
 the secrets are securely protected by the [[ref: issuers]] and [[ref: holders]].
 Arbitrary modification of AnonCreds data without access to the appropriate secret data is
 detectable through the failure of the verification of the data objects. See the
@@ -109,7 +109,7 @@ the potentials impacts if those secrets are disclosed.
 ### Holder Collusion
 
 [[ref: Holders]] that collude by sharing their [[ref: link secret]] could each
-be issued credentials issued to the same [[ref: link secret]]. Subsequently,
+be issued credentials to the same [[ref: link secret]]. Subsequently,
 such [[ref: holders]] could present any combination of the credentials together,
 including generating a proof that they were all issued to the same [[ref: link
 secret]]. Where such collusion is deemed a significant risk, such as with a
