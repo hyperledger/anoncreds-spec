@@ -3205,46 +3205,360 @@ specification.</p>
 <h2 id="iana-considerations"><a class="toc-anchor" href="#iana-considerations" >§</a> IANA Considerations</h2>
 <p>This document has no IANA actions.</p>
 <h2 id="security-considerations"><a class="toc-anchor" href="#security-considerations" >§</a> Security Considerations</h2>
-<h3 id="cryptography"><a class="toc-anchor" href="#cryptography" >§</a> Cryptography</h3>
-<h4 id="signature"><a class="toc-anchor" href="#signature" >§</a> Signature</h4>
-<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><p>Add security considerations related to CL signatures</p>
-</div>
-<h4 id="revocation-accumulators"><a class="toc-anchor" href="#revocation-accumulators" >§</a> Revocation / Accumulators</h4>
-<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><p>Add security considerations related to cryptographic accumulators and AnonCreds revocation</p>
+<p>There are a number of security considerations that issuers, holders, and
+verifiers should be aware of when processing data described by this
+specification. Ignoring or not understanding the implications of this section
+can result in security vulnerabilities.</p>
+<p>While this section attempts to highlight a broad set of security considerations,
+it is not a complete list. Implementers are urged to seek the advice of security
+and cryptography professionals when implementing mission critical systems using
+the technology outlined in this specification.</p>
+<h3 id="zero-knowledge-proofs-in-anoncreds"><a class="toc-anchor" href="#zero-knowledge-proofs-in-anoncreds" >§</a> Zero Knowledge Proofs in AnonCreds</h3>
+<p>The security of AnonCreds is primarily based on the security of the AnonCreds
+cryptography, and in particular, the <a class="term-reference" href="#term:zero-knowledge-proofs">zero knowledge proofs</a> (ZKPs), upon
+which this specification is based. Each ZKP used in AnonCreds requires
+the following security properties be met, as introduced in many ZKP articles,
+such as this one on <a path-0="www0.cs.ucl.ac.uk"path-1="staff"path-2="J.Groth"path-3="ShortNIZK.pdf"href="http://www0.cs.ucl.ac.uk/staff/J.Groth/ShortNIZK.pdf" >non-interactive zero knowledge proofs</a>:</p>
 <ul>
-<li>issues with too small revocation registries</li>
-<li>…</li>
+<li>Completeness
+<ul>
+<li>If statement is true, a verifier will be convinced by prover.</li>
 </ul>
-</div>
-<h3 id="verifiable-data-registry"><a class="toc-anchor" href="#verifiable-data-registry" >§</a> Verifiable Data Registry</h3>
-<p>It is recommended to use a <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> that complies with the state of the art security features and best practices.</p>
-<h4 id="permission-management"><a class="toc-anchor" href="#permission-management" >§</a> Permission Management</h4>
-<p>The VDR for storing <a class="term-reference" href="#term:schema">Schema</a>s, <a class="term-reference" href="#term:credential-definition">Credential Definition</a>s, <a class="term-reference" href="#term:revocation-registry-definition">Revocation Registry Definition</a>s, and <a class="term-reference" href="#term:revocation-status-list">Revocation Status List</a>s shall ensure that only the owner or from the owner permitted entities can write, edit, or revoke those AnonCreds objects. Furthermore, public AnonCreds objects shall be readable by any entity that can access the VDR.</p>
-<h4 id="authentication-of-issuer"><a class="toc-anchor" href="#authentication-of-issuer" >§</a> Authentication of Issuer</h4>
-<p>The VDR shall allow only permitted entities to issue AnonCreds based on AnonCreds objects related to it.</p>
-<h4 id="security-requirements-at-dids-and-related-keys"><a class="toc-anchor" href="#security-requirements-at-dids-and-related-keys" >§</a> Security Requirements at DIDs and Related Keys</h4>
-<p>It is recommended to follow the best practices of decentralized key management system designs and architectures. For example, an option for publishing AnonCreds is the Hyperledger Indy, which are built on the following <a path-0="github.com"path-1="hyperledger"path-2="indy-sdk"path-3="blob"path-4="main"path-5="docs"path-6="design"path-7="005-dkms"path-8="DKMS%20Design%20and%20Architecture%20V3.md"href="https://github.com/hyperledger/indy-sdk/blob/main/docs/design/005-dkms/DKMS%20Design%20and%20Architecture%20V3.md" >DKMS Design and Architecture</a></p>
-<h3 id="envelope"><a class="toc-anchor" href="#envelope" >§</a> Envelope</h3>
-<p>AnonCreds should be packed in a message envelope that can fulfill properties such as authenticity, integrity, confidentiality, and non-repudiation of the message. A message can have these properties with signature and encryption algorithms. It is recommended to choose signature and encryption algorithms that are state of the art and offer such security. For example, Hyperledger Indy utilizes DIDComm v1 as message envelope for exchanging AnonCreds between <a class="term-reference" href="#term:issuer">issuer</a>s, <a class="term-reference" href="#term:holder">holder</a>s, and <a class="term-reference" href="#term:verifier">verifier</a>s.</p>
-<h3 id="transport"><a class="toc-anchor" href="#transport" >§</a> Transport</h3>
-<p>This specification does not mention which transport protocols should be used to exchange AnonCreds between parties. It is recommended to use transport protocols that are state of the art and offer such security.</p>
-<h3 id="wallet"><a class="toc-anchor" href="#wallet" >§</a> Wallet</h3>
-<p>It is recommended to follow the wallet security best practices such as the one created by the [DIF Wallet Security Working Group] (<a path-0="github.com"path-1="decentralized-identity"path-2="wallet-security"href="https://github.com/decentralized-identity/wallet-security" ><span>https://github.com/decentralized-identity/wallet-security</span></a>)</p>
-<h4 id="recovery"><a class="toc-anchor" href="#recovery" >§</a> Recovery</h4>
-<p>The wallets for AnonCreds shall offer recovery mechanisms for the <a class="term-reference" href="#term:holder">holder</a>s to export their keys and/or <a class="term-reference" href="#term:link-secret">link secret</a>s to different devices. Furthermore, wallet applications should offer portability mechanisms for <a class="term-reference" href="#term:holder">holder</a>s to migrate their credentials from one wallet (or end device) to another.</p>
-<h4 id="support-of-hardware-secure-modules"><a class="toc-anchor" href="#support-of-hardware-secure-modules" >§</a> Support of Hardware Secure Modules</h4>
-<p>The current underlying signature algorithm of AnonCreds is currently not supported by any hardware secure module. Use cases requiring binding of an AnonCreds to a device (device binding) can follow the best practices of wallet security (hyperlink) until the AnonCreds signature algorithm is supported by hardware secure modules of enduser devices.</p>
-<h3 id="crypto-agility"><a class="toc-anchor" href="#crypto-agility" >§</a> Crypto Agility</h3>
-<p>The underlying signature algorithm of AnonCreds is not known to be a post-quantum computing resistant. As new signature algorithms evolve for the post-quantum computing security, the underlying signature algorithm of AnonCreds shall keep privacy-preserving features such as selective disclosure and non-correlatability.</p>
+</li>
+<li>Soundness
+<ul>
+<li>If statement is false, a cheating prover cannot convince verifier it is true
+except with some negligible probability.</li>
+</ul>
+</li>
+<li>Zero-Knowledge
+<ul>
+<li>The verifier learns nothing beyond the statement’s validity.</li>
+</ul>
+</li>
+</ul>
+<p>The security of the ZKPs is based on the security of RSA cryptography, and
+specifically that the factoring of <code>n</code>, where <code>n</code> is the product of two <a class="term-reference" href="#term:safe-primes">safe primes</a>, is a computationally hard problem.</p>
+<p>These properties apply in the places where zero knowledge proofs are used in AnonCreds:</p>
+<ul>
+<li>No linkable identifiers for the holder are shared to the issuer during the
+issuing process, yet the <a class="term-reference" href="#term:issuer">issuer</a> is convinced by the <a class="term-reference" href="#term:holder">holder</a>
+that the <a class="term-reference" href="#term:holder">holder</a> knows the <a class="term-reference" href="#term:link-secret">link secret</a> to which the
+credentials are to be issued.
+<ul>
+<li>The <a class="term-reference" href="#term:issuer">issuer</a> may know other correlatable data about the <a class="term-reference" href="#term:holder">holder</a>, but not the <a class="term-reference" href="#term:link-secret">link secret</a> to which the credential is
+issued.</li>
+</ul>
+</li>
+<li>No linkable identifiers for the holder are shared to the verifier during the
+presentation process, yet the <a class="term-reference" href="#term:verifier">verifier</a> is convinced by the <a class="term-reference" href="#term:holder">holder</a> that the <a class="term-reference" href="#term:holder">holder</a> knows the <a class="term-reference" href="#term:link-secret">link secret</a> to which the
+credentials were issued.
+<ul>
+<li>The <a class="term-reference" href="#term:verifier">verifier</a> may receive <a class="term-reference" href="#term:claims">claims</a> about the <a class="term-reference" href="#term:holder">holder</a>
+that are correlatable, but not the <a class="term-reference" href="#term:link-secret">link secret</a> to which the
+presented credentials were issued.</li>
+</ul>
+</li>
+<li>Even though the signatures over the credentials in a presentation are
+generated to be unique per presentation by the <a class="term-reference" href="#term:holder">holder</a>, the <a class="term-reference" href="#term:verifier">verifier</a> is convinced that the presented signatures were derived from the
+signatures generated by the <a class="term-reference" href="#term:issuer">issuer</a> using the cryptographic
+information in the <a class="term-reference" href="#term:credential-definitions">credential definitions</a> published by the <a class="term-reference" href="#term:issuers">issuers</a>.</li>
+<li>The <a class="term-reference" href="#term:verifier">verifier</a> is convinced that the signatures in the presentation are
+valid despite the selective disclosure of <a class="term-reference" href="#term:claims">claims</a> from the verifiable
+credentials.</li>
+<li>The <a class="term-reference" href="#term:verifier">verifier</a> is convinced that the presented predicates are true if
+and only if the requested predicate expression based on the <a class="term-reference" href="#term:claim">claim</a>
+value is also true.</li>
+<li>The <a class="term-reference" href="#term:verifier">verifier</a> is convinced that the <a class="term-reference" href="#term:holders">holders</a> source verifiable
+credentials are not revoked (assuming it is revocable) if the <a class="term-reference" href="#term:non-revocation-proofs">non-revocation proofs</a> generated by the <a class="term-reference" href="#term:issuer">issuer</a> are valid.</li>
+</ul>
+<h3 id="eavesdropping"><a class="toc-anchor" href="#eavesdropping" >§</a> Eavesdropping</h3>
+<p>The prevention of eavesdropping during the exchange of AnonCreds objects during
+issuance and verification is outside the scope of this specification. The
+security of the data shared between parties shall be protected by implementing
+best practices in communications amongst mobile wallet and IT infrastructure,
+like <a path-0="www.iso.org"path-1="standard"path-2="27001"href="https://www.iso.org/standard/27001" >ISO27001</a> and <a path-0="en.wikipedia.org"path-1="wiki"path-2="Information_security_management"href="https://en.wikipedia.org/wiki/Information_security_management" >Information Security Management</a> systems (ISMS). That said,
+the AnonCreds cryptography prevents an eavesdropper from gaining other than any
+plaintext information the parties of an interaction might intentionally or
+accidentally share.</p>
+<ul>
+<li>Issuances are generated uniquely using nonces and the <a class="term-reference" href="#term:holder">holder</a>'s
+generated <a class="term-reference" href="#term:blinded-link-secret">blinded link secret</a> such that an eavesdropper that lacks
+knowledge of the holder’s <a class="term-reference" href="#term:link-secret">link secret</a> cannot replay the interaction
+or derive presentations from the verifiable credential.</li>
+<li>Presentation requests are generated uniquely using a nonce, and presentations
+are derived based on the <a class="term-reference" href="#term:holder">holder</a>'s <a class="term-reference" href="#term:link-secret">link secret</a> such that an
+eavesdropper that lacks knowledge of the holder’s <a class="term-reference" href="#term:link-secret">link secret</a> cannot
+replay the interaction or derive additional presentations from the source
+verifiable credentials.</li>
+</ul>
+<h3 id="replay"><a class="toc-anchor" href="#replay" >§</a> Replay</h3>
+<p>Replay prevention in AnonCreds for both issuances and presentations are
+prevented through the use of nonces. During the 3-step issuance process the
+<a class="term-reference" href="#term:issuer">issuer</a> (in the Credential Offer) and then the <a class="term-reference" href="#term:holder">holder</a> (in the
+Credential Request) provide and verify the use of nonces before proceeding.
+Likewise in the presentation request, the <a class="term-reference" href="#term:verifier">verifier</a> provides a nonce
+that is incorporated by the <a class="term-reference" href="#term:holder">holder</a> in generating the presentation, and
+verified by the <a class="term-reference" href="#term:verifier">verifier</a>.</p>
+<h3 id="message-tampering"><a class="toc-anchor" href="#message-tampering" >§</a> Message Tampering</h3>
+<p>Message tampering during AnonCreds exchanges is ineffective when
+the secrets are securely protected by the <a class="term-reference" href="#term:issuers">issuers</a> and <a class="term-reference" href="#term:holders">holders</a>.
+Arbitrary modification of AnonCreds data without access to the appropriate secret data is
+detectable through the failure of the verification of the data objects. See the
+security considerations sections about the <a href="#protection-of-data" >protection of
+data</a> and <a href="#protection-of-key-material" >protection of key
+material</a> for more on protecting those secrets and
+the potentials impacts if those secrets are disclosed.</p>
+<h3 id="holder-collusion"><a class="toc-anchor" href="#holder-collusion" >§</a> Holder Collusion</h3>
+<p><a class="term-reference" href="#term:holders">Holders</a> that collude by sharing their <a class="term-reference" href="#term:link-secret">link secret</a> could each
+be issued credentials to the same <a class="term-reference" href="#term:link-secret">link secret</a>. Subsequently,
+such <a class="term-reference" href="#term:holders">holders</a> could present any combination of the credentials together,
+including generating a proof that they were all issued to the same <a class="term-reference" href="#term:link">link</a>. Where such collusion is deemed a significant risk, such as with a
+mobile wallet application, the agent software should protect the <a class="term-reference" href="#term:link">link</a> so as to prevent access or extraction. <a class="term-reference" href="#term:issuers">Issuers</a> and <a class="term-reference" href="#term:verifiers">Verifiers</a> may choose to implement verifications that the <a class="term-reference" href="#term:holder">holder</a> is
+using a mobile wallet that is known to prevent such extraction and subsequent
+collusion.</p>
+<h3 id="protection-of-data"><a class="toc-anchor" href="#protection-of-data" >§</a> Protection of data</h3>
+<p>The protection of data, both at rest and in motion, is outside the scope of this
+specification. Protection of data should be accomplished by the participants
+exchanging AnonCreds verifiable data implementing best practices in data
+protection for mobile wallet and IT infrastructure, like <a path-0="www.iso.org"path-1="standard"path-2="27001"href="https://www.iso.org/standard/27001" >ISO27001</a> and
+<a path-0="en.wikipedia.org"path-1="wiki"path-2="Information_security_management"href="https://en.wikipedia.org/wiki/Information_security_management" >Information Security Management</a> systems (ISMS). See the section on the
+<a href="#protection-of-key-material" >protection of key material</a> for more on the
+potential impact of disclosed secrets.</p>
+<p>When verifiable credentials are stored on a device and that device is lost or
+stolen, it might be possible for an attacker to use the victim’s verifiable
+credentials. Mitigating the impacts of such a loss include:</p>
+<ul>
+<li>Enabling password, pin, pattern, or biometric screen unlock protection on the
+device.</li>
+<li>Enabling password, biometric, or multi-factor authentication for the
+credential repository.</li>
+<li>Enabling password, biometric, or multi-factor authentication when accessing
+cryptographic keys.</li>
+<li>All or any combination of the above.</li>
+</ul>
+<p>The potential risks in not adequately protecting data are covered in the
+<a href="#eavesdropping" >eavesdropping</a>, <a href="#message-insertion-and-modification" >message insertion and
+modification</a> and <a href="#replay" >replay</a>
+subsection of the Security Considerations.</p>
+<h3 id="protection-of-key-material"><a class="toc-anchor" href="#protection-of-key-material" >§</a> Protection of Key Material</h3>
+<p>The private keys associated with the public keys used by the <a class="term-reference" href="#term:issuer">issuer</a>
+must be kept secret. Each <a class="term-reference" href="#term:issuer">issuer</a> is responsible for storing and using
+their private keys and (for the <a class="term-reference" href="#term:holder">holder</a>) the <a class="term-reference" href="#term:link-secret">link secret</a> in a
+sufficiently secure manner.</p>
+<p>Unintended disclosure of <a class="term-reference" href="#term:issuer">issuer</a> secret information could allow others
+with access to the secrets issue credentials as if from the original <a class="term-reference" href="#term:issuer">issuer</a>.</p>
+<p>Unintended disclosure of the <a class="term-reference" href="#term:holder">holder</a>'s <a class="term-reference" href="#term:link-secret">link secret</a> could, if
+accompanied by the disclosure of the holder’s verifiable credentials, allow
+others to present those credentials as their own. A malicious presenter could
+not present their own credentials issued to a different <a class="term-reference" href="#term:link-secret">link secret</a>
+alongside the compromised verifiable credentials.</p>
+<h3 id="man-in-the-middle"><a class="toc-anchor" href="#man-in-the-middle" >§</a> Man-In-The-Middle</h3>
+<p>The prevention and detection of Man-In-The-Middle (MITM) attacks during the
+exchange of AnonCreds objects during issuance and verification is outside the
+scope of this specification. Best practices in preventing MITM attacks while
+establishing the communications channel between the parties through which the
+data objects are exchanged should be followed by all of the participants.</p>
+<p>As covered in the previous section on <a href="#message-insertion-and-modification" >Message Insertion and
+Modification</a> issuance and presentations
+processes are not susceptible to alteration by a MITM. The primary risk of MITM
+attacks are the potential for collusion between <a class="term-reference" href="#term:holders">holders</a> interacting
+with a <a class="term-reference" href="#term:verifier">verifier</a>. For example, a MITM interacts with a verifier to
+respond to a presentation request by colluding (in real-time) with a set of one
+or more <a class="term-reference" href="#term:holders">holders</a> to pass on each presentation request and get a
+presentation from the most suitable <a class="term-reference" href="#term:holder">holder</a> for each individual
+presentation request. This attack can be mitigated by requesting presentations
+that are satisfied from multiple source credentials, which will be verified to
+show all are bound to the same <a class="term-reference" href="#term:link-secret">link secret</a>.</p>
+<h3 id="deletion"><a class="toc-anchor" href="#deletion" >§</a> Deletion</h3>
+<p>The handling of the deletion of AnonCreds objects by the various participants is
+outside the scope of this specification. Such objects may be deleted by the
+participants at any time, understanding that once done, the operations enabled
+by the possession of those objects cannot be performed. For example, an issuer
+losing the issuance and revocation private keys can no longer issue or revoke
+credentials. Likewise, a <a class="term-reference" href="#term:holder">holder</a> can’t provide a presentation of a
+deleted source credential. Protection from inadvertent deletion of such data
+shall be protected by implementing best practices in data management by mobile
+wallet and IT infrastructure, like <a path-0="www.iso.org"path-1="standard"path-2="27001"href="https://www.iso.org/standard/27001" >ISO27001</a> and <a path-0="en.wikipedia.org"path-1="wiki"path-2="Information_security_management"href="https://en.wikipedia.org/wiki/Information_security_management" >Information Security
+Management</a> systems (ISMS).</p>
+<h3 id="denial-of-service"><a class="toc-anchor" href="#denial-of-service" >§</a> Denial of Service</h3>
+<p>Denial of Service attacks against the various participants in AnonCreds
+exchanges are outside the scope of this specification.</p>
+<h3 id="storage-or-network-amplification"><a class="toc-anchor" href="#storage-or-network-amplification" >§</a> Storage or Network Amplification</h3>
+<p>Storage or network amplification attacks against the various participants in
+AnonCreds exchanges are outside the scope of this specification.</p>
+<h2 id="residual-risks"><a class="toc-anchor" href="#residual-risks" >§</a> Residual Risks</h2>
+<p>The residual risks inherent in AnonCreds include:</p>
+<ul>
+<li>Compromise in the used cryptographic primitives used in AnonCreds v1, as
+described in this specification.</li>
+<li>Bugs in the AnonCreds implementations used by participants exchanging
+AnonCreds verifiable data.</li>
+<li>External libraries upon which the AnonCreds implementations are dependent.</li>
+</ul>
 <h2 id="privacy-considerations"><a class="toc-anchor" href="#privacy-considerations" >§</a> Privacy Considerations</h2>
-<div id="todo-14" class="notice todo"><a class="notice-link" href="#todo-14">TODO</a><p>Add privacy considerations.</p>
-</div>
+<p>The business expression of the AnonCreds privacy goal is to allow a verifiable
+credential holder to minimize the amount of information they share with others
+in presentations and to minimize the opportunities for holder <a class="term-reference" href="#term:correlation">correlation</a> (also called <a class="term-reference" href="#term:unlinkability">unlinkability</a>) across issuers and verifiers
+when using verifiable credentials and presentations. While it is understood that
+the <a class="term-reference" href="#term:claims">claims</a> that a holder shares in a verifiable presentation may be
+correlatable, the act of providing an AnonCreds verifiable presentation must not
+provide <a class="term-reference" href="#term:correlatable">correlatable</a> data.</p>
+<p>AnonCreds accomplishes its privacy goals using the following techniques, all of
+which are based on forms of <a class="term-reference" href="#term:zero-knowledge-proofs">zero-knowledge proofs</a>, as described in this
+specification.</p>
+<ul>
+<li>Holders use a <a class="term-reference" href="#term:link-secret">link secret</a> to enable the binding of the credentials
+they receive from issuers, such that:
+<ul>
+<li>Issuers do not receive an identifier for the holder that can be correlated
+with other issuers during the credential issuance process.</li>
+<li>In a presentation, verifiers receive proof of the holder’s knowledge of the
+link secret without receiving an identifier that can be correlated with
+other issuers.</li>
+<li>In a presentation, verifiers do not receive an identifier that can be
+correlated with the issuers of the source credentials.</li>
+<li>In a presentation, holders prove all of the credentials they were issued are
+bound to the same link secret without revealing a correlatable identifier to
+verifiers.</li>
+</ul>
+</li>
+<li>In a presentation, the holder provides proof of the issuers signatures without
+revealing the signatures itself, which can be used as a correlatable
+identifier.</li>
+<li><a class="term-reference" href="#term:holders">Holders</a> can (verifiably) selectively disclose <a class="term-reference" href="#term:claims">claims</a> from
+source credentials.</li>
+<li><a class="term-reference" href="#term:holders">Holders</a> can (verifiably) prove <a class="term-reference" href="#term:predicate">predicate</a> expressions about
+integer <a class="term-reference" href="#term:claims">claims</a> from source credentials.</li>
+<li><a class="term-reference" href="#term:holders">Holders</a> can in some situations, produce <a class="term-reference" href="#term:non-revocation">non-revocation</a> (NRPs) about the source credentials in a presentation without
+revealing a correlatable identifier for themselves or the source credentials.
+<ul>
+<li>If credentials are both revocable and not revoked, the <a class="term-reference" href="#term:holder">Holder</a> can
+produce a valid NRP for presented source credentials.</li>
+<li>If credentials are both revocable and revoked, the <a class="term-reference" href="#term:holder">Holder</a> cannot
+produce a valid NRP for presented source credentials.</li>
+<li>If credentials are not revocable, the <a class="term-reference" href="#term:holder">Holder</a> cannot produce a valid NRP
+for presented source credentials.</li>
+</ul>
+</li>
+</ul>
+<p>The further privacy properties are stated according to <a path-0="tools.ietf.org"path-1="html"path-2="rfc6973#section-5"href="https://tools.ietf.org/html/rfc6973#section-5" >Section 5 of
+RFC6973</a>.</p>
+<h3 id="surveillance"><a class="toc-anchor" href="#surveillance" >§</a> Surveillance</h3>
+<p>In the strict scope of this specification, the activities of the parties are not
+subject to surveillance due to the presentation <a class="term-reference" href="#term:data-minimization">data minimization</a> and
+<a class="term-reference" href="#term:unlinkability">unlinkability</a> characteristics of the credential issuance and presentation
+actions. However, in any digital trust ecosystem, there are other components
+that could lead to surveillance depending on how they are implemented. These
+include:</p>
+<ul>
+<li>The interactions of the various participants could be surveilled depending on
+how the various objects (credentials, presentations, etc.) are exchanged. For
+example, HTTP traffic amongst <a class="term-reference" href="#term:issuers">Issuers</a>, <a class="term-reference" href="#term:holders">Holders</a> and <a class="term-reference" href="#term:verifiers">Verifiers</a> could be correlated.
+<ul>
+<li>Using a secure, encrypted, peer-to-peer communication channel such as
+[DIDComm] can be used to mitigate the surveillance risk.</li>
+</ul>
+</li>
+<li>An implementation of AnonCreds based on this specification can not hide the
+time to generate or size of a presentation.
+<ul>
+<li>A deployment based on this implementation could mitigate this potential
+leakage by artificially inflating both the time to generate and the size of
+the presentation.</li>
+</ul>
+</li>
+<li>If the <a class="term-reference" href="#term:holder">Holder</a> must request credential revocation information directly
+from an <a class="term-reference" href="#term:issuer">Issuer</a> when creating a presentation, the <a class="term-reference" href="#term:issuer">Issuer</a>
+could surveil the use of a credential by the <a class="term-reference" href="#term:holder">Holder</a>. Further, if the
+<a class="term-reference" href="#term:verifier">Verifier</a> also must request revocation data from an <a class="term-reference" href="#term:issuer">issuer</a> to
+verify a received presentation, the <a class="term-reference" href="#term:issuer">Issuer</a> could correlate the use of
+credentials by <a class="term-reference" href="#term:holders">Holders</a> and with what <a class="term-reference" href="#term:verifiers">Verifiers</a> the
+credentials are being used. This is often called the <a class="term-reference" href="#term:call-home">Call Home</a> problem.
+<ul>
+<li><a class="term-reference" href="#term:distributed-ledgers">Distributed Ledgers</a> are often used in <a class="term-reference" href="#term:digital-trust-ecosystems">Digital Trust ecosystems</a> to
+mitigate such surveillance, where public data needed to generate and verify presentations
+are read from public ledgers operated by a set of “uninterested” parties.</li>
+<li>Other techniques are possible to mitigate such surveillance when ledgers are
+not used.  For example, <a class="term-reference" href="#term:verifiers">Verifiers</a> requesting a presentation could
+retrieve the necessary revocation data from <a class="term-reference" href="#term:issuers">Issuers</a> and provide
+that data to the <a class="term-reference" href="#term:holder">Holder</a>. The Issuer could still surveil the
+verifications occurring, but would not know what <a class="term-reference" href="#term:holders">Holders</a> were
+providing the presentations.</li>
+</ul>
+</li>
+</ul>
+<h3 id="stored-data-compromise"><a class="toc-anchor" href="#stored-data-compromise" >§</a> Stored Data Compromise</h3>
+<p>The compromise of stored data held by the various agents in a digital trust
+ecosystem must be mitigated by the respective agent software and hardware, and
+is out of scope of this specification. The stored data of an individual agent
+shall be protected by implementing best practices in securing mobile wallet
+applications and IT infrastructure, like <a path-0="www.iso.org"path-1="standard"path-2="27001"href="https://www.iso.org/standard/27001" >ISO27001</a> and <a path-0="en.wikipedia.org"path-1="wiki"path-2="Information_security_management"href="https://en.wikipedia.org/wiki/Information_security_management" >Information Security
+Management</a> systems (ISMS).</p>
+<h3 id="unsolicited-traffic"><a class="toc-anchor" href="#unsolicited-traffic" >§</a> Unsolicited Traffic</h3>
+<p>The issue of unsolicited traffic is out of scope of this specification. It is a
+concern of the agents into which the AnonCreds library is embedded. The
+prevention of unsolicited traffic shall be accomplished by implementing best
+practices in securing mobile wallet applications and IT infrastructure, like
+<a path-0="www.iso.org"path-1="standard"path-2="27001"href="https://www.iso.org/standard/27001" >ISO27001</a> and <a path-0="en.wikipedia.org"path-1="wiki"path-2="Information_security_management"href="https://en.wikipedia.org/wiki/Information_security_management" >Information Security Management</a> systems (ISMS).</p>
+<h3 id="misattribution"><a class="toc-anchor" href="#misattribution" >§</a> Misattribution</h3>
+<p>The risk of misattribution when using AnonCreds is mitigated by the participants
+following the specification. However, as noted in the <a href="#generating-a-credential-definition-without-revocation-support" >warning found in this
+section</a> of this
+specification, a malicious <a class="term-reference" href="#term:issuer">issuer</a> could deliberately generate a weak
+private key for use in issuing AnonCreds credentials such that a unique
+identifier for a holder can be determined via a brute force attack. In that
+case, anyone applying the brute force attack could issue credentials as it they
+were from the <a class="term-reference" href="#term:issuer">Issuer</a>, possibly with false information. This risk
+further incentivize <a class="term-reference" href="#term:issuers">Issuers</a> not to deliberately weaken their keys.</p>
+<p>If a third party gains access to the secure storage of a <a class="term-reference" href="#term:holder">Holder</a> (or a
+copy thereof), they could present information as if they were the <a class="term-reference" href="#term:holder">Holder</a>. The stored data of an individual agent shall be protected by
+implementing best practices in securing mobile wallet applications and IT
+infrastructure, like <a path-0="www.iso.org"path-1="standard"path-2="27001"href="https://www.iso.org/standard/27001" >ISO27001</a> and <a path-0="en.wikipedia.org"path-1="wiki"path-2="Information_security_management"href="https://en.wikipedia.org/wiki/Information_security_management" >Information Security Management</a> systems
+(ISMS).</p>
+<h3 id="correlation"><a class="toc-anchor" href="#correlation" >§</a> Correlation</h3>
+<p>As noted in the introduction to this section, AnonCreds v1 uses two important
+techniques to prevent correlation in the issuance and presentation of verifiable
+data:</p>
+<ul>
+<li>The use of <a class="term-reference" href="#term:zero-knowledge-proofs">zero knowledge proofs</a> in eliminating an correlatable (linkable)
+data as part of the process of issuing AnonCreds verifiable credentials and
+presenting AnonCreds verifiable presentations. While the credential data
+issued and presented MAY include correlatable data elements, the issuing and
+presenting processes do not provide correlatable data elements.</li>
+<li>The data minimization features supported in presenting data, such that the
+<a class="term-reference" href="#term:holder">holder</a> can selectively disclose only relevant information from the
+credential based on the business purpose of the presentation, and the use of
+<a class="term-reference" href="#term:predicates">predicates</a> that support proving an expression based on an integer
+claim in a verifiable credential without revealing the claim itself.</li>
+</ul>
+<h3 id="identification"><a class="toc-anchor" href="#identification" >§</a> Identification</h3>
+<p>AnonCreds v1 enables, but does not itself provide, identification. The <a class="term-reference" href="#term:unlinkability">unlinkability</a> and <a class="term-reference" href="#term:data-minimization">data minimization</a> capabilities inherent in
+AnonCreds enable the <a class="term-reference" href="#term:holder">Holder</a> to provide presentations anonymously.
+However, the <a class="term-reference" href="#term:claims">claims</a> within the presentation are from verifiably issued
+credentials, and as such, may be used for identification.</p>
+<h3 id="secondary-use"><a class="toc-anchor" href="#secondary-use" >§</a> Secondary Use</h3>
+<p>The disclosed <a class="term-reference" href="#term:claims">claims</a> and <a class="term-reference" href="#term:predicates">predicates</a> presented by the <a class="term-reference" href="#term:holder">Holder</a> to the <a class="term-reference" href="#term:verifier">Verifier</a> are necessarily visible to the <a class="term-reference" href="#term:verifier">verifier</a>. The secondary use of that data is outside the scope of the AnonCreds
+specification, and is a governance issue. A <a class="term-reference" href="#term:holder">holder</a> that presents data
+to a <a class="term-reference" href="#term:verifier">verifier</a> using AnonCreds cannot “revoke” that the presentation was
+made as the <a class="term-reference" href="#term:verifier">verifier</a> already possesses the disclosed data.</p>
+<h3 id="disclosure"><a class="toc-anchor" href="#disclosure" >§</a> Disclosure</h3>
+<p>The disclosed <a class="term-reference" href="#term:claims">claims</a> and <a class="term-reference" href="#term:predicates">predicates</a> presented by the <a class="term-reference" href="#term:holder">Holder</a> to the <a class="term-reference" href="#term:verifier">Verifier</a> are necessarily visible to the <a class="term-reference" href="#term:verifier">verifier</a>. The disclosure of that data by the <a class="term-reference" href="#term:verifier">verifier</a> is outside the
+scope of the AnonCreds specification, and is a governance issue. A <a class="term-reference" href="#term:holder">holder</a> that presents data to a <a class="term-reference" href="#term:verifier">verifier</a> using AnonCreds cannot
+“revoke” that the presentation was made as the <a class="term-reference" href="#term:verifier">verifier</a> already possesses the
+disclosed data.</p>
+<h3 id="exclusion"><a class="toc-anchor" href="#exclusion" >§</a> Exclusion</h3>
+<p>The participants (<a class="term-reference" href="#term:issuers">issuers</a>, <a class="term-reference" href="#term:holders">holders</a>, <a class="term-reference" href="#term:verifiers">verifiers</a>) using
+AnonCreds may apply whatever policies (including refusal) they want in issuing,
+holding, requesting, presenting, and verifying AnonCreds verifiable credential
+and presentations. Such policies are out outside the
+scope of the AnonCreds specification, and are governance issues.</p>
 <h2 id="references"><a class="toc-anchor" href="#references" >§</a> References</h2>
 <h3 id="normative-references"><a class="toc-anchor" href="#normative-references" >§</a> Normative References</h3>
-<div id="todo-15" class="notice todo"><a class="notice-link" href="#todo-15">TODO</a><p>Add normative references</p>
+<div id="todo-12" class="notice todo"><a class="notice-link" href="#todo-12">TODO</a><p>Add normative references</p>
 </div>
 <h3 id="informative-references"><a class="toc-anchor" href="#informative-references" >§</a> Informative References</h3>
-<div id="todo-16" class="notice todo"><a class="notice-link" href="#todo-16">TODO</a><p>Add informative references</p>
+<div id="todo-13" class="notice todo"><a class="notice-link" href="#todo-13">TODO</a><p>Add informative references</p>
 </div>
 <h4 id="resources-on-cryptography"><a class="toc-anchor" href="#resources-on-cryptography" >§</a> Resources on cryptography</h4>
 <h5 id="sigma-protocols"><a class="toc-anchor" href="#sigma-protocols" >§</a> Sigma protocols</h5>
@@ -3267,7 +3581,7 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li>Matt Raffel - Kiva Microfiance</li>
 </ul>
 <h2 id="authors-addresses"><a class="toc-anchor" href="#authors-addresses" >§</a> Authors’ Addresses</h2>
-<div id="todo-17" class="notice todo"><a class="notice-link" href="#todo-17">TODO</a><p>Add authors’ addresses.</p>
+<div id="todo-14" class="notice todo"><a class="notice-link" href="#todo-14">TODO</a><p>Add authors’ addresses.</p>
 </div>
 
                     </article>    
@@ -3400,31 +3714,33 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li><a href="#iana-considerations" >IANA Considerations</a></li>
 <li><a href="#security-considerations" >Security Considerations</a>
 <ul>
-<li><a href="#cryptography" >Cryptography</a>
+<li><a href="#zero-knowledge-proofs-in-anoncreds" >Zero Knowledge Proofs in AnonCreds</a></li>
+<li><a href="#eavesdropping" >Eavesdropping</a></li>
+<li><a href="#replay" >Replay</a></li>
+<li><a href="#message-tampering" >Message Tampering</a></li>
+<li><a href="#holder-collusion" >Holder Collusion</a></li>
+<li><a href="#protection-of-data" >Protection of data</a></li>
+<li><a href="#protection-of-key-material" >Protection of Key Material</a></li>
+<li><a href="#man-in-the-middle" >Man-In-The-Middle</a></li>
+<li><a href="#deletion" >Deletion</a></li>
+<li><a href="#denial-of-service" >Denial of Service</a></li>
+<li><a href="#storage-or-network-amplification" >Storage or Network Amplification</a></li>
+</ul>
+</li>
+<li><a href="#residual-risks" >Residual Risks</a></li>
+<li><a href="#privacy-considerations" >Privacy Considerations</a>
 <ul>
-<li><a href="#signature" >Signature</a></li>
-<li><a href="#revocation-accumulators" >Revocation / Accumulators</a></li>
+<li><a href="#surveillance" >Surveillance</a></li>
+<li><a href="#stored-data-compromise" >Stored Data Compromise</a></li>
+<li><a href="#unsolicited-traffic" >Unsolicited Traffic</a></li>
+<li><a href="#misattribution" >Misattribution</a></li>
+<li><a href="#correlation" >Correlation</a></li>
+<li><a href="#identification" >Identification</a></li>
+<li><a href="#secondary-use" >Secondary Use</a></li>
+<li><a href="#disclosure" >Disclosure</a></li>
+<li><a href="#exclusion" >Exclusion</a></li>
 </ul>
 </li>
-<li><a href="#verifiable-data-registry" >Verifiable Data Registry</a>
-<ul>
-<li><a href="#permission-management" >Permission Management</a></li>
-<li><a href="#authentication-of-issuer" >Authentication of Issuer</a></li>
-<li><a href="#security-requirements-at-dids-and-related-keys" >Security Requirements at DIDs and Related Keys</a></li>
-</ul>
-</li>
-<li><a href="#envelope" >Envelope</a></li>
-<li><a href="#transport" >Transport</a></li>
-<li><a href="#wallet" >Wallet</a>
-<ul>
-<li><a href="#recovery" >Recovery</a></li>
-<li><a href="#support-of-hardware-secure-modules" >Support of Hardware Secure Modules</a></li>
-</ul>
-</li>
-<li><a href="#crypto-agility" >Crypto Agility</a></li>
-</ul>
-</li>
-<li><a href="#privacy-considerations" >Privacy Considerations</a></li>
 <li><a href="#references" >References</a>
 <ul>
 <li><a href="#normative-references" >Normative References</a></li>
