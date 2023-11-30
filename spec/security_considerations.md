@@ -1,47 +1,217 @@
 ## Security Considerations
 
-### Cryptography
+There are a number of security considerations that issuers, holders, and
+verifiers should be aware of when processing data described by this
+specification. Ignoring or not understanding the implications of this section
+can result in security vulnerabilities.
 
-#### Signature
-::: todo
-Add security considerations related to CL signatures
-::: 
+While this section attempts to highlight a broad set of security considerations,
+it is not a complete list. Implementers are urged to seek the advice of security
+and cryptography professionals when implementing mission critical systems using
+the technology outlined in this specification.
 
-#### Revocation / Accumulators
-::: todo
-Add security considerations related to cryptographic accumulators and AnonCreds revocation
-- issues with too small revocation registries
-- ...
-:::
+### Zero Knowledge Proofs in AnonCreds
 
-### Verifiable Data Registry
-It is recommended to use a [[ref: Verifiable Data Registry]] that complies with the state of the art security features and best practices.
+The security of AnonCreds is primarily based on the security of the AnonCreds
+cryptography, and in particular, the [[ref: zero knowledge proofs]] (ZKPs), upon
+which this specification is based. Each ZKP used in AnonCreds requires
+the following security properties be met, as introduced in many ZKP articles,
+such as this one on [non-interactive zero knowledge proofs]:
 
-#### Permission Management
-The VDR for storing [[ref: Schema]]s, [[ref: Credential Definition]]s, [[ref: Revocation Registry Definition]]s, and [[ref: Revocation Status List]]s shall ensure that only the owner or from the owner permitted entities can write, edit, or revoke those AnonCreds objects. Furthermore, public AnonCreds objects shall be readable by any entity that can access the VDR.
+- Completeness
+  - If statement is true, a verifier will be convinced by prover.
+- Soundness
+  - If statement is false, a cheating prover cannot convince verifier it is true
+    except with some negligible probability.
+- Zero-Knowledge
+  - The verifier learns nothing beyond the statement’s validity.
 
-#### Authentication of Issuer
-The VDR shall allow only permitted entities to issue AnonCreds based on AnonCreds objects related to it.  
+[non-interactive zero knowledge proofs]: http://www0.cs.ucl.ac.uk/staff/J.Groth/ShortNIZK.pdf
 
-#### Security Requirements at DIDs and Related Keys
-It is recommended to follow the best practices of decentralized key management system designs and architectures. For example, an option for publishing AnonCreds is the Hyperledger Indy, which are built on the following [DKMS Design and Architecture](https://github.com/hyperledger/indy-sdk/blob/main/docs/design/005-dkms/DKMS%20Design%20and%20Architecture%20V3.md) 
+The security of the ZKPs is based on the security of RSA cryptography, and
+specifically that the factoring of `n`, where `n` is the product of two [[ref:
+safe primes]], is a computationally hard problem.
 
-### Envelope
-AnonCreds should be packed in a message envelope that can fulfill properties such as authenticity, integrity, confidentiality, and non-repudiation of the message. A message can have these properties with signature and encryption algorithms. It is recommended to choose signature and encryption algorithms that are state of the art and offer such security. For example, Hyperledger Indy utilizes DIDComm v1 as message envelope for exchanging AnonCreds between [[ref: issuer]]s, [[ref: holder]]s, and [[ref: verifier]]s. 
+These properties apply in the places where zero knowledge proofs are used in AnonCreds:
 
-### Transport
-This specification does not mention which transport protocols should be used to exchange AnonCreds between parties. It is recommended to use transport protocols that are state of the art and offer such security.
+- No linkable identifiers for the holder are shared to the issuer during the
+  issuing process, yet the [[ref: issuer]] is convinced by the [[ref: holder]]
+  that the [[ref: holder]] knows the [[ref: link secret]] to which the
+  credentials are to be issued.
+  - The [[ref: issuer]] may know other correlatable data about the [[ref:
+    holder]], but not the [[ref: link secret]] to which the credential is
+    issued.
+- No linkable identifiers for the holder are shared to the verifier during the
+  presentation process, yet the [[ref: verifier]] is convinced by the [[ref:
+  holder]] that the [[ref: holder]] knows the [[ref: link secret]] to which the
+  credentials were issued.
+  - The [[ref: verifier]] may receive [[ref: claims]] about the [[ref: holder]]
+    that are correlatable, but not the [[ref: link secret]] to which the
+    presented credentials were issued.
+- Even though the signatures over the credentials in a presentation are
+  generated to be unique per presentation by the [[ref: holder]], the [[ref:
+  verifier]] is convinced that the presented signatures were derived from the
+  signatures generated by the [[ref: issuer]] using the cryptographic
+  information in the [[ref: credential definitions]] published by the [[ref:
+  issuers]].
+- The [[ref: verifier]] is convinced that the signatures in the presentation are
+  valid despite the selective disclosure of [[ref: claims]] from the verifiable
+  credentials.
+- The [[ref: verifier]] is convinced that the presented predicates are true if
+  and only if the requested predicate expression based on the [[ref: claim]]
+  value is also true.
+- The [[ref: verifier]] is convinced that the [[ref: holders]] source verifiable
+  credentials are not revoked (assuming it is revocable) if the [[ref:
+  non-revocation proofs]] generated by the [[ref: issuer]] are valid.
 
+### Eavesdropping
 
-### Wallet
-It is recommended to follow the wallet security best practices such as the one created by the [DIF Wallet Security Working Group] (https://github.com/decentralized-identity/wallet-security)
+The prevention of eavesdropping during the exchange of AnonCreds objects during
+issuance and verification is outside the scope of this specification. The
+security of the data shared between parties shall be protected by implementing
+best practices in communications amongst mobile wallet and IT infrastructure,
+like [ISO27001] and [Information Security Management] systems (ISMS). That said,
+the AnonCreds cryptography prevents an eavesdropper from gaining other than any
+plaintext information the parties of an interaction might intentionally or
+accidentally share.
 
-#### Recovery
-The wallets for AnonCreds shall offer recovery mechanisms for the [[ref: holder]]s to export their keys and/or [[ref: link secret]]s to different devices. Furthermore, wallet applications should offer portability mechanisms for [[ref: holder]]s to migrate their credentials from one wallet (or end device) to another. 
+- Issuances are generated uniquely using nonces and the [[ref: holder]]'s
+  generated [[ref: blinded link secret]] such that an eavesdropper that lacks
+  knowledge of the holder's [[ref: link secret]] cannot replay the interaction
+  or derive presentations from the verifiable credential.
+- Presentation requests are generated uniquely using a nonce, and presentations
+  are derived based on the [[ref: holder]]'s [[ref: link secret]] such that an
+  eavesdropper that lacks knowledge of the holder's [[ref: link secret]] cannot
+  replay the interaction or derive additional presentations from the source
+  verifiable credentials.
 
-#### Support of Hardware Secure Modules
-The current underlying signature algorithm of AnonCreds is currently not supported by any hardware secure module. Use cases requiring binding of an AnonCreds to a device (device binding) can follow the best practices of wallet security (hyperlink) until the AnonCreds signature algorithm is supported by hardware secure modules of enduser devices.  
+### Replay
 
-### Crypto Agility
-The underlying signature algorithm of AnonCreds is not known to be a post-quantum computing resistant. As new signature algorithms evolve for the post-quantum computing security, the underlying signature algorithm of AnonCreds shall keep privacy-preserving features such as selective disclosure and non-correlatability.
+Replay prevention in AnonCreds for both issuances and presentations are
+prevented through the use of nonces. During the 3-step issuance process the
+[[ref: issuer]] (in the Credential Offer) and then the [[ref: holder]] (in the
+Credential Request) provide and verify the use of nonces before proceeding.
+Likewise in the presentation request, the [[ref: verifier]] provides a nonce
+that is incorporated by the [[ref: holder]] in generating the presentation, and
+verified by the [[ref: verifier]].
 
+### Message Tampering
+
+Message tampering during AnonCreds exchanges is ineffective when
+the secrets are securely protected by the [[ref: issuers]] and [[ref: holders]].
+Arbitrary modification of AnonCreds data without access to the appropriate secret data is
+detectable through the failure of the verification of the data objects. See the
+security considerations sections about the [protection of
+data](#protection-of-data) and [protection of key
+material](#protection-of-key-material) for more on protecting those secrets and
+the potentials impacts if those secrets are disclosed.
+
+### Holder Collusion
+
+[[ref: Holders]] that collude by sharing their [[ref: link secret]] could each
+be issued credentials to the same [[ref: link secret]]. Subsequently,
+such [[ref: holders]] could present any combination of the credentials together,
+including generating a proof that they were all issued to the same [[ref: link
+secret]]. Where such collusion is deemed a significant risk, such as with a
+mobile wallet application, the agent software should protect the [[ref: link
+secret]] so as to prevent access or extraction. [[ref: Issuers]] and [[ref:
+Verifiers]] may choose to implement verifications that the [[ref: holder]] is
+using a mobile wallet that is known to prevent such extraction and subsequent
+collusion.
+
+### Protection of data
+
+The protection of data, both at rest and in motion, is outside the scope of this
+specification. Protection of data should be accomplished by the participants
+exchanging AnonCreds verifiable data implementing best practices in data
+protection for mobile wallet and IT infrastructure, like [ISO27001] and
+[Information Security Management] systems (ISMS). See the section on the
+[protection of key material](#protection-of-key-material) for more on the
+potential impact of disclosed secrets.
+
+When verifiable credentials are stored on a device and that device is lost or
+stolen, it might be possible for an attacker to use the victim's verifiable
+credentials. Mitigating the impacts of such a loss include:
+
+- Enabling password, pin, pattern, or biometric screen unlock protection on the
+  device.
+- Enabling password, biometric, or multi-factor authentication for the
+  credential repository.
+- Enabling password, biometric, or multi-factor authentication when accessing
+  cryptographic keys.
+- All or any combination of the above.
+
+The potential risks in not adequately protecting data are covered in the
+[eavesdropping](#eavesdropping), [message insertion and
+modification](#message-insertion-and-modification) and [replay](#replay)
+subsection of the Security Considerations.
+
+### Protection of Key Material
+
+The private keys associated with the public keys used by the [[ref: issuer]]
+must be kept secret. Each [[ref: issuer]] is responsible for storing and using
+their private keys and (for the [[ref: holder]]) the [[ref: link secret]] in a
+sufficiently secure manner.
+
+Unintended disclosure of [[ref: issuer]] secret information could allow others
+with access to the secrets issue credentials as if from the original [[ref:
+issuer]].
+
+Unintended disclosure of the [[ref: holder]]'s [[ref: link secret]] could, if
+accompanied by the disclosure of the holder's verifiable credentials, allow
+others to present those credentials as their own. A malicious presenter could
+not present their own credentials issued to a different [[ref: link secret]]
+alongside the compromised verifiable credentials.
+
+### Man-In-The-Middle
+
+The prevention and detection of Man-In-The-Middle (MITM) attacks during the
+exchange of AnonCreds objects during issuance and verification is outside the
+scope of this specification. Best practices in preventing MITM attacks while
+establishing the communications channel between the parties through which the
+data objects are exchanged should be followed by all of the participants.
+
+As covered in the previous section on [Message Insertion and
+Modification](#message-insertion-and-modification) issuance and presentations
+processes are not susceptible to alteration by a MITM. The primary risk of MITM
+attacks are the potential for collusion between [[ref: holders]] interacting
+with a [[ref: verifier]]. For example, a MITM interacts with a verifier to
+respond to a presentation request by colluding (in real-time) with a set of one
+or more [[ref: holders]] to pass on each presentation request and get a
+presentation from the most suitable [[ref: holder]] for each individual
+presentation request. This attack can be mitigated by requesting presentations
+that are satisfied from multiple source credentials, which will be verified to
+show all are bound to the same [[ref: link secret]].
+
+### Deletion
+
+The handling of the deletion of AnonCreds objects by the various participants is
+outside the scope of this specification. Such objects may be deleted by the
+participants at any time, understanding that once done, the operations enabled
+by the possession of those objects cannot be performed. For example, an issuer
+losing the issuance and revocation private keys can no longer issue or revoke
+credentials. Likewise, a [[ref: holder]] can't provide a presentation of a
+deleted source credential. Protection from inadvertent deletion of such data
+shall be protected by implementing best practices in data management by mobile
+wallet and IT infrastructure, like [ISO27001] and [Information Security
+Management] systems (ISMS).
+
+### Denial of Service
+
+Denial of Service attacks against the various participants in AnonCreds
+exchanges are outside the scope of this specification.
+
+### Storage or Network Amplification
+
+Storage or network amplification attacks against the various participants in
+AnonCreds exchanges are outside the scope of this specification.
+
+## Residual Risks
+
+The residual risks inherent in AnonCreds include:
+
+- Compromise in the used cryptographic primitives used in AnonCreds v1, as
+  described in this specification.
+- Bugs in the AnonCreds implementations used by participants exchanging
+  AnonCreds verifiable data.
+- External libraries upon which the AnonCreds implementations are dependent.
