@@ -130,19 +130,6 @@ NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “NOT RECOMMENDED”
 “MAY”, and “OPTIONAL” in this document are to be interpreted as
 described in BCP 14 [RFC2119] [RFC8174] when, and only when, they
 appear in all capitals, as shown here.</p>
-<p><code>a || b</code> : Denotes the concatenation of octet strings a and b.</p>
-<p><code>I \ J</code> : For sets I and J, denotes the difference of the two sets i.e., all the elements of I that do not appear in J, in the same order as they were in I.</p>
-<p><code>X[a..b]</code> : Denotes a slice of the array X containing all elements from and including the value at index a until and including the value at index b. Note when this syntax is applied to an octet string, each element in the array X is assumed to be a single byte.</p>
-<p><code>range(a, b)</code> : For integers a and b, with a &lt;= b, denotes the ascending ordered list of all integers between a and b inclusive (i.e., the integers “i” such that a &lt;= i &lt;= b).</p>
-<p><code>length(input)</code> : Takes as input either an array or an octet string. If the input is an array, returns the number of elements of the array. If the input is an octet string, returns the number of bytes of the inputted octet string.</p>
-<p><code>H(...)</code> : Any hash function.</p>
-<p>Terms specific to pairing-friendly elliptic curves are:</p>
-<p><code>E1, E2</code> : elliptic curve groups defined over finite fields. This document assumes that E1 has a more compact representation than E2, i.e., because E1 is defined over a smaller field than E2.</p>
-<p><code>G1, G2</code> : subgroups of E1 and E2 (respectively) having prime order r.</p>
-<p><code>GT</code> : a subgroup, of prime order r, of the multiplicative group of a field extension.</p>
-<p><code>e</code> : G1 x G2 -&gt; GT: a non-degenerate bilinear map.</p>
-<p><code>r</code> : The prime order of the G1 and G2 subgroups.</p>
-<p><code>P1, P2</code> : points on G1 and G2 respectively. For a pairing-friendly curve, this document denotes operations in E1 and E2 in additive notation, i.e., P + Q denotes point addition and x * P denotes scalar multiplication. Operations in GT are written in multiplicative notation, i.e., a * b is field multiplication.</p>
 <h2 id="terminology"><a class="toc-anchor" href="#terminology" >§</a> Terminology</h2>
 <dl>
 <dt><span id="term:blinding-factor">blinding factor</span></dt>
@@ -315,8 +302,24 @@ accumulator, such that the updated witness times the private factor of the crede
 <p>AnonCreds are capable of all three features mentioned above.</p>
 </dd>
 </dl>
-<div id="note-1" class="notice note"><a class="notice-link" href="#note-1">NOTE</a><p><strong>Question</strong>: Should the items that are AnonCreds data models be included in this?</p>
-</div>
+<h3 id="cryptographic-notations"><a class="toc-anchor" href="#cryptographic-notations" >§</a> Cryptographic Notations</h3>
+<p>This specification contains the cryptographic calculations necessary to produce
+the data objects exchanged in using Hyperledger AnonCreds, and to verify the various proofs
+embedded in those objects. The following is information about the notations used
+in displaying the cryptographic calculations:</p>
+<p><code>a || b</code> : Denotes the concatenation of octet strings <code>a</code> and <code>b</code>.</p>
+<p><code>I \ J</code> : For sets <code>I</code> and <code>J</code>, denotes the difference of the two sets i.e., all the elements of <code>I</code> that do not appear in <code>J</code>, in the same order as they were in <code>I</code>.</p>
+<p><code>X[a..b]</code> : Denotes a slice of the array <code>X</code> containing all elements from and including the value at index <code>a</code> until and including the value at index <code>b</code>. Note when this syntax is applied to an octet string, each element in the array <code>X</code> is assumed to be a single byte.</p>
+<p><code>range(a, b)</code> : For integers <code>a</code> and <code>b</code>, with <code>a &lt;= b</code>, denotes the ascending ordered list of all integers between <code>a</code> and <code>b</code> inclusive (i.e., the integers <code>i</code> such that <code>a &lt;= i &lt;= b</code>).</p>
+<p><code>length(input)</code> : Takes as input either an array or an octet string. If the input is an array, returns the number of elements of the array. If the input is an octet string, returns the number of bytes of the inputted octet string.</p>
+<p><code>H(...)</code> : Any hash function.</p>
+<p>Terms specific to pairing-friendly elliptic curves are:</p>
+<p><code>E1, E2</code> : elliptic curve groups defined over finite fields. This document assumes that <code>E1</code> has a more compact representation than <code>E2</code>, i.e., because <code>E1</code> is defined over a smaller field than <code>E2</code>.</p>
+<p><code>G1, G2</code> : subgroups of <code>E1</code> and <code>E2</code> (respectively) having prime order <code>r</code>.</p>
+<p><code>GT</code> : a subgroup, of prime order <code>r</code>, of the multiplicative group of a field extension.</p>
+<p><code>e</code> : <code>G1 x G2 -&gt; GT</code> a non-degenerate bilinear map.</p>
+<p><code>r</code> : The prime order of the <code>G1</code> and <code>G2</code> subgroups.</p>
+<p><code>P1, P2</code> : points on <code>G1</code> and <code>G2</code> respectively. For a pairing-friendly curve, this document denotes operations in <code>E1</code> and <code>E2</code> in additive notation, i.e., <code>P + Q</code> denotes point addition and <code>x * P</code> denotes scalar multiplication. Operations in <code>GT</code> are written in multiplicative notation, i.e., <code>a * b</code> is field multiplication.</p>
 <h2 id="anoncreds-setup-data-flow"><a class="toc-anchor" href="#anoncreds-setup-data-flow" >§</a> AnonCreds Setup Data Flow</h2>
 <p>The following sequence diagram summarizes the setup operations performed by a <a class="term-reference" href="#term:schema-publisher">Schema Publisher</a>, the <a class="term-reference" href="#term:issuer">Issuer</a> (one required and one optional) in preparing to issue an AnonCred credential based on provided <a class="term-reference" href="#term:schema">Schema</a>, and the one setup operation performed by each <a class="term-reference" href="#term:holder">Holder</a>. On successfully completing the operations, the <a class="term-reference" href="#term:issuer">Issuer</a> is able to issue credentials based on the given <a class="term-reference" href="#term:schema">Schema</a> to the <a class="term-reference" href="#term:holder">Holder</a>. The subsections below the diagram detail each of these operations.</p>
 <div class="mermaid">
@@ -353,7 +356,7 @@ sequenceDiagram
       Note left of H: 💡The "Verifier" role is<br>omitted in this<br>diagram, since<br>it is not required<br>for the setup
     end
 </div>
-<div id="note-2" class="notice note"><a class="notice-link" href="#note-2">NOTE</a><p>Those with a knowledge of DIDs might expect that in the flow above, the first
+<div id="note-1" class="notice note"><a class="notice-link" href="#note-1">NOTE</a><p>Those with a knowledge of DIDs might expect that in the flow above, the first
 step would be for the <a class="term-reference" href="#term:issuer">issuer</a> to publish a DID. However, in AnonCreds,
 DIDs are not used in the processing of credentials, and notably, the public keys
 used in AnonCreds signatures come not from DIDs, but rather from <a class="term-reference" href="#term:credential-definition">Credential Definition</a> objects. DIDs may be used to identify the entity publishing the
@@ -754,7 +757,7 @@ the index of the point for that credential. The contents of the <a class="term-r
 (if possible) a “proof of non-revocation” to show their issued credential has
 not been revoked.</p>
 <p>The process of generating the points that populate the <a class="term-reference" href="#term:tails_file">TAILS_FILE</a> are <code>tail[index] = g_dash * (gamma ** index)</code></p>
-<div id="note-3" class="notice note"><a class="notice-link" href="#note-3">NOTE</a><p>Detailed process for tails file generation:</p>
+<div id="note-2" class="notice note"><a class="notice-link" href="#note-2">NOTE</a><p>Detailed process for tails file generation:</p>
 <ul>
 <li>Create and open the tails file.</li>
 <li>To generate a tail point for an attribute located at a specific index, follow the steps.</li>
@@ -1182,7 +1185,7 @@ the encoded value signed by the <a class="term-reference" href="#term:issuer">is
 </ul>
 <p>An example implementation in Python of these rules can be found <a path-0="github.com"path-1="hyperledger"path-2="aries-cloudagent-python"path-3="blob"path-4="0000f924a50b6ac5e6342bff90e64864672ee935"path-5="aries_cloudagent"path-6="messaging"path-7="util.py#L106"href="https://github.com/hyperledger/aries-cloudagent-python/blob/0000f924a50b6ac5e6342bff90e64864672ee935/aries_cloudagent/messaging/util.py#L106" >here</a>.</p>
 <p>A gist of test value pairs can be found <a path-0="github.com"path-1="hyperledger"path-2="aries-cloudagent-python"path-3="blob"path-4="0000f924a50b6ac5e6342bff90e64864672ee935"path-5="aries_cloudagent"path-6="messaging"path-7="util.py#L106"href="https://github.com/hyperledger/aries-cloudagent-python/blob/0000f924a50b6ac5e6342bff90e64864672ee935/aries_cloudagent/messaging/util.py#L106" >here</a>.</p>
-<div id="note-4" class="notice note"><a class="notice-link" href="#note-4">NOTE</a><p>To enable broad interoperability, and to improve the security of AnonCreds by
+<div id="note-3" class="notice note"><a class="notice-link" href="#note-3">NOTE</a><p>To enable broad interoperability, and to improve the security of AnonCreds by
 eliminating the risk of malicious <a class="term-reference" href="#term:holders">holders</a> altering the <code>raw</code> data
 values in hopes that the <a class="term-reference" href="#term:verifier">verifier</a> will not check the encoding as part
 of the overall presentation verification, future versions of AnonCreds
@@ -1266,7 +1269,7 @@ generate the encoded values “on-the-fly” based on the encoding rules above.<
 <li><code>witness</code> is <code>null</code> if the credential is not revocable. A description of the element and generation process when the credential is revocable are in the section <a href="#supporting-revocation-in-a-credential" >Supporting Revocation in a Credential</a>.</li>
 </ul>
 <p>Once constructed, the <a class="term-reference" href="#term:issuer">issuer</a> sends the credential to the <a class="term-reference" href="#term:holder">holder</a> for verification and storage.</p>
-<div id="note-5" class="notice note"><a class="notice-link" href="#note-5">NOTE</a><p>Please note the data attribute “birth_dateint” in the example above. The convention of
+<div id="note-4" class="notice note"><a class="notice-link" href="#note-4">NOTE</a><p>Please note the data attribute “birth_dateint” in the example above. The convention of
 putting a <code>_dateint</code> suffix on a credential attribute name is used to indicate
 that the field contains a date in the form of an integer, such as “2022.11.21”
 as the integer “20221121” (the number 20,221,121). By putting the date in that
@@ -1749,7 +1752,7 @@ be used to satisfy multiple attributes and predicates. Each attribute in the
 presentation request may specify (using the <code>names</code> item) that multiple <a class="term-reference" href="#term:claims">claims</a> from the source credential must be shared. If there is no <code>restrictions</code> item
 in the presentation request, the <a class="term-reference" href="#term:holder">holder</a> MAY satisfy the presentation request
 with self-attested attributes.</p>
-<div id="note-6" class="notice note"><a class="notice-link" href="#note-6">NOTE</a><p>To prevent confusion, the term “attribute” in this section <strong>always</strong> refers to
+<div id="note-5" class="notice note"><a class="notice-link" href="#note-5">NOTE</a><p>To prevent confusion, the term “attribute” in this section <strong>always</strong> refers to
 the <code>required_attributes</code> in a presentation request, and the term “claim” is
 used for the data elements in a verifiable credential.</p>
 </div>
@@ -1759,7 +1762,7 @@ the <a class="term-reference" href="#term:holder">holder</a> must accompany the 
 non-revocation proofs (NRPs) for the source credentials. The generation of NRPs
 is described <a href="#generate-non-revocation-proofs" >in the generate non-revocation proofs
 section</a> of the specification.</p>
-<div id="note-7" class="notice note"><a class="notice-link" href="#note-7">NOTE</a><p>Often in discussions about verifiable presentations, the term “<a class="term-reference" href="#term:prover">prover</a>”
+<div id="note-6" class="notice note"><a class="notice-link" href="#note-6">NOTE</a><p>Often in discussions about verifiable presentations, the term “<a class="term-reference" href="#term:prover">prover</a>”
 is used to indicate the participant generating the presentation. Throughout the
 Hyperledger AnonCreds implementation the term <code>prover</code> is used in the names of
 methods performed by that participant. However, because in AnonCreds the <a class="term-reference" href="#term:holder">holder</a> and the <a class="term-reference" href="#term:prover">prover</a> are always the same entity, we’ll use <a class="term-reference" href="#term:holder">holder</a> to refer to the participant generating the requested presentation to
@@ -2367,7 +2370,7 @@ is divided into five parts:</p>
         <span class="token punctuation">}</span>
       <span class="token punctuation">}</span>
 </code></pre>
-<div id="note-8" class="notice note"><a class="notice-link" href="#note-8">NOTE</a><p>It is important for all verifiers to understand that the revealed attribute
+<div id="note-7" class="notice note"><a class="notice-link" href="#note-7">NOTE</a><p>It is important for all verifiers to understand that the revealed attribute
 proof (<code>eq_proof</code> described earlier) is a proof on the <code>encoded</code> value, not on
 the <code>raw</code> value. As such, it is up to the verifier to know the “raw to encoded”
 algorithm used by the issuer, and to verify that the revealed <code>raw</code> value properly
@@ -2507,7 +2510,7 @@ selected <a class="term-reference" href="#term:revocation-registry-entry">Revoca
 time of the <code>from</code> value or have been published by the issuer between the <code>from</code>
 and <code>to</code> values. How to determine an appropriate <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a> to use is up to the holder, and their use of the capabilities of the
 relevant <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a>.</p>
-<div id="note-9" class="notice note"><a class="notice-link" href="#note-9">NOTE</a><p>When Hyperledger Indy is the <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> for the <a class="term-reference" href="#term:revocation-registry-entry">Revocation Registry Entry</a>, the state is received from Indy ledger as the
+<div id="note-8" class="notice note"><a class="notice-link" href="#note-8">NOTE</a><p>When Hyperledger Indy is the <a class="term-reference" href="#term:verifiable-data-registry">Verifiable Data Registry</a> for the <a class="term-reference" href="#term:revocation-registry-entry">Revocation Registry Entry</a>, the state is received from Indy ledger as the
 “deltas” (state changes) from either the initial state of the Registry or from a
 previous <a class="term-reference" href="#term:revocation-registry-entry">Revocation Registry Entry</a>. While the older Indy version of
 AnonCreds used the “deltas” representation directly, the newer AnonCreds version
@@ -3079,7 +3082,7 @@ entries, up to the total number of credentials in the <a class="term-reference" 
 any time is the same: determine the (modulo) product of the primes for each
 non-revoked credential in the <a class="term-reference" href="#term:revocation-registry">Revocation Registry</a>, as described
 <a href="#creating-the-initial-revocation-registry-entry-object" >here</a>.</p>
-<div id="note-10" class="notice note"><a class="notice-link" href="#note-10">NOTE</a><p>The <a class="term-reference" href="#term:issuer">issuer</a> MUST track of the revocation status of all of the
+<div id="note-9" class="notice note"><a class="notice-link" href="#note-9">NOTE</a><p>The <a class="term-reference" href="#term:issuer">issuer</a> MUST track of the revocation status of all of the
 credentials within a <a class="term-reference" href="#term:revreg">RevReg</a> so that it can both calculate the correct
 accumulator and send to the <a class="term-reference" href="#term:vdr">VDR</a> accurate lists (<code>issued</code> and <code>revoked</code>)
 of the indices of the credentials whose status has changed since the last <a class="term-reference" href="#term:revregentry">RevRegEntry</a> was published. If the list and accumulator published to <a class="term-reference" href="#term:vdr">VDR</a> get out of
@@ -3295,7 +3298,11 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li><a href="#copyright-notice" >Copyright Notice</a></li>
 <li><a href="#introduction" >Introduction</a></li>
 <li><a href="#requirements-notation-and-conventions" >Requirements, Notation and Conventions</a></li>
-<li><a href="#terminology" >Terminology</a></li>
+<li><a href="#terminology" >Terminology</a>
+<ul>
+<li><a href="#cryptographic-notations" >Cryptographic Notations</a></li>
+</ul>
+</li>
 <li><a href="#anoncreds-setup-data-flow" >AnonCreds Setup Data Flow</a>
 <ul>
 <li><a href="#schema-publisher-publish-schema-object" >Schema Publisher: Publish Schema Object</a></li>
