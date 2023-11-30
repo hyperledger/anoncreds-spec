@@ -66,9 +66,8 @@ include:
   [[ref: Verifier]] also must request revocation data from an [[ref: issuer]] to
   verify a received presentation, the [[ref: Issuer]] could correlate the use of
   credentials by [[ref: Holders]] and with what [[ref: Verifiers]] the
-  credentials are being used.
-  - This is often called the [[ref: Call Home]] problem.
-  - [[ref: Distributed Ledgers]] are often used in Digital Trust ecosystems to
+  credentials are being used. This is often called the [[ref: Call Home]] problem.
+  - [[ref: Distributed Ledgers]] are often used in [[ref: Digital Trust ecosystems]] to
     mitigate such surveillance, where public data needed to generate and verify presentations
     are read from public ledgers operated by a set of "uninterested" parties.
   - Other techniques are possible to mitigate such surveillance when ledgers are

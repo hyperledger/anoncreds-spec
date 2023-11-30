@@ -14,17 +14,17 @@ the technology outlined in this specification.
 
 The security of AnonCreds is primarily based on the security of the AnonCreds
 cryptography, and in particular, the [[ref: zero knowledge proofs]] (ZKPs), upon
-embedded within this specification is based. Each ZKP used in AnonCreds requires
+which this specification is based. Each ZKP used in AnonCreds requires
 the following security properties be met, as introduced in many ZKP articles,
 such as this one on [non-interactive zero knowledge proofs]:
 
 - Completeness
-  - If statement is true, verifier will be convinced by prover.
+  - If statement is true, a verifier will be convinced by prover.
 - Soundness
   - If statement is false, a cheating prover cannot convince verifier it is true
-    except with some small probability.
+    except with some negligible probability.
 - Zero-Knowledge
-  - Verifier learns nothing beyond the statement’s validity.
+  - The verifier learns nothing beyond the statement’s validity.
 
 [non-interactive zero knowledge proofs]: http://www0.cs.ucl.ac.uk/staff/J.Groth/ShortNIZK.pdf
 
