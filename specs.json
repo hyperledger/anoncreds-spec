@@ -20,7 +20,6 @@
         "data_flow_presentation_verify.md",
         "data_flow_revocation.md",
         "anoncreds_methods.md",
-        "crypto.md",
         "anoncreds_conventions.md",
         "iana_considerations.md",
         "security_considerations.md",
