@@ -215,12 +215,19 @@ entry:
         "witness": Option<{..}>,
       }
       ```
-        * `signature` - [cryptographic credential signature correctness proof](./data_flow_issuance.md#the-credential-signature) generated for the credential.
-        * `signature_correctness_proof` -  [credential signature correctness proof](./data_flow_issuance.md#the-credential-signature) generated for the credential.
-        * `rev_reg` - `null` if the credential is not revocable. A description of the element and generation process when the credential is revocable are in the section [Supporting Revocation in a Credential](./data_flow_issuance.md#supporting-revocation-in-a-credential).
-        * `witness` - `null` if the credential is not revocable. A description of the element and generation process when the credential is revocable are in the section [Supporting Revocation in a Credential](./data_flow_issuance.md#supporting-revocation-in-a-credential).
+        * `signature` - [cryptographic credential signature correctness proof](./data_flow_issuance.md#the-credential-signature)
+          generated for the credential.
+        * `signature_correctness_proof` -  [credential signature correctness proof](./data_flow_issuance.md#the-credential-signature)
+          generated for the credential.
+        * `rev_reg` - `null` if the credential is not revocable. A description of the element and generation process
+          when the credential is revocable are in the
+          section [Supporting Revocation in a Credential](./data_flow_issuance.md#supporting-revocation-in-a-credential).
+        * `witness` - `null` if the credential is not revocable. A description of the element and generation process
+          when the credential is revocable are in the
+          section [Supporting Revocation in a Credential](./data_flow_issuance.md#supporting-revocation-in-a-credential).
 
-      * encoding the object using `MessagePack` and next encoding the output bytes as `Base64Url` string with no padding.
+        * encoding the object using `MessagePack` and next encoding the output bytes as `Base64Url` string with no
+          padding.
 
 ##### Non-AnonCreds Integrity proof
 
@@ -241,7 +248,8 @@ The `id` attribute of `credentialStatus` must contain id of revocation registry.
 Also, credential revocation data including revocation registry and witness values (`rev_reg` and `witness`) must be 
 included into the credential proof signature as demonstrated above in [AnonCreds CL proof](#anoncreds-cl-proof) section.
 
-A description of generation process when the credential is revocable is in the section [Supporting Revocation in a Credential](./data_flow_issuance.md#supporting-revocation-in-a-credential).
+A description of generation process when the credential is revocable is in the
+section [Supporting Revocation in a Credential](./data_flow_issuance.md#supporting-revocation-in-a-credential).
 
 ```json
 {
@@ -347,7 +355,8 @@ pointing to the difference in a base presentation structure and looks the follow
 #### Verifiable Credential
 
 W3C [Verifiable Credential](https://www.w3.org/TR/vc-data-model/#presentations-0) section requires including
-of `verifiableCredential` property to a verifiable presentation constructed from one or more [verifiable credentials](#credential).
+of `verifiableCredential` property to a verifiable presentation constructed from one or
+more [verifiable credentials](#credential).
 
 The listed [credentials](#credential) must include attributes and predicated requested in 
 the [presentation request](./data_flow_presentation_create_request.md).   
@@ -384,10 +393,11 @@ in two forms:
         }
     ```
     * A predicate object consists of the following data:
-      * `type` - `AnonCredsPredicate` type defined in the scope of [@context](#context) and describes the format of the resolved predicate
-      * `predicate` - type of the predicate: [same as in request](./data_flow_presentation_create_request.md)
-      * `value` - value of the predicate: [same as in request](./data_flow_presentation_create_request.md)
-  
+        * `type` - `AnonCredsPredicate` type defined in the scope of [@context](#context) and describes the format of
+          the resolved predicate
+        * `predicate` - type of the predicate: [same as in request](./data_flow_presentation_create_request.md)
+        * `value` - value of the predicate: [same as in request](./data_flow_presentation_create_request.md)
+
 ##### Proof (Signature)
 
 In the case of W3C AnonCreds presentations, the `proof` attribute for each verifiable credential must be an object of 
@@ -417,7 +427,8 @@ In the case of W3C AnonCreds presentations, the `proof` attribute for each verif
                 }
             }
         ```
-      * `sub_proof` - [cryptographyc proof](./data_flow_presentation_create_presentation.md#generate-the-presentation) generated for each used credential
+        * `sub_proof` - [cryptographyc proof](./data_flow_presentation_create_presentation.md#generate-the-presentation)
+          generated for each used credential
     * encoding the object using `MessagePack` and next encoding the output bytes as `Base64Url` string with no padding.
 * `timestamp` - (Optional) if revocation supported and requested, time as a total number of seconds from Unix Epoch
   representing pointing to the specif moment of revocation registry
@@ -463,7 +474,9 @@ It is verifier and holder responsibility to negotiate which proof must be used
             }
         }
       ```
-        * `aggregated` - [aggregate proof](./data_flow_presentation_create_presentation.md#generate-the-presentation), across all of the source credentials that proves that the same link secret was used in the issuance of all of the credentials.
+        * `aggregated` - [aggregate proof](./data_flow_presentation_create_presentation.md#generate-the-presentation),
+          across all the source credentials that proves that the same link secret was used in the issuance of all of the
+          credentials.
     * encoding the object using `MessagePack` and next encoding the output bytes as `Base64Url` string with no padding.
 
 ### AnonCreds W3C Presentation containing Revocable Credential
@@ -477,7 +490,9 @@ It is verifier and holder responsibility to negotiate which proof must be used
 
 ### Context
 
-The AnonCreds context, located at https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json can be used to implement a local cached copy.
+The AnonCreds context, located
+at https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json can be used to
+implement a local cached copy.
 For convenience, the AnonCreds context is also provided in this section.
 
 :::
