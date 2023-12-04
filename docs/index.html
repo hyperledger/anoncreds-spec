@@ -3245,8 +3245,55 @@ specification is defined within a <a class="term-reference" href="#term:did-meth
 other cases, the <a class="term-reference" href="#term:anoncreds-method">AnonCreds method</a> is a standalone
 specification.</p>
 <h2 id="anoncreds-conventions"><a class="toc-anchor" href="#anoncreds-conventions" >§</a> AnonCreds Conventions</h2>
-<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>Cover conventions like encoding claims, date handling for predicates and revocation status requests</p>
-</div>
+<p>Over the years of using Hyperledger AnonCreds, several conventions (listed here) have been defined can or must be used
+in deploying AnonCreds. The conventions are not required in the current <a path-0="github.com"path-1="hyperledger"path-2="anoncreds-rs"href="https://github.com/hyperledger/anoncreds-rs" >AnonCreds implementation</a>, but
+are necessary to follow for interoperability with other AnonCreds implementations.</p>
+<h3 id="encoding-credential-claims"><a class="toc-anchor" href="#encoding-credential-claims" >§</a> Encoding Credential Claims</h3>
+<p>As described in this specification, the claim data that is actually signed in
+producing an AnonCreds verifiable credential is not the “raw”, human-readable
+data of the claims, but rather an integer derived from the raw data. The act of
+encoding the data was defined to be done by the issuer. However, unless the
+issuer implements exactly the encoding expected by all others in an ecosystem,
+the signatures produced for a presentation will not verify. Thus, although the
+issuer is nominally in control of the encoding, practically, all issuers MUST
+follow the <a href="#encoding-attribute-data" >encoding defined in this specification</a>.</p>
+<p>In a future version of AnonCreds we expect to move the encoding process away
+from the issuer and into AnonCreds.</p>
+<h3 id="date-and-datetime-predicates"><a class="toc-anchor" href="#date-and-datetime-predicates" >§</a> Date and Date/Time Predicates</h3>
+<p>A powerful capability in AnonCreds is the ability to use predicates on dates,
+such as proving based on a date of birth (a strongly correlatable value) that a
+person is older than a certain age without revealing the date of birth. However,
+because of <a href="#encoding-credential-claims" >how credential claims are encoded</a>
+(above), for a date-based predicate to work, the date must be an integer. Thus,
+a “date of birth” claim in an <a path-0="www.iso.org"path-1="iso-8601-date-and-time-format.html"href="https://www.iso.org/iso-8601-date-and-time-format.html" >ISO 8601 Standard Date
+String</a> will not be able
+to be used in a predicate. Rather, the convention of the AnonCreds community has
+been to put the data into the form of the date as an integer of value <code>YYYYMMDD</code>
+This convention was initially defined
+<a path-0="github.com"path-1="hyperledger"path-2="aries-rfcs"path-3="tree"path-4="main"path-5="concepts"path-6="0441-present-proof-best-practices#dates-and-predicates"href="https://github.com/hyperledger/aries-rfcs/tree/main/concepts/0441-present-proof-best-practices#dates-and-predicates" >here</a>
+by the <a path-0="www.hyperledger.org"path-1="projects"path-2="aries"href="https://www.hyperledger.org/projects/aries" >Hyperledger Aries</a>
+community.</p>
+<p>For the same reasons, AnonCreds <code>datetime</code> claims that are to be used in predicates
+SHOULD be issued in <a path-0="en.wikipedia.org"path-1="wiki"path-2="Unix_time"href="https://en.wikipedia.org/wiki/Unix_time" >Unix Time</a> format.</p>
+<p>In a future version of AnonCreds we expect to define the type of each claim in a
+credential so that the <code>date</code> and <code>datetime</code> values as strings can be
+automatically encoded as integers and Unix Time values (respectively). This
+enables supporting both human-friendly displaying of the claims as well as
+support for predicates.</p>
+<h3 id="presentation-request-revocation-intervals"><a class="toc-anchor" href="#presentation-request-revocation-intervals" >§</a> Presentation Request Revocation Intervals</h3>
+<p>While the AnonCreds <a class="term-reference" href="#term:presentation-request">Presentation Request</a> format allows the flexible
+application of <code>from</code> to <code>to</code> ranges for when the <a class="term-reference" href="#term:holder">Holder</a> must prove
+their credential was not revoked, those deploying AnonCreds have found that it is
+rarely practical or necessary to use such flexibility, and the best practices
+are to set the two values (<code>from</code>, <code>to</code>) to be the same in <a class="term-reference" href="#term:presentation">Presentation</a>. For <a class="term-reference" href="#term:verifiers">Verifiers</a> interested in the current revocation status
+of the credential, both values should be set to the current time, while if the
+verifier wants to see the revocation status of the credential at some point in
+the past, both values should be set to point in time.</p>
+<p>Details about this convention can be found in the <a href="#request-non-revocation-proofs" >Presentation Request section
+of this specification</a>.</p>
+<p>Since the <a class="term-reference" href="#term:holder">Holder</a> must prove non-revocation based on a <a class="term-reference" href="#term:revocation">Revocation</a> published by the issuer, the actual interval that the <a class="term-reference" href="#term:holder">Holder</a> must use is not <code>from</code> to <code>to</code>, but rather from the <a class="term-reference" href="#term:revocation">Revocation</a> active at time <code>from</code> to the <a class="term-reference" href="#term:revocation-registry-entry">Revocation Registry Entry</a>
+active at time <code>to</code>, where “time” is as determined by the transaction times
+recorded at the location on which the issuer published the <a class="term-reference" href="#term:revocation">Revocation</a>.</p>
 <h2 id="iana-considerations"><a class="toc-anchor" href="#iana-considerations" >§</a> IANA Considerations</h2>
 <p>This document has no IANA actions.</p>
 <h2 id="security-considerations"><a class="toc-anchor" href="#security-considerations" >§</a> Security Considerations</h2>
@@ -3600,10 +3647,10 @@ and presentations. Such policies are out outside the
 scope of the AnonCreds specification, and are governance issues.</p>
 <h2 id="references"><a class="toc-anchor" href="#references" >§</a> References</h2>
 <h3 id="normative-references"><a class="toc-anchor" href="#normative-references" >§</a> Normative References</h3>
-<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>Add normative references</p>
+<div id="todo-8" class="notice todo"><a class="notice-link" href="#todo-8">TODO</a><p>Add normative references</p>
 </div>
 <h3 id="informative-references"><a class="toc-anchor" href="#informative-references" >§</a> Informative References</h3>
-<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>Add informative references</p>
+<div id="todo-9" class="notice todo"><a class="notice-link" href="#todo-9">TODO</a><p>Add informative references</p>
 </div>
 <h4 id="resources-on-cryptography"><a class="toc-anchor" href="#resources-on-cryptography" >§</a> Resources on cryptography</h4>
 <h5 id="sigma-protocols"><a class="toc-anchor" href="#sigma-protocols" >§</a> Sigma protocols</h5>
@@ -3626,7 +3673,7 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li>Matt Raffel - Kiva Microfiance</li>
 </ul>
 <h2 id="authors-addresses"><a class="toc-anchor" href="#authors-addresses" >§</a> Authors’ Addresses</h2>
-<div id="todo-11" class="notice todo"><a class="notice-link" href="#todo-11">TODO</a><p>Add authors’ addresses.</p>
+<div id="todo-10" class="notice todo"><a class="notice-link" href="#todo-10">TODO</a><p>Add authors’ addresses.</p>
 </div>
 
                     </article>    
@@ -3753,7 +3800,13 @@ contributed ideas, feedback, and wording that influenced this specification:</p>
 <li><a href="#anoncreds-method-registry" >AnonCreds Method Registry</a></li>
 </ul>
 </li>
-<li><a href="#anoncreds-conventions" >AnonCreds Conventions</a></li>
+<li><a href="#anoncreds-conventions" >AnonCreds Conventions</a>
+<ul>
+<li><a href="#encoding-credential-claims" >Encoding Credential Claims</a></li>
+<li><a href="#date-and-datetime-predicates" >Date and Date/Time Predicates</a></li>
+<li><a href="#presentation-request-revocation-intervals" >Presentation Request Revocation Intervals</a></li>
+</ul>
+</li>
 <li><a href="#iana-considerations" >IANA Considerations</a></li>
 <li><a href="#security-considerations" >Security Considerations</a>
 <ul>
