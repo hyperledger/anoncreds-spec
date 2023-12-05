@@ -37,8 +37,8 @@
           }
         ]
       },
-      "issuanceDate": "2023-11-15T10:59:48.036203Z",
-      "issuer": "issuer:id/path=bar",
+      "issuanceDate": "2023-11-15T10:00:00.036203Z",
+      "issuer": "did:sov:3avoBCqDMFHFaKUHug9s8W",
       "proof": {
         "type": "AnonCredsPresentationProof2023",
         "proofValue": "eyJzdWJfcHJvb2Yi...zMTc1NzU0NDAzNDQ0ODUifX1dfX19"
