@@ -87,7 +87,8 @@ In the context of W3C AnonCreds credentials, credential subject property is comp
     - So that `credentialSubject` property is always represented as an object entry, but not an array.
 - Credentials claims are always represented as key value pairs, where `value` is the `raw` value of CL credential
   attributes.
-    - encoded CL credential values are not included in the credential subject
+    - Encoded credential values are not included in the credential subject. Libraries implementing specification must use [the algorithm](https://github.com/hyperledger/aries-rfcs/tree/main/features/0592-indy-attachments#encoding-claims)
+      to generate encoded values during the signature generation and proof verification.
 
 In the case of W3C AnonCreds credentials, the `credentialSubject` attribute looks the following:
 
@@ -118,8 +119,7 @@ schema in order to include the information about AnonCreds related definitions t
   "credentialSchema": {
     "type": "AnonCredsDefinition",
     "definition": "did:sov:3avoBCqDMFHFaKUHug9s8W:3:CL:13:default",
-    "schema": "did:sov:3avoBCqDMFHFaKUHug9s8W:2:fabername:0.1.0",
-    "encoding": "auto"
+    "schema": "did:sov:3avoBCqDMFHFaKUHug9s8W:2:fabername:0.1.0"
   },
   ...
 }
@@ -130,13 +130,6 @@ schema in order to include the information about AnonCreds related definitions t
 * `type` - `AnonCredsDefinition`
 * `schema` - id of [[ref: Schema]]
 * `definition` - id of [[ref: Credential Definition]]
-* `revocation_registry` - (Optional) id of [[ref: Revocation Registry Definition]]
-* `encoding` - attributes encoding algorithm to apply for generating encoded credential values
-    * encoded credential attribute values (binary representation required for doing CL signatures) are not included
-      neither to `credentialSubject` or `signature`
-    * `encoding: auto` implies using the algorithm defined
-      at [Aries RFC 0592 Indy Attachments section](https://github.com/hyperledger/aries-rfcs/tree/main/features/0592-indy-attachments#encoding-claims)
-      to generate encoded values under the hood during the signature generation and proof verification.
 
 #### Issuer
 

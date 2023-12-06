@@ -20,8 +20,7 @@
       "credentialSchema": {
         "type": "AnonCredsDefinition",
         "definition": "did:sov:3avoBCqDMFHFaKUHug9s8W:3:CL:13:default",
-        "schema": "did:sov:3avoBCqDMFHFaKUHug9s8W:2:basic_person:0.1.0",
-        "encoding": "auto"
+        "schema": "did:sov:3avoBCqDMFHFaKUHug9s8W:2:basic_person:0.1.0"
       },
       "credentialSubject": {
         "firstName": "Alice",
