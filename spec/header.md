@@ -15,6 +15,7 @@ AnonCreds Specification
 - Sam Curren
 - Victor Martinez Jurado
 - [Aritra Bhaduri](https://github.com/aritrocoder)
+- [Artem Ivanov](https://github.com/Artemkaaas)
 
 <!-- -->
 

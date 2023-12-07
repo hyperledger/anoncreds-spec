@@ -1,0 +1,48 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json"
+  ],
+  "type": [
+    "VerifiablePresentation",
+    "AnonCredsPresentation"
+  ],
+  "verifiableCredential": [
+    {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json"
+      ],
+      "type": [
+        "VerifiableCredential",
+        "AnonCredsCredential"
+      ],
+      "credentialSchema": {
+        "type": "AnonCredsDefinition",
+        "definition": "did:sov:3avoBCqDMFHFaKUHug9s8W:3:CL:13:default",
+        "schema": "did:sov:3avoBCqDMFHFaKUHug9s8W:2:basic_person:0.1.0"
+      },
+      "credentialSubject": {
+        "firstName": "Alice",
+        "age": [
+          {
+            "type": "AnonCredsPredicate",
+            "predicate": ">=",
+            "value": 18
+          }
+        ]
+      },
+      "issuanceDate": "2023-11-15T10:59:48.036203Z",
+      "issuer": "did:sov:3avoBCqDMFHFaKUHug9s8W",
+      "proof": {
+        "type": "AnonCredsPresentationProof2023",
+        "proofValue": "eyJzdWJfcHJvb2Yi...zMTc1NzU0NDAzNDQ0ODUifX1dfX19"
+      }
+    }
+  ],
+  "proof": {
+    "type": "AnonCredsPresentationProof2023",
+    "challenge": "413296376279822794586260",
+    "proofValue": "eyJhZ2dyZWdhdGVkIjp7ImNfaGFzaCI6IjEwMT...IsMzAsMTM1LDE4MywxMDcsMTYwXV19fQ=="
+  }
+}

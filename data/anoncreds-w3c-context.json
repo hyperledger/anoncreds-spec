@@ -1,0 +1,74 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@protected": true,
+    "ac": "https://anoncreds.example/2022/ns#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "AnonCredsCredential": "ac:AnonCredsCredential",
+
+    "AnonCredsDefinition": {
+      "@id": "ac:AnonCredsDefinition",
+      "@context": {
+        "@version": 1.1,
+        "@protected": true,
+        "definition": {
+          "@id": "ac:definition",
+          "@type": "@id"
+        },
+        "schema": {
+          "@id": "ac:schema",
+          "@type": "@id"
+        }
+      }
+    },
+
+    "AnonCredsCredentialStatusList2023": "ac:AnonCredsCredentialStatusList2023",
+
+    "AnonCredsPresentation": "ac:AnonCredsPresentation",
+
+    "AnonCredsPresentationProof2023": {
+      "@id": "ac:AnonCredsPresentationProof2023",
+      "@context": {
+        "@version": 1.1,
+        "@protected": true,
+        "proofValue": {
+          "@id": "ac:proofValue",
+          "@type": "xsd:string"
+        },
+        "challenge": {
+          "@id": "ac:challenge",
+          "@type": "xsd:string"
+        }
+      }
+    },
+
+    "AnonCredsProof2023": {
+      "@id": "ac:AnonCredsProof2023",
+      "@context": {
+        "@version": 1.1,
+        "@protected": true,
+        "signature": {
+          "@id": "ac:signature",
+          "@type": "xsd:string"
+        }
+      }
+    },
+
+    "AnonCredsPredicate": {
+      "@id": "ac:AnonCredsPredicate",
+      "@context": {
+        "@version": 1.1,
+        "@protected": true,
+        "predicate": {
+          "@id": "ac:predicate",
+          "@type": "xsd:string"
+        },
+        "value": {
+          "@id": "ac:value",
+          "@type": "xsd:decimal"
+        }
+      }
+    }
+  }
+}
