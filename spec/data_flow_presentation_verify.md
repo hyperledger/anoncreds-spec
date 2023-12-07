@@ -29,43 +29,44 @@ verification process, as noted below. Finally, an important part of the
 verification process is **not** carried out in AnonCreds v1.0 and must be
 performed by the calling [[ref: verifier]]. We highlight that as well.
 
-#### Verify `eq_proof`
+#### Verify Validity Proofs
 
-An AnoncCreds `eq_proof` is the proof of the signature over the entire source credential.
-As noted, there is one `eq_proof` for each source credential in the
-presentation. The cryptographic processing that verifies the signature over the
-encoded data values is described here.
+An AnoncCreds validity proof is the combination of both equality and inequality predicate proofs. The validity proof is bound to the primary credential by the $\widehat{m_2}$ value that is presented in both proofs. The validity proof is verified by the following steps:
 
-::: todo
+- For each credential $C_p$, take each sub-proof $Pr_C$ and compute
+$$ \widehat{T} \leftarrow \left(
+    \frac{Z}
+    { \left(
+        \prod_{j \in \mathcal{A}_r}{R_j}^{m_j}
+    \right)
+    (A')^{2^{596}}
+    }\right)^{-c}
+    (A')^{\widehat{e}}
+    \left(\prod_{j\in (\mathcal{A}_{\widetilde{r}})}{R_j}^{\widehat{m_j}}\right)
+    (S^{\widehat{v}})\pmod{n}. $$
+Add $\widehat{T}$ to $\widehat{\mathcal{T}}$ .
 
-Add the eq_proof verification process
+- For each predicate $p$: 
+$$ \Delta' \leftarrow \begin{cases}
+z_j; & if\  * \equiv\ \leq
+z_j-1; & if\ * \equiv\ <
+z_j; & if\ * \equiv\ \geq
+z_j+1; & if\ * \equiv\ >
+\end{cases} $$
+$$
+a \leftarrow \begin{cases}
+-1 & if\ * \equiv \leq or <
+1  & if\ * \equiv \geq or >
+\end{cases}
+$$
 
-:::
-
-#### Verify `ge_proof`
-
-An AnoncCreds `ge_proof` is the proof of the predicates (if any) derived from the source credential.
-As noted, there is one `ge_proof` for each predicate from each source credential in the
-presentation. The cryptographic processing that verifies the predicate is described here.
-
-::: todo
-
-Add the ge_proof verification process
-
-:::
-
-#### Verify `aggregate_proof`
-
-The AnoncCreds `aggregate_proof` is the proof that the blinded link secrets in
-each of the source credentials were derived from the same link secret, binding
-credentials to that one linked secret. The cryptographic processing that verifies
-the predicate is described here.
-
-::: todo
-
-Add the aggregate_proof verification process
-
-:::
+- Using $Pr_p$ and $\mathcal{C}$ compute 
+$$
+\widehat{T_i} \leftarrow T_i^{-c}Z^{\widehat{u_i}} S^{\widehat{r_i}}\pmod{n}_{1\leq i \leq 4};
+\widehat{T_{\Delta}} \leftarrow \left(T_{\Delta}^{a}Z^{\Delta'}\right)^{-c}Z^{\widehat{m_j}}S^{a\widehat{r_{\Delta}}}\pmod{n};
+\widehat{Q}\leftarrow (T_{\Delta}^{-c})\prod_{i=1}^{4}T_i^{\widehat{u_i}}(S^{\widehat{\alpha}})\pmod{n},
+$$
+and add these values to  $\widehat{\mathcal{T}}$ in the order $\widehat{T_1},\widehat{T_2} ,\widehat{T_3},\widehat{T_4},\widehat{T_{\Delta}},\widehat{Q}$.
 
 #### Verify Non-Revocation Proof
 
@@ -104,7 +105,7 @@ $$\widehat{T_6} \leftarrow  D^{\widehat{r''}}\cdot g^{-\widehat{m'}} \widetilde{
 $$\widehat{T_7} \leftarrow \left(\frac{e(pk\cdot\mathcal{G},\mathcal{S})}{e(g,g')}\right)^{c_H}\cdot e(pk\cdot \mathcal{G},\widehat{h})^{\widehat{r''}}\cdot e(\widetilde{h},\widehat{h})^{-\widehat{m'}}\cdot e(\widetilde{h},\mathcal{S})^{\widehat{r}}$$
 $$\widehat{T_8} \leftarrow \left(\frac{e(\mathcal{G},u)}{e(g,\mathcal{U})}\right)^{c_H}\cdot e(\widetilde{h},u)^{\widehat{r}}\cdot e(1/g,\widehat{h})^{\widehat{r'''}}$$
 
-Then all these values are added to $\widehat{T}$. This is then added with the validity proof which when hashed with $\mathcal{C}$ and $n_1$(recieved from [[ref: holder]]) re constructs the challenge hash $\widehat{c_H}$
+Then all these values are added to $\widehat{T}$. This is then added with the validity proof which when hashed with $\mathcal{C}$ and $n_1$(received from [[ref: holder]]) re constructs the challenge hash $\widehat{c_H}$.
 If $\widehat{c_H} = c_H$, then the proof is valid.
 
 The NRP is bound to the primary credential by the $\widehat{m_2}$ value that is presented in both proofs.
