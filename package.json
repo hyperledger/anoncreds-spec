@@ -17,7 +17,7 @@
     "mocha": "^10.1.0"
   },
   "scripts": {
-    "render": "node -e \"require('spec-up')({ nowatch: true })\"",
+    "render": "node -e \"require('spec-up')({ nowatch: true })\" && cp data/anoncreds-w3c-context.json docs/anoncreds-w3c-context",
     "edit": "node -e \"require('spec-up')()\"",
     "test": "mocha 'test/**/*.js'"
   }
