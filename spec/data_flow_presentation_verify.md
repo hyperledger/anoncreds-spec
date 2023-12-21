@@ -23,7 +23,7 @@ described below.
 
 While in this section we mostly focus on the verification of the proofs in the
 presentation, there are other data elements included, such as the revealed
-attributes, self-attested attributes, and the [[def: Presentation Request]] for
+attributes, self-attested attributes, and the [[ref: Presentation Request]] for
 which the presentation was generated. Some of these values contribute to the
 verification process, as noted below. Finally, an important part of the
 verification process is **not** carried out in AnonCreds v1.0 and must be
