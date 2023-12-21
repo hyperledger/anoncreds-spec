@@ -83,7 +83,7 @@ mechanism is based on the use of a blinded secret.
 
 [[def: Holder, Holders, holder, holders, prover, Prover]]
 
-~ A holder, also known as an identity holder and prover, is an entity that is in possession of a [[ref: credential]]. In many use cases, the holder is also the identity [[ref: subject]]. A holder can interact with an issuer to obtain anonymous credentials. It can also derive information from anonymous credentials that can be presented to a [[ref: verifier]] to gain access to goods and services. A prover is a synonym for holder that is often used in a holder-[[ref: verifier]] interaction. In this specification, we only use the term "holder", however the underlying implementations use "prover" in code.
+~ In this specification, the holder is a software component (agent) used by an entity (person, organization, etc.) in possession of [[ref: credentials]] issued to them. Where "holder" is used in the specification we mean the software component. In some places where required, we clearly refer to an entity using holder software as separate from the holder software component. Holders interact with [[ref: issuers]] to obtain [[ref: credentials]], and derive [[ref: presentations]] from the [[ref: credentials]] they hold. 
 
 [[def: Issuer, Issuers, issuer, issuers]]
 
@@ -114,6 +114,10 @@ mechanism is based on the use of a blinded secret.
 [[def: Presentation Request, presentation request, presentation requests, Presentation Requests]]
 
 ~ An AnonCreds presentation request is an object constructed by the [[ref: verifier]] and sent to the [[ref: holder]] defining the verifiable data that the [[ref: verifier]] wants from the [[ref: holder]] for some business purpose.
+
+[[def: Prover, prover]]
+
+~ A prover is a synonym for holder that is sometimes used in a [[ref: holder]]-[[ref: verifier]] interaction. In this specification, we use the term "holder" in all cases. However the underlying AnonCreds implementations use "prover" in code.
 
 [[def: Revocation, revocation]]
 
