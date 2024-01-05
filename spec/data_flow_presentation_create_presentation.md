@@ -82,7 +82,7 @@ process to get the necessary additional verifiable credentials may be initiated.
 If more than one verifiable credential satisfy any of the `restrictions` items,
 the [[ref: holder]] software might select one to use by default, such as the
 most recently issued, non-revoked of the credentials, and/or might invoke a user
-interface to allow the entity that controls the [[def:holder]] software to
+interface to allow the entity that controls the [[ref: holder]] software to
 select from the set of possible credentials to use.
 
 In order to proceed to the presentation generation step, there must be one
@@ -540,7 +540,7 @@ The data structure is:
 
 The example above is for a source credential that is not revocable. For a
 revocable source credential, the `rev_reg_id` and `timestamp` (the identifier
-for the [[def: Revocation Registry Entry]] used in the non-revocation proof) are
+for the [[ref: Revocation Registry Entry]] used in the non-revocation proof) are
 added. Those are described in the section below on [generation of non-revocation
 proofs](#generate-non-revocation-proofs)
 
@@ -582,7 +582,7 @@ the presentation request.
 
 The `witness` is an integer that is used in the non-revocation zero
 knowledge proof to demonstrate to the verifier that the holder's credential has
-not been revoked. Recall that the `accumulator` of a [[def: Revocation Registry
+not been revoked. Recall that the `accumulator` of a [[ref: Revocation Registry
 State]] is the product of the tails file entries for all of the unrevoked
 credentials in the registry. For a specific holder, its `witness` is the product
 of the tails file entries for all of the unrevoked credentials in the registry
