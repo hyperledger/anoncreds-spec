@@ -310,8 +310,8 @@ The following describes the process for generating the revocation portion of the
 The revocation scheme uses a pairing-based dynamic accumulator based on the [CKS scheme](https://link.springer.com/content/pdf/10.1007/978-3-642-00468-1_27.pdf).
 
 A [[ref: Private Credential Definition]] with revocation enabled has the following format. In this, the
-details of the `p_key` element are hidden, as they are the same as was covered
-above.
+details of the `p_key` element are omitted, as they are the same as was covered
+above.  The implementation can be found in the [anoncreds-clsignatures-rs](https://github.com/hyperledger/anoncreds-clsignatures-rs/blob/main/src/types.rs) repository.
 
 ```json
 {
@@ -327,14 +327,14 @@ above.
 ```
 
 - `r_key` is an object defining the private key for the CKS revocation scheme.
-  - `x` is a Big (128-bit?) integer selected at random from the the group of integers defined by the order of the bilinear groups `q`
-  - `sk` is a Big (128-bit?) integer selected at random from the the group of integers defined by the order of the bilinear groups `q`
+  - `x` is an integer modulo `q`, the size of the elliptic curve group used in the CKS scheme.  This is the value called gamma in the CKS scheme.
+  - `sk` is an integer modulo `q`, the size of the elliptic curve group used in the CKS scheme.  This is the secret key of the signature scheme that is used to link elements of the accumulator to credentials.
 
 `x` and `sk` are used as part of the revocation public key generation as defined below.
 
 A [[ref: Credential Definition]] with revocation enabled has the following format (from [this
 example Credential Definition](https://indyscan.io/tx/SOVRIN_MAINNET/domain/55204) on the
-Sovrin MainNet). In this, the details of the `primary` element are hidden, as
+Sovrin MainNet). In this, the details of the `primary` element are omitted, as
 they are the same as was covered above.
 
 ```json
