@@ -25,7 +25,7 @@ jobs:
           npm run render
           
     - name: Override gitignore
-      run: git add -f docs/index.html
+      run: git add -f docs/index.html docs/anoncreds-w3c-context
 
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@4.1.3

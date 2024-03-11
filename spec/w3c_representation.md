@@ -29,7 +29,7 @@ The **context** definition used for AnonCreds W3C credentials representation can
 discovered [here](../data/anoncreds-w3c-context.json).
 
 In the case of W3C AnonCreds credentials, the `@context` attribute includes an extra
-entry `https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json`
+entry `https://hyperledger.github.io/anoncreds-spec/anoncreds-w3c-context`
 which is required for the resolution of custom structure definitions and looks the following:
 
 ```json
@@ -37,7 +37,7 @@ which is required for the resolution of custom structure definitions and looks t
   ...
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json"
+    "https://hyperledger.github.io/anoncreds-spec/anoncreds-w3c-context"
   ],
   ...
 }
@@ -309,7 +309,7 @@ The **context** definition used for AnonCreds W3C presentations representation c
 discovered [here](../data/anoncreds-w3c-context.json).
 
 In the case of W3C AnonCreds presentations, the `@context` attribute includes an extra
-entry `https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json`
+entry `https://hyperledger.github.io/anoncreds-spec/anoncreds-w3c-context`
 which is required for the resolution of custom structure definitions and looks the following:
 
 ```json
@@ -317,7 +317,7 @@ which is required for the resolution of custom structure definitions and looks t
   ...
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json"
+    "https://hyperledger.github.io/anoncreds-spec/anoncreds-w3c-context"
   ],
   ...
 }
@@ -492,7 +492,7 @@ It is [[ref: verifier]] and [[ref: holder]] responsibility to negotiate which pr
 ### Context
 
 The AnonCreds context, located
-at https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/data/anoncreds-w3c-context.json can be used to
+at https://hyperledger.github.io/anoncreds-spec/anoncreds-w3c-context can be used to
 implement a local cached copy.
 For convenience, the AnonCreds context is also provided in this section.
 
