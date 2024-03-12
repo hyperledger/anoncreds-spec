@@ -297,29 +297,54 @@ The identifier for the [[ref: Credential Definition]] is dependent on where the
 
 The issuer enables the ability to revoke credentials produced from a [[ref: Credential Definition]] by
 passing to the [[ref: Credential Definition]] generation process the flag `support_revocation` as
-`true`. When revocation is to enabled for a [[ref: Credential Definition]], additional data related to
-revocation is generated and added to the [[ref: Credential Definition]] JSON objects defined above. In
-the following the additional steps in the [[ref: Credential Definition]] generation process to enable
-revocation are described, along with the additional data produced in that
-process.
+`true`. 
+When using revocation in a credential, private key material is added
+to the [[ref: Private Credential Definition]] to allow the issuer to
+revoke credentials, and public key material is added to the
+[[ref: Credential Definition]] to allow a verifier to check revocation
+status.  The following describes the fields added to the [[ref: Private Credential Definition]] and  the
+[[ref: Credential Definition]].
 
-The following describes the process for generating the revocation portion of the
-[[ref: Credential Definition]] data. This process extends the process for generating a [[ref: Credential Definition]] in the
-[previous section](#generating-a-credential-definition-without-revocation-support) of this document.
 
-The revocation scheme uses a pairing-based dynamic accumulator based on the [CKS scheme](https://link.springer.com/content/pdf/10.1007/978-3-642-00468-1_27.pdf).
+The revocation scheme uses a pairing-based dynamic accumulator defined
+as a variant of the [CKS scheme](https://ia.cr/2008/539) but with a
+Type 3 elliptic curve pairing instead of a Type 1 pairing.  The curve
+$E$ is [BN254](https://neuromancer.sk/std/bn/bn254), which is defined
+over a 254-bit prime $p$.  The pairing is an Ate pairing $e : G_1
+\times G_2 \rightarrow G_T$ where $G_1 = E(\mathbb{F}_p)$, $G_2 =
+E(\mathbb{F}_{p^2})$, and $G_T$ is the group of $q^{\text{th}}$ roots
+of unity in $\mathbb{F}_{p^{12}}$ where $q=|E(\mathbb{F}_p)|$, which
+is another 254-bit prime.  
 
-Pairing cryptography makes use of two pairing-friendly elliptic curve groups (G1, G2) with a known, computable pairing function e(G1,G2) -> Gt that maps any two group elements from G1 and G2 respectively to an element in the third group Gt. All groups have the same order, q, the number of elements in the group. The accumulator scheme implemented uses Type-3 pairings such that G1 != G2 and there are no efficiently computable homomorphisms between G1 and G2. An introduction to pairings can be found [here](https://www.math.uwaterloo.ca/~ajmeneze/publications/pairings.pdf).
+In the amcl library used for the elliptic curve arithmetic, points are
+represented using projective co-ordinates, i.e. a point $(X/Z,Y/Z)$ on
+the curve $E$ is mapped to a projective point $(X: Y: Z)$.
+Additionally, the big-integer co-ordinates are strings of 64
+hexadecimal characters, meaning there are up to 64 * 4 - 254 = 2 bits of
+'excess' in each encoding.  The library includes the excess number of
+bits as an integer (i.e. `1` or `2`) before the hexadecimal
+string.  The upshot is:
+- Elements of $G_1$ are encoded as three 64-character
+  strings of hexadecimal characters, each preceded by the excess, e.g.
+  `1 1D1...A04 1 146...8BC 1 095...8A8`.
+- Elements of $G_2$ are encoded as six 64-character 
+  strings of hexadecimal characters, each preceded by the excess.
+  `1 104...EC9 1 01A...FC2 1 226...1EB 1 234...D08 1 095...8A8 1 000...000`.
 
-NOTE: This scheme must use a specific pairing friendly elliptic curve. Believe it will be using BLS-381. But should confirm. For implementations to be interoperable they must use the same curve (or possibly support multiple, but then would have to identify the curve in this data somewhere. Feels like unnecessary complexity)
+::: note
 
-::: todo
-Formally define a type-3 bilinear curve setup? Should this go in the appendix?
+In this section, multiplicative notation is used: a point $P$
+on an elliptic curve $E$ is considered an element $g$ in the group $G$
+of points on the curve $E$, and for an integer $k$ modulo the group
+order $q$, we write $g^k$ to mean the point $k \cdot P$.
+
 :::
 
+
+##### Private Revocation Keys
 A [[ref: Private Credential Definition]] with revocation enabled has the following format. In this, the
-details of the `p_key` element are hidden, as they are the same as was covered
-above.
+details of the `p_key` element are omitted, as they are the same as was covered
+in [the section above](generating-a-credential-definition-without-revocation-support).  The implementation can be found in the [anoncreds-clsignatures-rs](https://github.com/hyperledger/anoncreds-clsignatures-rs/blob/main/src/types.rs) repository.
 
 ```json
 {
@@ -334,15 +359,28 @@ above.
 }
 ```
 
-- `r_key` is an object defining the private key for the CKS revocation scheme.
-  - `x` is a Big (128-bit?) integer selected at random from the the group of integers defined by the order of the bilinear groups `q`
-  - `sk` is a Big (128-bit?) integer selected at random from the the group of integers defined by the order of the bilinear groups `q`
+- `r_key` is an object defining the revocation private key for the credential.
+  - `x` is an integer modulo $q$
+  - `sk` is an integer modulo $q$
 
-`x` and `sk` are used as part of the revocation public key generation as defined below.
+The value $q$ is the order of the group $G_1=E(\mathbb{F}_p)$ on the curve BN254 (see above: $q$ is a 254-bit prime).
+`x` and `sk` are used to generate parts of the revocation public key as described below.
+
+::: note
+
+The issuer additionally holds a secret value `gamma` used to construct
+the accumulator.  This is inside the `RevocationKeyPrivate` object in
+[anoncreds-clsignatures-rs](https://github.com/hyperledger/anoncreds-clsignatures-rs.git),
+which is separate from the `CredentialRevocationPrivateKey` object
+that stores `sk` and `x`.
+
+:::
+
+##### Public Revocation Keys
 
 A [[ref: Credential Definition]] with revocation enabled has the following format (from [this
 example Credential Definition](https://indyscan.io/tx/SOVRIN_MAINNET/domain/55204) on the
-Sovrin MainNet). In this, the details of the `primary` element are hidden, as
+Sovrin MainNet). In this, the details of the `primary` element are omitted, as
 they are the same as was covered above.
 
 ```json
@@ -355,38 +393,36 @@ they are the same as was covered above.
     "primary": {...},
     "revocation": {
       "g": "1 154...813 1 11C...D0D 2 095..8A8",
-      "g_dash": "1 1F0...000",
-      "h": "1 131...8A8",
-      "h0": "1 1AF...8A8",
-      "h1": "1 242...8A8",
-      "h2": "1 072...8A8",
-      "h_cap": "1 196...000",
-      "htilde": "1 1D5...8A8",
-      "pk": "1 0E7...8A8",
-      "u": "1 18E...000",
-      "y": "1 068...000"
+      "g_dash": "1 1F0...3B5 1 229...41D 1 04B...F7D 1 061...8B7 2 095...8A8 1 000...000",
+      "h": "1 131...0DD 1 0D5...66E 2 095...8A8",
+      "h0": "1 1AF...246 1 127...361 2 095...8A8",
+      "h1": "1 242...F14 1 1AC...2FF 2 095...8A8",
+      "h2": "1 072...7A1 1 09E...622 2 095...8A8",
+      "h_cap": "1 196...C53 1 238...38B 1 196...C7E 1 198...D31 2 095...8A8 1 000...000",
+      "htilde": "1 1D5...797 1 034...232 2 095...8A8",
+      "pk": "1 0E7...A88 1 007...4B8 2 095...8A8",
+      "u": "1 18E...44B 1 018...F71 1 0D8...2C2 1 003...4CF 2 095...8A8 1 000...000",
+      "y": "1 068...F6B 1 16C...F7E 1 01F...68A 1 1E3...9F9 2 095...8A8 1 000...000"
     }
   }
 }
 ```
 
-All attributes in the `revocation` item represent elliptic curve points that are members of either G1 or G2. Group elements of G1 are represented using 3 64 digit hex integers, wheras G2 elements are represented using 6 64 digit hex integers. The `revocation` attributes define a CKS public key that can be used to authenticate updates from the issuer to the accumulator.
-
 In the following, only the `revocation` item is described, as the rest of items (`primary`, `ref`, etc.) are described in the previous section of this document.
 
 - `revocation` is the data used for managing the revocation status of
-  credentials issued using this [[ref: Credential Definition]].
-  - `g` is a generator for the elliptic curve group G1
-  - `g_dash` is a generator for the elliptic curve group G2
-  - `h` is a random elliptic curve element selected from G1
-  - `h0` is a random elliptic curve element selected from G1
-  - `h1` is a random elliptic curve element selected from G1
-  - `h2` is a random elliptic curve element selected from G1
-  - `h_cap` is a random elliptic curve element selected from G2
-  - `htilde` is a random elliptic curve element selected from G1
-  - `pk` is the public key in G1 for the issuer respective to this accumulator. (g^sk)
-  - `u` is a random elliptic curve element selected from G2
-  - `y` is the an elliptic curve element in G1 calculated as h_cap^x, where x is selected at random by the issuer from the set Z_q.
+  credentials issued using this [[ref: Credential Definition]]
+  - `g` is a generator for the elliptic curve group $G_1$
+  - `g_dash` is a generator for the elliptic curve group $G_2$
+  - `h` is an elliptic curve point selected uniformly at random from $G_1$
+  - `h0` is an elliptic curve point selected uniformly at random from $G_1$
+  - `h1` is an elliptic curve point selected uniformly at random from $G_1$
+  - `h2` is an elliptic curve point selected uniformly at random from $G_1$
+  - `h_cap` is an elliptic curve point selected uniformly at random from $G_2$
+  - `htilde` is an elliptic curve point selected uniformly at random from $G_1$
+  - `pk` is the public key in $G_1$ for the issuer with respect to this accumulator, computed as `g^sk` (in multiplicative notation), where `sk` is from `r_key` above
+  - `u` is an elliptic curve point selected uniformly at random from $G_2$
+  - `y` is the an elliptic curve point in $G_2$, computed as `h_cap^x` (in multiplicative notation), where `x` is from `r_key` above
 
 #### Publishing the Credential Definition on a Verifiable Data Registry
 
