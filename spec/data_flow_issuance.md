@@ -157,7 +157,7 @@ The [[ref: holder]] constructs the following [[ref: Credential Request]] JSON st
 
 ```json
 {
-    "prover_did": "BZpdQDGp2ifid3u3Up17MG",
+    "entropy": "BZpdQDGp2ifid3u3Up17MG",
     "cred_def_id": "GvLGiRogTJubmj5B36qhYz:3:CL:8:faber.agent.degree_schema",
     "blinded_ms": {
         # Structure detailed below
